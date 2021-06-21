@@ -21,6 +21,5 @@ void loop()
         ctrl = input.toInt();
         left.write(ctrl);
         right.write(ctrl);
-        
     }
 }
