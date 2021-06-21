@@ -2,7 +2,7 @@ import numpy as np
 import serial, time, cv2, keyboard
 from PIL import Image
 
-vid = cv2.VideoCapture(0)
+
 yellow_lower = np.array([0, 50, 50])
 yellow_upper = np.array([35, 255, 255])
 
@@ -83,8 +83,22 @@ count = 5000
 delay = 0
 
 while 1:
-    ret, frame = vid.read()
-    
+#   frame counting    
+    if 1:
+        if keyboard.is_pressed('up'):
+            delay += .003
+        if keyboard.is_pressed('down'):
+            delay -= .003
+        if delay < 0:
+            delay = 0    
+        time.sleep(delay)
+
+        count += 3
+        if count >= 13400:
+            count = 5000
+
+    frame = np.array(cv2.imread('C:\\Users\\ekhad\\Desktop\\carshit\\td1\\frame' + str(count) + '.png'))
+
     cut = read.getTile(frame)
     mask = read.getMask(frame)
     tmp = read.getCenter(frame)
@@ -119,7 +133,7 @@ while 1:
 
         vel = Vf - Vi
 
-        velDiffScaled = (vel**2)/diff
+        velDiffScaled = (vel**1.2)/diff
 
         if diff < 0:
             itg -= .01*diff
@@ -138,10 +152,7 @@ while 1:
     ctrl = int(ctrl/10)
     ctrl = limit(ctrl, -50, 50)
 
-    try:
-        qaz.write(str(ctrl).encode("utf-8"))
-    except Exception:
-        print("transfer failed. Continuing . . .")
+    qaz.write(str(ctrl).encode("utf-8"))
 
 #   adding dots
     cv2.line(frame, (265, 280), (265 + ctrl, 260), (200, 200, 20), 2)
@@ -151,7 +162,6 @@ while 1:
 
     cv2.imshow('frame', frame)
     cv2.imshow('cut', cut)
-    cv2.imshow('mask', mask)
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         1
