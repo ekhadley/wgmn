@@ -17,9 +17,9 @@ while count > -1:
     path = 'D:\\LAZARUS\\frame' + str(count) + ".png"
     '''
     format  = 'X:????????????????'
-
-    cv2.imwrite(path, frame)
     '''
+    cv2.imwrite(path, frame)
+
     print(path)
     cv2.imshow('frame', frame)
 
