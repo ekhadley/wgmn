@@ -14,11 +14,12 @@ while count > -1:
 
     ret, frame = numpy.array(vid.read())
  
-    path = 'D:\\LAZARUS\\frame' + str(count) + ".png"
-    '''
-    path  = 'C:\\Users\\ekhad\\Desktop\\lvid.png'
-    '''
-    cv2.imwrite(path, frame)
+    try:
+        path = 'D:\\LAZARUS\\frame' + str(count) + ".png"
+        cv2.imwrite(path, frame)
+    except Exception:
+        path  = 'C:\\Users\\ekhad\\Desktop\\lvid.png'
+        cv2.imwrite(path, frame)
 
     print(path)
     cv2.imshow('frame', frame)
