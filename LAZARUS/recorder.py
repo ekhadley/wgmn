@@ -16,7 +16,7 @@ while count > -1:
  
     path = 'D:\\LAZARUS\\frame' + str(count) + ".png"
     '''
-    format  = 'X:????????????????'
+    path  = 'C:\\Users\\ekhad\\Desktop\\lvid.png'
     '''
     cv2.imwrite(path, frame)
 
