@@ -1,9 +1,7 @@
 import numpy, time, cv2, time
 from PIL import Image
 
-
-
-vid = cv2.VideoCapture(1)
+vid = cv2.VideoCapture(0)
 
 count = 0
 
@@ -13,13 +11,9 @@ while count > -1:
     count += 1
 
     ret, frame = numpy.array(vid.read())
- 
-    try:
-        path = 'D:\\LAZARUS\\frame' + str(count) + ".png"
-        cv2.imwrite(path, frame)
-    except Exception:
-        path  = 'C:\\Users\\ekhad\\Desktop\\lvid.png'
-        cv2.imwrite(path, frame)
+
+    path  = 'C:\\Users\\ekhad\\Desktop\\lvid\\frame' + str(count) + '.png'
+    cv2.imwrite(path, frame)
 
     print(path)
     cv2.imshow('frame', frame)
