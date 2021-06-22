@@ -1,7 +1,7 @@
 import numpy, time, cv2, time
 from PIL import Image
 
-count = 9
+count = 0
 
 
 while count > -1:

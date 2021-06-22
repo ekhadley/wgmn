@@ -12,6 +12,5 @@
         "-p",
         "test*.py"
     ],
-    "python.testing.promptToConfigure": false,
-    "python.pythonPath": "c:\\Users\\ekhad\\AppData\\Local\\Programs\\Python\\Python38\\python.exe"
+    "python.testing.promptToConfigure": false
 }
