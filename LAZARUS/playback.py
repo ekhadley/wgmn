@@ -13,10 +13,8 @@ while count > -1:
     frame = cv2.imread(path)
 
     print(path)
-    try:
-        cv2.imshow('frame', frame)
-    except Exception:
-        pass
+
+    cv2.imshow('frame', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         1
