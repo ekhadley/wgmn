@@ -2,7 +2,7 @@ import numpy as np
 import serial, time, cv2, keyboard
 from PIL import Image
 
-vid = cv2.VideoCapture(0)
+vid = cv2.VideoCapture(1)
 yellow_lower = np.array([0, 50, 50])
 yellow_upper = np.array([35, 255, 255])
 
