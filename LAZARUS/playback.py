@@ -1,10 +1,6 @@
 import numpy, time, cv2, time
 from PIL import Image
 
-
-
-vid = cv2.VideoCapture(1)
-
 count = 0
 
 
