@@ -87,7 +87,9 @@ while 1:
     if count == 8595:
         count = 3000
 
-    frame = np.array(cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
+    
+#    frame = np.array(cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
+    frame = np.array(cv2.imread('D:\\lvid\\frame' + str(count) + ".png"))
 
 #   cutting and reading image
     cut = read.getTile(frame)
@@ -124,25 +126,24 @@ while 1:
     vel = Vf - Vi
 
     try:
-        velDiffScaled = (vel*25)/diff
+        velDiffScaled = (vel)/diff
     except Exception:
         velDiffScaled = 0
 
     if diff < 0:
-        itg += .01*diff
+        itg += .003*diff
     if diff > 0:
-        itg += .01*diff
-    if diff in range(-5, 5):
-        print('reset')
+        itg += .003*diff
+    if diff > -1 and diff < 1:
         itg = 0
 
-    itg = limit(itg, -50, 50)
+    itg = limit(itg, -10, 10)
 
     vals = [diff, itg, velDiffScaled]
 #
     ProportionalStrength = 1
-    IntegralStrength = 5
-    DerivitiveStrength = 3
+    IntegralStrength = 1
+    DerivitiveStrength = 5
 
     print(diff)
 
@@ -163,7 +164,7 @@ while 1:
 #   lines and displaying
     cv2.line(frame, (335, 280), (335 + ctrl, 280), (200, 200, 20), 2)
     cv2.line(frame, (335, 300), (335 - round(diff)*ProportionalStrength, 300), (120, 50, 200), 4)
-    cv2.line(frame, (335, 330), (335 + round(itg)*IntegralStrength, 330), (200, 50, 120), 4)
+    cv2.line(frame, (335, 330), (335 - round(itg)*IntegralStrength, 330), (200, 50, 120), 4)
     cv2.line(frame, (335, 360), (335 + round(velDiffScaled)*DerivitiveStrength, 360), (10, 200, 120), 4)
 
     cv2.circle(frame, (x, 280), 2, (200, 20, 20), 4)
