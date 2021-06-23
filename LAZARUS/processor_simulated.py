@@ -14,7 +14,7 @@ for i in range(0, 100):
     vels.append(0)
 
 prevs = []
-for i in range(0, 1000):
+for i in range(0, 3000):
     prevs.append(185)
 
 mode = 'calibrating . . .'
@@ -130,6 +130,8 @@ while 1:
     except Exception:
         velDiffScaled = 0
 
+    velDiffScaled = limit(velDiffScaled, -25, 25)
+
     if diff < 0:
         itg += .003*diff
     if diff > 0:
@@ -139,13 +141,13 @@ while 1:
 
     itg = limit(itg, -10, 10)
 
-    vals = [diff, itg, velDiffScaled]
+    vals = [diff, itg, -velDiffScaled]
 #
-    ProportionalStrength = 1
-    IntegralStrength = 1
+    ProportionalStrength = .35
+    IntegralStrength = 3
     DerivitiveStrength = 5
 
-    print(diff)
+    print(velDiffScaled)
 
 #   cleaning output signal
     ctrls.append(PID(vals, ProportionalStrength*100, IntegralStrength*100, DerivitiveStrength*100))
@@ -162,10 +164,10 @@ while 1:
         pass
 
 #   lines and displaying
-    cv2.line(frame, (335, 280), (335 + ctrl, 280), (200, 200, 20), 2)
-    cv2.line(frame, (335, 300), (335 - round(diff)*ProportionalStrength, 300), (120, 50, 200), 4)
-    cv2.line(frame, (335, 330), (335 - round(itg)*IntegralStrength, 330), (200, 50, 120), 4)
-    cv2.line(frame, (335, 360), (335 + round(velDiffScaled)*DerivitiveStrength, 360), (10, 200, 120), 4)
+    cv2.line(frame, (335, 277), (335 + ctrl, 277), (0, 60, 250), 4)
+    cv2.line(frame, (335, 300), (335 - round(diff*ProportionalStrength), 300), (120, 50, 200), 4)
+    cv2.line(frame, (335, 330), (335 - round(itg*IntegralStrength), 330), (200, 50, 120), 4)
+    cv2.line(frame, (335, 360), (335 + round(velDiffScaled*DerivitiveStrength), 360), (10, 200, 120), 4)
 
     cv2.circle(frame, (x, 280), 2, (200, 20, 20), 4)
     cv2.circle(cut, (x, 5), 2, (200, 20, 20), 4)
@@ -173,7 +175,6 @@ while 1:
     cv2.putText(frame, str(count), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
     cv2.imshow('frame', frame)
-    cv2.imshow('mask', mask)
     cv2.imshow('cut', cut)
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
