@@ -14,8 +14,8 @@ for i in range(0, 100):
     vels.append(0)
 
 prevs = []
-for i in range(0, 5000):
-    prevs.append(135)
+for i in range(0, 1000):
+    prevs.append(185)
 
 mode = 'calibrating . . .'
 
@@ -42,13 +42,13 @@ class reader():
     def getTile(self, src):
         mask = cv2.cvtColor(src, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(mask, self.lowerYel, self.upperYel)
-       # mask = cv2.erode(mask, np.ones((4, 4), np.uint8))
+        mask = cv2.erode(mask, np.ones((4, 4), np.uint8))
        # mask = cv2.dilate(mask, np.ones((4, 4), np.uint8))
         return mask[self.y1:self.y2, self.x1:self.x2]
     def getMask(self, src):
         mask = cv2.cvtColor(src, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(mask, self.lowerYel, self.upperYel)
-      #  mask = cv2.erode(mask, np.ones((4, 4), np.uint8))
+        mask = cv2.erode(mask, np.ones((4, 4), np.uint8))
       #  mask = cv2.dilate(mask, np.ones((4, 4), np.uint8))
         return mask
     def getCenter(self, src):
@@ -56,7 +56,7 @@ class reader():
         centerEnd = 0
         mask = cv2.cvtColor(src, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(mask, self.lowerYel, self.upperYel)
-     #   mask = cv2.erode(mask, np.ones((4, 4), np.uint8))
+        mask = cv2.erode(mask, np.ones((4, 4), np.uint8))
      #   mask = cv2.dilate(mask, np.ones((4, 4), np.uint8))
         cut = mask[self.y1:self.y2, self.x1:self.x2]        
         for i in range(1, (self.x2 - self.x1) - 1):
@@ -87,72 +87,85 @@ while 1:
     if count == 8595:
         count = 3000
 
-    frame = np.array(cv2.imread('D:\\lvid\\frame' + str(count) + ".png"))
+    frame = np.array(cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
 
+#   cutting and reading image
     cut = read.getTile(frame)
     mask = read.getMask(frame)
     tmp = read.getCenter(frame)
 
 #   PID calculations
-    if 1:
-        if tmp != None:    
-            recent.append(tmp)
-            recent.pop(0)
-        for i in recent:
-            x += i
-        x = int(x/10)
+    if tmp != None:    
+        recent.append(tmp)
+        recent.pop(0)
+    for i in recent:
+        x += i
+    x = int(x/10)
 
-        avg = 0
+    avg = 400
 
-        prevs.append(x)
-        prevs.pop(0)
-        for i in prevs:
-            avg += i
-        avg /= (len(prevs) + .0001)
+    prevs.append(x)
+    prevs.pop(0)
+    for i in prevs:
+        avg += i
+    avg /= len(prevs)
 
-        diff = avg - x
+    diff = avg - x
 
-        Vi, Vf, vel = 0, 0, 0
+    Vi, Vf, vel = 0, 0, 0
 
-        for i in range(0, 4):
-            Vi += recent[i]
-        for j in range(5, 9):
-            Vf += recent[i]
-        Vi /= 5
-        Vf /= 5
+    for i in range(0, 4):
+        Vi += recent[i]
+    for j in range(5, 9):
+        Vf += recent[i]
+    Vi /= 5
+    Vf /= 5
 
-        vel = Vf - Vi
+    vel = Vf - Vi
 
-        try:
-            velDiffScaled = round((vel**2)/diff)
-        except Exception:
-            velDiffScaled = 0
+    try:
+        velDiffScaled = (vel*25)/diff
+    except Exception:
+        velDiffScaled = 0
 
-        if diff < 0:
-            itg -= .01*diff
-        if diff > 0:
-            itg += .01*diff
-        else:
-            itg = 0
-        itg = limit(itg, -20, 20)
-        vals = [diff, itg, velDiffScaled]
+    if diff < 0:
+        itg += .01*diff
+    if diff > 0:
+        itg += .01*diff
+    if diff in range(-5, 5):
+        print('reset')
+        itg = 0
 
-    ctrls.append(PID(vals, 50, 180, 2000))
+    itg = limit(itg, -50, 50)
+
+    vals = [diff, itg, velDiffScaled]
+#
+    ProportionalStrength = 1
+    IntegralStrength = 5
+    DerivitiveStrength = 3
+
+    print(diff)
+
+#   cleaning output signal
+    ctrls.append(PID(vals, ProportionalStrength*100, IntegralStrength*100, DerivitiveStrength*100))
     ctrls.pop(0)
     ctrl = 0
     for i in ctrls:
         ctrl += i
-    ctrl = int(ctrl/10)
+    ctrl = round(ctrl/10)
     ctrl = limit(ctrl, -50, 50)
-
+#   sending to arduino
     try:
         qaz.write(str(ctrl).encode("utf-8"))
     except Exception:
-        print("transfer failed")
+        pass
 
-#   adding dots
-    cv2.line(frame, (265, 280), (265 + ctrl, 260), (200, 200, 20), 2)
-    cv2.line(frame, (265, 350), (265 + round(20*vel/diff), 350), (200, 50, 120), 4)
+#   lines and displaying
+    cv2.line(frame, (335, 280), (335 + ctrl, 280), (200, 200, 20), 2)
+    cv2.line(frame, (335, 300), (335 - round(diff)*ProportionalStrength, 300), (120, 50, 200), 4)
+    cv2.line(frame, (335, 330), (335 + round(itg)*IntegralStrength, 330), (200, 50, 120), 4)
+    cv2.line(frame, (335, 360), (335 + round(velDiffScaled)*DerivitiveStrength, 360), (10, 200, 120), 4)
+
     cv2.circle(frame, (x, 280), 2, (200, 20, 20), 4)
     cv2.circle(cut, (x, 5), 2, (200, 20, 20), 4)
     cv2.circle(frame, (int(avg), 280), 7, (20, 200, 20), 2)
@@ -164,4 +177,51 @@ while 1:
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         1
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
