@@ -89,7 +89,7 @@ while 1:
 
     
 #    frame = np.array(cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
-    frame = np.array(cv2.imread('D:\\lvid\\frame' + str(count) + ".png"))
+    frame = np.array(cv2.imread('C:\\Users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
 
 #   cutting and reading image
     cut = read.getTile(frame)
