@@ -8,7 +8,7 @@ ws.connect("wss://stream.pushbullet.com/websocket/o.GfFQafU2ftZ3FtYmi8QKeDPlmKO3
 def getPart(msg, mode):
     msg = msg[1].decode("utf-8") 
 
-    start = 0 
+    start = 0
     end = 0 
     final = ''
     try:

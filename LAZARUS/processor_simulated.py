@@ -89,7 +89,7 @@ while 1:
 
     
 #    frame = np.array(cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
-    frame = np.array(cv2.imread('C:\\Users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
+    frame = np.array(cv2.imread('D:\\lvid\\frame' + str(count) + ".png"))
 
 #   cutting and reading image
     cut = read.getTile(frame)
@@ -114,21 +114,23 @@ while 1:
 
     diff = avg - x
 
-    Vi, Vf, vel = 0, 0, 0
 
-    for i in range(0, 4):
-        Vi += recent[i]
-    for j in range(5, 9):
-        Vf += recent[i]
-    Vi /= 5
-    Vf /= 5
-
-    vel = Vf - Vi
+    vel = 0
+    for i in range(len(recent)):
+        try:
+            vel += recent[i+1] - recent[i]
+        except:
+            pass
+    vel /= 9
 
     try:
-        velDiffScaled = (vel)/diff
-    except Exception:
+        if diff > 0:
+            velDiffScaled = vel/diff**.5
+        else:       
+            velDiffScaled = -vel/abs(diff**.5)
+    except ZeroDivisionError:
         velDiffScaled = 0
+
 
     velDiffScaled = limit(velDiffScaled, -25, 25)
 
@@ -167,7 +169,7 @@ while 1:
     cv2.line(frame, (335, 277), (335 + ctrl, 277), (0, 60, 250), 4)
     cv2.line(frame, (335, 300), (335 - round(diff*ProportionalStrength), 300), (120, 50, 200), 4)
     cv2.line(frame, (335, 330), (335 - round(itg*IntegralStrength), 330), (200, 50, 120), 4)
-    cv2.line(frame, (335, 360), (335 + round(velDiffScaled*DerivitiveStrength), 360), (10, 200, 120), 4)
+    cv2.line(frame, (335, 360), (335 + round(-velDiffScaled*DerivitiveStrength), 360), (10, 200, 120), 4)
 
     cv2.circle(frame, (x, 280), 2, (200, 20, 20), 4)
     cv2.circle(cut, (x, 5), 2, (200, 20, 20), 4)
