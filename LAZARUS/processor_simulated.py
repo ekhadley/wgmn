@@ -20,7 +20,7 @@ for i in range(0, 3000):
 mode = 'calibrating . . .'
 
 try:
-    qaz = serial.Serial('COM6', 2000, timeout=.1)
+    qaz = serial.Serial('COM4', 9600, timeout=.1)
     time.sleep(1)
 except Exception:
     print('CONNECT FAILED')
@@ -82,8 +82,10 @@ itg = 0
 count = 3000
 delay = 1
 
+i = 0
 while 1:
     count += 1
+    i += 1
     if count == 8595:
         count = 3000
 
@@ -149,8 +151,6 @@ while 1:
     IntegralStrength = 3
     DerivitiveStrength = 5
 
-    print(velDiffScaled)
-
 #   cleaning output signal
     ctrls.append(PID(vals, ProportionalStrength*100, IntegralStrength*100, DerivitiveStrength*100))
     ctrls.pop(0)
@@ -159,11 +159,17 @@ while 1:
         ctrl += i
     ctrl = round(ctrl/10)
     ctrl = limit(ctrl, -50, 50)
+
 #   sending to arduino
+
     try:
-        qaz.write(str(ctrl).encode("utf-8"))
-    except Exception:
-        pass
+        package = str(-ctrl).encode()
+        qaz.write(package)
+        time.sleep(.05)
+    except NameError:
+        print('transfer fail')
+
+
 
 #   lines and displaying
     cv2.line(frame, (335, 277), (335 + ctrl, 277), (0, 60, 250), 4)

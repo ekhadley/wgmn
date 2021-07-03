@@ -5,21 +5,42 @@ Servo right;
 void setup()
 {
 Serial.begin(9600);
-pinMode(8, OUTPUT);
 left.attach(9);
 right.attach(10);
+left.write(0);
+right.write(0);
+Serial.setTimeout(50);
 }
 
+int ctrl = 0;
 String input;
-int ctrl;
+char next;
+
 
 void loop()
+
 {
-    if (Serial.available())
-    {
+    if(Serial.available() > 0){
         input = Serial.readString();
         ctrl = input.toInt();
-        left.write(ctrl);
-        right.write(ctrl);
-    }
+        Serial.println(ctrl);
+     }
+     left.write(ctrl+127);
+     right.write(ctrl+127);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
