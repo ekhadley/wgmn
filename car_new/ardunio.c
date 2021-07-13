@@ -5,7 +5,7 @@ Servo right;
 void setup()
 {
 Serial.begin(9600);
-left.attach(9);
+left.attach(11);
 right.attach(10);
 left.write(0);
 right.write(0);

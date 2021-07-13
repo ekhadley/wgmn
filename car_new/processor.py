@@ -2,6 +2,7 @@ import numpy as np
 import serial, time, cv2, keyboard
 from PIL import Image
 
+vid = cv2.VideoCapture(0)
 
 yellow_lower = np.array([0, 50, 50])
 yellow_upper = np.array([35, 255, 255])
@@ -19,11 +20,14 @@ for i in range(0, 3000):
 
 mode = 'calibrating . . .'
 
-try:
-    qaz = serial.Serial('COM4', 9600, timeout=.1)
-    time.sleep(1)
-except Exception:
-    print('CONNECT FAILED')
+hold = 1
+while hold:
+    try:
+        qaz = serial.Serial('COM6', 9600, timeout=.1)
+        time.sleep(1)
+        hold = 0
+    except Exception:
+        print('CONNECT FAILED')
 
 def limit(num, start, end):
     if num > end:
