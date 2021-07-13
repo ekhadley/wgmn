@@ -140,7 +140,7 @@ while 1:
         itg += .003*diff
     if diff > 0:
         itg += .003*diff
-    if diff > -1 and diff < 1:
+    if diff > -2 and diff < 2:
         itg = 0
 
     itg = limit(itg, -10, 10)
