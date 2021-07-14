@@ -154,7 +154,7 @@ while 1:
     ctrl = 0
     for i in ctrls:
         ctrl += i
-    ctrl = round(ctrl/10)
+    ctrl = round(ctrl/30)
     ctrl = limit(ctrl, -50, 50)
 
 #   sending to arduino
