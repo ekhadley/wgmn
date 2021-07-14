@@ -147,7 +147,7 @@ while 1:
 
     vals = [diff, itg, -velDiffScaled]
 #
-    ProportionalStrength = .35
+    ProportionalStrength = .8
     IntegralStrength = 3
     DerivitiveStrength = 5
 
