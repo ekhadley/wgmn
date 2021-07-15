@@ -14,8 +14,7 @@ for i in range(0, 100):
     vels.append(0)
 
 prevs = []
-for i in range(0, 3000):
-    prevs.append(185)
+
 
 mode = 'calibrating . . .'
 
@@ -79,19 +78,19 @@ read = reader()
 x = 0
 tmp = 0
 itg = 0
-count = 3000
+count = 0
 delay = 1
 
 i = 0
 while 1:
     count += 1
     i += 1
-    if count == 8595:
-        count = 3000
+    if count == 3900:
+        count = 2
 
     
 #    frame = np.array(cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
-    frame = np.array(cv2.imread('D:\\lvid\\frame' + str(count) + ".png"))
+    frame = np.array(cv2.imread('D:\\lvid\\caps\\frame' + str(count) + ".png"))
 
 #   cutting and reading image
     cut = read.getTile(frame)
@@ -106,16 +105,17 @@ while 1:
         x += i
     x = int(x/10)
 
-    avg = 400
-
     prevs.append(x)
-    prevs.pop(0)
-    for i in prevs:
-        avg += i
-    avg /= len(prevs)
+    if len(prevs) > 499:
+        mode = "setpos"
+
+    if mode == "calibrating . . .":
+        try:
+            avg = sum(prevs)/len(prevs)
+        except ZeroDivisionError:
+            avg = 0
 
     diff = avg - x
-
 
     vel = 0
     for i in range(len(recent)):
@@ -161,13 +161,12 @@ while 1:
     ctrl = limit(ctrl, -50, 50)
 
 #   sending to arduino
-
     try:
         package = str(-ctrl).encode()
         qaz.write(package)
         time.sleep(.05)
     except NameError:
-        print('transfer fail')
+        pass
 
 
 

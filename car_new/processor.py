@@ -15,8 +15,6 @@ for i in range(0, 100):
     vels.append(0)
 
 prevs = []
-for i in range(0, 3000):
-    prevs.append(185)
 
 mode = 'calibrating . . .'
 
@@ -103,13 +101,15 @@ while 1:
         x += i
     x = int(x/10)
 
-    avg = 400
-
     prevs.append(x)
-    prevs.pop(0)
-    for i in prevs:
-        avg += i
-    avg /= len(prevs)
+    if len(prevs) > 499:
+        mode = "setpos"
+
+    if mode == "calibrating . . .":
+        try:
+            avg = sum(prevs)/len(prevs)
+        except ZeroDivisionError:
+            avg = 0
 
     diff = avg - x
 
