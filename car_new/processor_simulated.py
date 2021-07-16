@@ -1,5 +1,5 @@
 import numpy as np
-import serial, time, cv2, keyboard
+import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
@@ -17,6 +17,8 @@ prevs = []
 
 
 mode = 'calibrating . . .'
+
+
 
 try:
     qaz = serial.Serial('COM4', 9600, timeout=.1)
@@ -88,7 +90,6 @@ while 1:
     if count == 3900:
         count = 2
 
-    
 #    frame = np.array(cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
     frame = np.array(cv2.imread('D:\\lvid\\caps\\frame' + str(count) + ".png"))
 
@@ -125,16 +126,6 @@ while 1:
             pass
     vel /= 9
 
-    try:
-        if diff > 0:
-            velDiffScaled = vel/diff**.5
-        else:       
-            velDiffScaled = -vel/abs(diff**.5)
-    except ZeroDivisionError:
-        velDiffScaled = 0
-
-
-    velDiffScaled = limit(velDiffScaled, -25, 25)
 
     if diff < 0:
         itg += .003*diff
@@ -143,13 +134,14 @@ while 1:
     if diff > -2 and diff < 2:
         itg = 0
 
-    itg = limit(itg, -10, 10)
+    ProportionalStrength = 1
+    IntegralStrength = .5
+    DerivitiveStrength = 10
+    bias = -5
+    finalScale = 1
+    finalRange = 50
 
-    vals = [diff, itg, -velDiffScaled]
-#
-    ProportionalStrength = .8
-    IntegralStrength = 3
-    DerivitiveStrength = 5
+    vals = [diff, itg, -vel]
 
 #   cleaning output signal
     ctrls.append(PID(vals, ProportionalStrength*100, IntegralStrength*100, DerivitiveStrength*100))
@@ -157,8 +149,8 @@ while 1:
     ctrl = 0
     for i in ctrls:
         ctrl += i
-    ctrl = round(ctrl/10)
-    ctrl = limit(ctrl, -50, 50)
+    ctrl *= finalScale/10
+    ctrl = round(limit(ctrl+bias, -finalRange, finalRange))
 
 #   sending to arduino
     try:
@@ -171,10 +163,10 @@ while 1:
 
 
 #   lines and displaying
-    cv2.line(frame, (335, 277), (335 + ctrl, 277), (0, 60, 250), 4)
-    cv2.line(frame, (335, 300), (335 - round(diff*ProportionalStrength), 300), (120, 50, 200), 4)
-    cv2.line(frame, (335, 330), (335 - round(itg*IntegralStrength), 330), (200, 50, 120), 4)
-    cv2.line(frame, (335, 360), (335 + round(-velDiffScaled*DerivitiveStrength), 360), (10, 200, 120), 4)
+    cv2.line(frame, (300, 277), (300 + ctrl, 277), (0, 60, 250), 4)
+    cv2.line(frame, (300, 300), (300 - round(diff*ProportionalStrength), 300), (120, 50, 200), 4)
+    cv2.line(frame, (300, 330), (300 - round(itg*IntegralStrength), 330), (200, 50, 120), 4)
+    cv2.line(frame, (300, 360), (300 + round(-vel*DerivitiveStrength), 360), (10, 200, 120), 4)
 
     cv2.circle(frame, (x, 280), 2, (200, 20, 20), 4)
     cv2.circle(cut, (x, 5), 2, (200, 20, 20), 4)
@@ -186,7 +178,6 @@ while 1:
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         1
-
 
 
 
