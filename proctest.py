@@ -8,7 +8,6 @@ def setup():
 
 def draw():
     background(30)
-
     ellipse(100, 100, 35, 35)
 
 
