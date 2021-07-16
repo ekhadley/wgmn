@@ -132,7 +132,7 @@ while 1:
         itg = 0
 
     ProportionalStrength = .8
-    IntegralStrength = .5
+    IntegralStrength = .2
     DerivitiveStrength = 10
     if diff in range(-8, 8):
         DerivitiveStrength = 20
