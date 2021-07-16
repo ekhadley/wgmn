@@ -122,8 +122,6 @@ while 1:
             pass
     vel /= 9
 
-    print(diff)
-
     if diff < 0:
         itg += .003*diff
     if diff > 0:
