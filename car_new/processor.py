@@ -130,11 +130,11 @@ while 1:
     if diff > -2 and diff < 2:
         itg = 0
 
-    ProportionalStrength = 1
+    ProportionalStrength = .8
     IntegralStrength = .5
     DerivitiveStrength = 10
     bias = -5
-    finalScale = 1
+    finalScale = .2
     finalRange = 50
 
     vals = [diff, itg, -vel]
