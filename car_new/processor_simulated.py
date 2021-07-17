@@ -140,7 +140,7 @@ while 1:
 
 
     ProportionalStrength = .8
-    IntegralStrength = .8
+    IntegralStrength = .6
     DerivitiveStrength = 10
     if diff in range(-8, 8):
         DerivitiveStrength = 20
@@ -163,7 +163,7 @@ while 1:
 
 #   sending to arduino
     try:
-        #time.sleep(.05)
+        time.sleep(.05)
         package = str(-ctrl).encode()
         qaz.write(package)
     except NameError:
