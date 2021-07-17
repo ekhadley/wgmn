@@ -90,8 +90,8 @@ while 1:
     if count == 3900:
         count = 2
 
-#    frame = np.array(cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
-    frame = np.array(cv2.imread('D:\\lvid\\caps\\frame' + str(count) + ".png"))
+    frame = np.array(cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
+#    frame = np.array(cv2.imread('D:\\lvid\\caps\\frame' + str(count) + ".png"))
 
 #   cutting and reading image
     cut = read.getTile(frame)
