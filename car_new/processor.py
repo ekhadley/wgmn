@@ -127,15 +127,15 @@ while 1:
     if diff > 0:
         itg += .003*diff
     if diff > -2 and diff < 2:
-        itg = 0
+        itg /= -3
 
-    ProportionalStrength = .8
-    IntegralStrength = .35
+    ProportionalStrength = .75
+    IntegralStrength = .4
     DerivitiveStrength = 10
     if diff in range(-8, 8):
         DerivitiveStrength = 20
-    bias = 0
-    finalScale = .2
+    bias = -7
+    finalScale = .15
     finalRange = 50
 
     vals = [diff, itg, -vel]
@@ -151,9 +151,9 @@ while 1:
 
 #   sending to arduino
     try:
+        time.sleep(.05)
         package = str(-ctrl).encode()
         qaz.write(package)
-        time.sleep(.05)
     except NameError:
         pass
 
