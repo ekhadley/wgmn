@@ -150,12 +150,13 @@ while 1:
     ctrl = round(limit(ctrl+bias, -finalRange, finalRange))
 
 #   sending to arduino
-    try:
-        time.sleep(.05)
-        package = str(-ctrl).encode()
-        qaz.write(package)
-    except NameError:
-        pass
+    if mode == "setpos":
+        try:
+            time.sleep(.05)
+            package = str(-ctrl).encode()
+            qaz.write(package)
+        except NameError:
+            pass
 
 
 
