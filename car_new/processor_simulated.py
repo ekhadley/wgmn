@@ -142,8 +142,9 @@ while 1:
     ProportionalStrength = .8
     IntegralStrength = .6
     DerivitiveStrength = 10
-    if diff in range(-8, 8):
+    if diff in range(-12, 12):
         DerivitiveStrength = 20
+        ProportionalStrength = .6
     bias = -5
     finalScale = 1
     finalRange = 50
