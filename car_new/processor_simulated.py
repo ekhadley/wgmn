@@ -133,7 +133,7 @@ while 1:
     if diff > 0:
         itg += .003*diff
     if diff > -2 and diff < 2:
-        itg = 0
+        itg /= -2
 
     ProportionalStrength = .8
     IntegralStrength = .5
