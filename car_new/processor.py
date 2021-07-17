@@ -127,7 +127,9 @@ while 1:
     if diff > 0:
         itg += .003*diff
     if diff > -2 and diff < 2:
-        itg /= -3
+        if count - switchCD > 30:
+            itg /= -2
+            switchCD = count
 
     ProportionalStrength = .75
     IntegralStrength = .4
