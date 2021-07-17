@@ -82,6 +82,7 @@ tmp = 0
 itg = 0
 count = 0
 delay = 1
+switchCD = 0
 
 i = 0
 while 1:
@@ -90,8 +91,8 @@ while 1:
     if count == 3900:
         count = 2
 
-    frame = np.array(cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
-#    frame = np.array(cv2.imread('D:\\lvid\\caps\\frame' + str(count) + ".png"))
+#    frame = np.array(cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(count) + ".png"))
+    frame = np.array(cv2.imread('D:\\lvid\\caps\\frame' + str(count) + ".png"))
 
 #   cutting and reading image
     cut = read.getTile(frame)
@@ -126,23 +127,28 @@ while 1:
             pass
     vel /= 9
 
-    print(diff)
 
     if diff < 0:
         itg += .003*diff
     if diff > 0:
         itg += .003*diff
     if diff > -2 and diff < 2:
-        itg /= -2
+        if count - switchCD > 30:
+            itg /= -2
+            switchCD = count
+
+    print(count - switchCD)
 
     ProportionalStrength = .8
-    IntegralStrength = .5
+    IntegralStrength = .8
     DerivitiveStrength = 10
     if diff in range(-8, 8):
         DerivitiveStrength = 20
     bias = -5
-    finalScale = .2
+    finalScale = 1
     finalRange = 50
+
+
 
     vals = [diff, itg, -vel]
 
@@ -157,7 +163,7 @@ while 1:
 
 #   sending to arduino
     try:
-        time.sleep(.05)
+        #time.sleep(.05)
         package = str(-ctrl).encode()
         qaz.write(package)
     except NameError:
