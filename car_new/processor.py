@@ -83,6 +83,7 @@ tmp = 0
 itg = 0
 count = 3000
 delay = 1
+switchCD = 0
 
 i = 0
 while 1:
@@ -131,8 +132,8 @@ while 1:
             itg /= -2
             switchCD = count
 
-    ProportionalStrength = .75
-    IntegralStrength = .4
+    ProportionalStrength = .9
+    IntegralStrength = .5
     DerivitiveStrength = 10
     if diff in range(-8, 8):
         DerivitiveStrength = 20
