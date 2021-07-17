@@ -157,9 +157,9 @@ while 1:
 
 #   sending to arduino
     try:
+        time.sleep(.05)
         package = str(-ctrl).encode()
         qaz.write(package)
-        time.sleep(.05)
     except NameError:
         pass
 
