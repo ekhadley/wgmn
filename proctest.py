@@ -1,6 +1,7 @@
 from p5 import *
-
+print('wtf!')
 w, h = 200, 200
+
 def setup():
     size(w, h)
     background(30)
