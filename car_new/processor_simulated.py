@@ -112,6 +112,7 @@ while 1:
         mode = "setpos"
 
     if mode == "calibrating . . .":
+        print(mode)
         try:
             avg = sum(prevs)/len(prevs)
         except ZeroDivisionError:
@@ -137,7 +138,6 @@ while 1:
             itg /= -2
             switchCD = count
 
-    print(count - switchCD)
 
     ProportionalStrength = .8
     IntegralStrength = .8
