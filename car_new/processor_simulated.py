@@ -133,7 +133,7 @@ while 1:
     if diff > 0:
         itg += .003*diff
     if diff > -2 and diff < 2:
-        if count - switchCD > 30:
+        if abs(count - switchCD) > 30:
             itg /= -2
             switchCD = count
 
@@ -144,7 +144,7 @@ while 1:
     if diff in range(-12, 12):
         DerivitiveStrength = 20
         ProportionalStrength = .6
-    bias = -5
+    bias = 0
     finalScale = 1
     finalRange = 50
 
@@ -163,9 +163,9 @@ while 1:
 
 #   sending to arduino
     try:
-        time.sleep(.05)
         package = str(-ctrl).encode()
         qaz.write(package)
+        time.sleep(.05)
     except NameError:
         pass
 

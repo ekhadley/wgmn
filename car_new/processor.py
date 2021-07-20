@@ -81,14 +81,14 @@ read = reader()
 x = 0
 tmp = 0
 itg = 0
-count = 3000
+count = 0
 delay = 1
 switchCD = 0
 
 i = 0
 while 1:
     ret, frame = vid.read()
-
+    count += 1
 
 #   cutting and reading image
     cut = read.getTile(frame)
