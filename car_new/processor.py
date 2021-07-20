@@ -132,7 +132,7 @@ while 1:
             itg /= -2
             switchCD = count
 
-    ProportionalStrength = .9
+    ProportionalStrength = 1
     IntegralStrength = .5
     DerivitiveStrength = 10
     if diff in range(-8, 8):
