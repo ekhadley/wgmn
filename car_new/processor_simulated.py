@@ -3,13 +3,11 @@ import numpy as np
 import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
-
 yellow_lower = np.array([0, 50, 50])
 yellow_upper = np.array([35, 255, 255])
 
-
 try:
-    qaz = serial.Serial('COM4', 9600, timeout=.1)
+    arduino = serial.Serial('COM4', 9600, timeout=.1)
     time.sleep(1)
 except Exception:
     print('CONNECT FAILED')
@@ -98,9 +96,7 @@ while 1:
     if lanePosition != None:    
         recentLanePositions.append(lanePosition)
         recentLanePositions.pop(0)
-    for i in recentLanePositions:
-        avgLanePosition += i
-    avgLanePosition = int(avgLanePosition/10)
+    avgLanePosition = sum(recentLanePositions)/len(recentLanePositions)
     recentLaneCenters.append(avgLanePosition)
 
     if len(recentLaneCenters) > 499:
@@ -152,7 +148,7 @@ while 1:
 #   sending to arduino
     try:
         package = str(-controlStrength).encode()
-        qaz.write(package)
+        arduino.write(package)
         time.sleep(.05)
     except NameError:
         pass
@@ -163,8 +159,8 @@ while 1:
     cv2.line(frame, (300, 330), (300 - round(integralSignal*IntegralStrength), 330), (200, 50, 120), 4)
     cv2.line(frame, (300, 360), (300 + round(-avgLaneSpeed*DerivitiveStrength), 360), (10, 200, 120), 4)
 
-    cv2.circle(frame, (avgLanePosition, 280), 2, (200, 20, 20), 4)
-    cv2.circle(cut, (avgLanePosition, 5), 2, (200, 20, 20), 4)
+    cv2.circle(frame, (int(avgLanePosition), 280), 2, (200, 20, 20), 4)
+    cv2.circle(cut, (int(avgLanePosition), 5), 2, (200, 20, 20), 4)
     cv2.circle(frame, (int(laneCenter), 280), 7, (20, 200, 20), 2)
     cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
