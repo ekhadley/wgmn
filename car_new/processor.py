@@ -16,6 +16,7 @@ while hold:
         hold = 0
     except Exception:
         print('CONNECT FAILED')
+        time.sleep(1)
 
 def limit(num, start, end):
     if num > end:
