@@ -1,6 +1,6 @@
 from p5 import *
 """ shit to add
-use PVectors becuase its cleaner
+use Vectors becuase its cleaner
 variable transferral/mutation rates based on change of fitness of recent generations
 only search local space for walls (segmented lists based on position)
 """
@@ -28,12 +28,6 @@ def mutate(lp, lc, t, m):
         if random.randint(1, 100) > m:
             lc[i] = [float(random.randint(-3, 300))/1000, float(random.randint(-300, 300))/1000]
     return(lc)
-
-def m(l, t):
-    for i in l:
-        if t < random.randint(1, 100):
-            lc[i] = [float(random.randint(-300, 300))/1000, float(random.randint(-300, 300))/1000]
-    return(l)
 
 class food():
     def __init__(self, x, y, r):
@@ -118,9 +112,9 @@ class walker():
     def show(self):
         fill(self.marker)
         translate(self.x, self.y)
-        rotate(PVector(self.vx, self.vy).heading() + PI/2)
+        rotate(Vector(self.vx, self.vy).heading() + PI/2)
         triangle(0, -10, -5, 10, 5, 10)
-        resetMatrix()
+        reset_matrix()
 
 poolsize = 500
 borgir = food(50, 50, 30)
@@ -152,8 +146,8 @@ def draw():
     global champs
     global thresh
     global points
+
     load_pixels()
-    
     background(50)
     borgir.show()
     fill(200, 15, 200)
