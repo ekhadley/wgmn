@@ -37,7 +37,7 @@ class food():
    
     def show(self):
         fill(230, 30, 30)
-        ellipse(self.x, self.y, self.r, self.r)
+        ellipse((self.x, self.y), self.r, self.r)
 
 class walker():
     def __init__(self, x, y):
@@ -166,7 +166,7 @@ def draw():
     no_stroke()
     for i in points:
         fill(15, 130, 250)
-        ellipse(i[0], i[1], 24, 24)
+        ellipse((i[0], i[1]), 24, 24)
     stroke(50)
     if started:  
         for i in pool:
