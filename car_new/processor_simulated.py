@@ -74,6 +74,7 @@ frameCount = 0
 switchCD = 0
 i = 0
 
+tstart = time.time()
 while 1:
     frameCount += 1
     i += 1
