@@ -63,7 +63,7 @@ def PID(val, P, I, D):
 
 read = reader()
 
-recentLanePositions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+recentLanePositions = [0, 0, 0]
 recentControlSignals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentSpeeds = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentLaneCenters = []
@@ -88,12 +88,11 @@ while 1:
     if type(desktopPath) == np.ndarray:
         frame = np.array(desktopPath)
 
-#   cutting and reading image
+
     cut = read.getTile(frame)
     mask = read.getMask(frame)
     lanePosition = read.getCenter(frame)
 
-#   PID calculations
     if lanePosition != None:    
         recentLanePositions.append(lanePosition)
         recentLanePositions.pop(0)
@@ -136,7 +135,6 @@ while 1:
     controlBias = 0
     finalScale = 1
     controlRange = 50
-
 
     pidValues = [laneCenterDist, integralSignal, -avgLaneSpeed]
 
