@@ -1,20 +1,16 @@
-import serial, time, cv2, keyboard, numpy as np
-from PIL import Image
 
+import numpy as np
+import serial, time, cv2, keyboard, tkinter as tk
+from PIL import Image
 
 yellow_lower = np.array([0, 50, 50])
 yellow_upper = np.array([35, 255, 255])
 
-
-hold = 1
-while hold:
-    try:
-        arduino = serial.Serial('COM6', 9600, timeout=.1)
-        time.sleep(1)
-        hold = 0
-    except Exception:
-        print('CONNECT FAILED')
-        time.sleep(1)
+try:
+    arduino = serial.Serial('COM4', 9600, timeout=.1)
+    time.sleep(1)
+except Exception:
+    print('CONNECT FAILED')
 
 def limit(num, start, end):
     if num > end:
@@ -58,40 +54,43 @@ class reader():
         if centerStart != 0 and centerEnd != 0:
             return ((centerStart + centerEnd)/2) + self.x1
 
-def PID(val, P, I, D):
-    controlStrength = 0
-    controlStrength += val[0] * (P/100)
-    controlStrength += val[1] * (I/100)
-    controlStrength += val[2] * (D/100)
-    return -round(controlStrength)
-
 read = reader()
 
-vid = cv2.VideoCapture(0)
-recentLanePositions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-recentControlSignals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+recentLanePositions = [0, 0, 0]
+recentAcc = [0, 0, 0]
 recentSpeeds = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentLaneCenters = []
 calibrating = True
 avgLanePosition = 0
-integralSignal = 0
+vid = cv2.VideoCapture(0)
 frameCount = 0
-switchCD = 0
-i = 0
+lastLanePos = 0
 
 while 1:
-    ret, frame = vid.read()
-    frameCount += 1
 
-#   cutting and reading image
+    frameCount += 1
+    if frameCount == 3900:
+        frameCount = 2
+
+    desktopPath = cv2.imread('D:\\lvid\\caps\\frame' + str(frameCount) + ".png")
+    LaptopPath = cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(frameCount) + ".png")
+    if type(LaptopPath) == np.ndarray:
+        frame = np.array(LaptopPath)
+    if type(desktopPath) == np.ndarray:
+        frame = np.array(desktopPath)
+    '''
+    ret, frame = vid.read()
+    '''    
     cut = read.getTile(frame)
     mask = read.getMask(frame)
     lanePosition = read.getCenter(frame)
 
-#   PID calculations
     if lanePosition != None:    
         recentLanePositions.append(lanePosition)
         recentLanePositions.pop(0)
+        lastLanePos = lanePosition
+    else:
+        lanePosition = lastLanePos
     avgLanePosition = sum(recentLanePositions)/len(recentLanePositions)
     recentLaneCenters.append(avgLanePosition)
 
@@ -105,63 +104,36 @@ while 1:
 
     laneCenterDist = laneCenter - avgLanePosition
 
-
     laneSpeed = recentLanePositions[-1] - recentLanePositions[0]
     recentSpeeds.append(laneSpeed)
     recentSpeeds.pop(0)
     avgLaneSpeed = sum(recentSpeeds)/len(recentSpeeds)
 
-    if laneCenterDist < 0:
-        integralSignal += .003*laneCenterDist
-    if laneCenterDist > 0:
-        integralSignal += .003*laneCenterDist
-    if laneCenterDist > -2 and laneCenterDist < 2:
-        if abs(frameCount - switchCD) > 15:
-            integralSignal /= -2
-            switchCD = frameCount
+    laneAcc = recentSpeeds[-1] - recentSpeeds[0]
+    recentAcc.append(laneAcc)
+    recentAcc.pop(0)
+    avgLaneAcc = sum(recentAcc)/len(recentAcc)
 
-
-    ProportionalStrength = .8
-    IntegralStrength = .6
-    DerivitiveStrength = 1
-    if laneCenterDist in range(-6, 6):
-        DerivitiveStrength = 3
-    if laneCenterDist in range(-15, 15):
-        ProportionalStrength = .5
-    controlBias = 0
-    finalScale = 1
-    controlRange = 50
-
-
-    pidValues = [laneCenterDist, integralSignal, -avgLaneSpeed]
-
-#   cleaning output signal
-    recentControlSignals.append(PID(pidValues, ProportionalStrength*100, IntegralStrength*100, DerivitiveStrength*100))
-    recentControlSignals.pop(0)
-    controlStrength = finalScale*sum(recentControlSignals)/len(recentControlSignals)
-    controlStrength = round(limit(controlStrength+controlBias, -controlRange, controlRange))
 
 #   sending to arduino
     try:
-        package = str(-controlStrength).encode()
-        arduino.write(package)
+        arduino.write(str(-1).encode())
         time.sleep(.05)
     except NameError:
         pass
 
 #   lines and displaying
-    cv2.line(frame, (300, 277), (300 + controlStrength, 277), (0, 60, 250), 4)
-    cv2.line(frame, (300, 300), (300 - round(laneCenterDist*ProportionalStrength), 300), (120, 50, 200), 4)
-    cv2.line(frame, (300, 330), (300 - round(integralSignal*IntegralStrength), 330), (200, 50, 120), 4)
-    cv2.line(frame, (300, 360), (300 + round(-avgLaneSpeed*DerivitiveStrength), 360), (10, 200, 120), 4)
+    #cv2.line(frame, (300, 277), (300 + controlStrength, 277), (0, 60, 250), 4)
+    cv2.line(frame, (300, 300), (300 - round(laneCenterDist), 300), (120, 50, 200), 4)
+    cv2.line(frame, (300, 330), (300 + round(-avgLaneSpeed), 330), (10, 200, 120), 4)
+    cv2.line(frame, (300, 360), (300 + round(-avgLaneAcc), 360), (255, 255, 255), 4)
 
-    cv2.circle(frame, (int(avgLanePosition), 280), 2, (200, 20, 20), 4)
-    cv2.circle(cut, (int(avgLanePosition), 5), 2, (200, 20, 20), 4)
+    cv2.circle(frame, (int(lanePosition), 280), 2, (200, 20, 20), 4)
+    cv2.circle(cut, (int(lanePosition), 5), 2, (200, 20, 20), 4)
     cv2.circle(frame, (int(laneCenter), 280), 7, (20, 200, 20), 2)
-    cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
     cv2.imshow('frame', frame)
-    cv2.imshow('cut', cut)
+    #cv2.imshow('cut', cut)
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         1
