@@ -6,8 +6,8 @@ from gym.spaces import Discrete, Box
 class env(Env):
     def __init__(self):
         self.pos = [random.randint(0, 100), random.randint(0, 100)]
-        self.observationSpace = 1
-        self.actionSpace = [random.randint(-1, 1), random.randint(-1, 1)]
+        self.observation_space = Box(low=0, high=100, shape=(1, 2), dtype=np.float16)
+        self.actionSpace = Discrete(4)
         self.time = 0
 
     def step(self, action):
@@ -30,11 +30,11 @@ class env(Env):
         self.pos = [random.randint(0, 100), random.randint(0, 100)]
 
 
-episodes = 100
+episodes = 1
 e = env()
 
 for i in range(episodes):
-
+    e.step()
 
 
 

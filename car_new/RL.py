@@ -1,6 +1,6 @@
 
 import numpy as np
-import serial, time, cv2, keyboard, tkinter as tk
+import serial, time, cv2, keyboard, math
 from PIL import Image
 
 yellow_lower = np.array([0, 50, 50])
@@ -114,6 +114,11 @@ while 1:
     recentAcc.pop(0)
     avgLaneAcc = sum(recentAcc)/len(recentAcc)
 
+    state = [laneCenterDist, -avgLaneSpeed, -avgLaneAcc]
+    try:
+        reward = 2-math.log(abs(laneCenterDist))
+    except ValueError:
+        reward = 5
 
 #   sending to arduino
     try:
