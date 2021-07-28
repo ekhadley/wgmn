@@ -74,8 +74,10 @@ frameCount = 0
 switchCD = 0
 i = 0
 
-tstart = time.time()
+
 while 1:
+    tstart = time.time()
+
     frameCount += 1
     i += 1
     if frameCount == 3900:
@@ -164,11 +166,11 @@ while 1:
     cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
     cv2.imshow('frame', frame)
-    cv2.imshow('cut', cut)
+    #cv2.imshow('cut', cut)
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         1
-
+    print(time.time()-tstart)
 
 
 
