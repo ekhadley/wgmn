@@ -120,18 +120,15 @@ while 1:
             integralSignal /= -2
             switchCD = frameCount
 
-
     ProportionalStrength = .8
     IntegralStrength = .6
     DerivitiveStrength = 1
-    if laneCenterDist in range(-6, 6):
-        DerivitiveStrength = 3
-    if laneCenterDist in range(-15, 15):
-        ProportionalStrength = .5
     controlBias = 0
     finalScale = 1
     controlRange = 50
-
+    if laneCenterDist in range(-10, 10):
+        DerivitiveStrength = 3
+        ProportionalStrength = .5
 
     pidValues = [laneCenterDist, integralSignal, -avgLaneSpeed]
 
