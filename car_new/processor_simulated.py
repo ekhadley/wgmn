@@ -121,11 +121,12 @@ while 1:
         integralSignal += .003*laneCenterDist
     if laneCenterDist > 0:
         integralSignal += .003*laneCenterDist
-    if laneCenterDist > -2 and laneCenterDist < 2:
+    if (prevLanerCenterDist > 0 and laneCenterDist < 0) or (prevLanerCenterDist < 0 and laneCenterDist > 0):
         if abs(frameCount - switchCD) > 15:
             integralSignal /= -2
             switchCD = frameCount
 
+    prevLanerCenterDist = laneCenterDist
 
     ProportionalStrength = .8
     IntegralStrength = .6
