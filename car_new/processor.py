@@ -78,6 +78,7 @@ integralSignal = 0
 frameCount = 0
 switchCD = 0
 i = 0
+prevLaneCenterDist = 0
 
 while 1:
     ret, frame = vid.read()
@@ -111,6 +112,7 @@ while 1:
     recentSpeeds.pop(0)
     avgLaneSpeed = sum(recentSpeeds)/len(recentSpeeds)
 
+    
     if laneCenterDist < 0:
         integralSignal += .003*laneCenterDist
     if laneCenterDist > 0:
@@ -119,6 +121,8 @@ while 1:
         if abs(frameCount - switchCD) > 15:
             integralSignal /= -2
             switchCD = frameCount
+
+    prevLaneCenterDist = laneCenterDist
 
     ProportionalStrength = .8
     IntegralStrength = 1
