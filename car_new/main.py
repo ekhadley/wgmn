@@ -3,6 +3,10 @@ import numpy as np
 import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
+
+PLAYMODE = "test"
+
+
 yellow_lower = np.array([0, 50, 50])
 yellow_upper = np.array([35, 255, 255])
 
@@ -13,6 +17,8 @@ while hold:
         time.sleep(1)
         hold=0
     except Exception:
+        if PLAYMODE == 'test':
+            hold = 0
         time.sleep(2)
         print('CONNECT FAILED')
 
@@ -78,9 +84,9 @@ def PID(val, P, I, D):
 read = reader()
 
 vid = cv2.VideoCapture(0)
-recentLanePositions = [0, 0, 0]
+recentLanePositions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentControlSignals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-recentSpeeds = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+recentSpeeds = [0, 0, 0]
 recentLaneCenters = []
 calibrating = True
 avgLanePosition = 0
@@ -89,15 +95,15 @@ frameCount = 0
 switchCD = 0
 prevLanerCenterDist = 0
 
-PLAYMODE = "live"
+
 while 1:
     tstart = time.time()
-    frameCount += 1
+    
 
     if PLAYMODE == 'test':
-        if frameCount == 3900:
+        if frameCount >= 3900:
             frameCount = 2
-
+        frameCount += 7
         desktopPath = cv2.imread('D:\\lvid\\caps\\frame' + str(frameCount) + ".png")
         LaptopPath = cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(frameCount) + ".png")
         if type(LaptopPath) == np.ndarray:
@@ -106,6 +112,7 @@ while 1:
             frame = np.array(desktopPath)
     if PLAYMODE == 'live':
         ret, frame = vid.read()
+        frameCount += 1
 
     cut = read.getTile(frame)
     mask = read.getMask(frame)
@@ -139,19 +146,19 @@ while 1:
         integralSignal += .003*laneCenterDist
     if not sameSign(prevLanerCenterDist, laneCenterDist):
         if abs(frameCount - switchCD) > 15:
-            integralSignal /= -1.5
+            integralSignal /= -4
             switchCD = frameCount
 
     prevLanerCenterDist = laneCenterDist
 
     ProportionalStrength = .8
     IntegralStrength = 1
-    DerivitiveStrength = .1
+    DerivitiveStrength = 4
     controlBias = 0
     finalScale = .15
     controlRange = 50
     if laneCenterDist in range(-8, 8):
-        DerivitiveStrength = .3
+        DerivitiveStrength = 4
         ProportionalStrength = .6
         IntegralStrength = 3
 
@@ -169,7 +176,8 @@ while 1:
         arduino.write(package)
         time.sleep(.05)
     except NameError:
-        pass
+        if PLAYMODE == 'test':
+            time.sleep(.05)
 
 #   lines and displaying
     cv2.line(frame, (300, 277), (300 + controlStrength, 277), (0, 60, 250), 4)
