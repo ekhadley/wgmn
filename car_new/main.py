@@ -151,7 +151,7 @@ while 1:
 
     prevLanerCenterDist = laneCenterDist
 
-    ProportionalStrength = 9
+    ProportionalStrength = 1
     IntegralStrength = 1
     DerivitiveStrength = 4
     controlBias = 0
