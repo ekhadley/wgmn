@@ -6,11 +6,15 @@ from PIL import Image
 yellow_lower = np.array([0, 50, 50])
 yellow_upper = np.array([35, 255, 255])
 
-try:
-    arduino = serial.Serial('COM4', 9600, timeout=.1)
-    time.sleep(1)
-except Exception:
-    print('CONNECT FAILED')
+hold = 1
+while hold:
+    try:
+        arduino = serial.Serial('COM6', 9600, timeout=.1)
+        time.sleep(1)
+        hold=0
+    except Exception:
+        time.sleep(2)
+        print('CONNECT FAILED')
 
 def sign(a):
     if abs(a) == a:
@@ -85,7 +89,7 @@ frameCount = 0
 switchCD = 0
 prevLanerCenterDist = 0
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 while 1:
     tstart = time.time()
     frameCount += 1
@@ -113,9 +117,9 @@ while 1:
     avgLanePosition = sum(recentLanePositions)/len(recentLanePositions)
     recentLaneCenters.append(avgLanePosition)
 
-    if len(recentLaneCenters) > 499:
+    if len(recentLaneCenters) > 299:
         calibrating = False
-        print('calibrated.')
+
     if calibrating:
         try:
             laneCenter = sum(recentLaneCenters)/len(recentLaneCenters)
