@@ -139,21 +139,21 @@ while 1:
         integralSignal += .003*laneCenterDist
     if not sameSign(prevLanerCenterDist, laneCenterDist):
         if abs(frameCount - switchCD) > 15:
-            integralSignal /= -2
+            integralSignal /= -1.5
             switchCD = frameCount
 
     prevLanerCenterDist = laneCenterDist
 
     ProportionalStrength = .8
     IntegralStrength = 1
-    DerivitiveStrength = 1
+    DerivitiveStrength = .1
     controlBias = 0
-    finalScale = .1
+    finalScale = .15
     controlRange = 50
     if laneCenterDist in range(-8, 8):
-        DerivitiveStrength = 1.5
-        ProportionalStrength = .5
-        IntegralStrength = 2
+        DerivitiveStrength = .3
+        ProportionalStrength = .6
+        IntegralStrength = 3
 
     pidValues = [laneCenterDist, integralSignal, -avgLaneSpeed]
 
@@ -183,7 +183,7 @@ while 1:
     cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
     cv2.imshow('frame', frame)
-    #cv2.imshow('cut', cut)
+    cv2.imshow('cut', cut)
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         1
