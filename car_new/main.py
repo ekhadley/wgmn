@@ -153,8 +153,8 @@ while 1:
 
     ProportionalStrength = 1
     IntegralStrength = 1
-    DerivitiveStrength = 4
-    controlBias = 0
+    DerivitiveStrength = 2
+    controlBias = -5
     finalScale = .1
     controlRange = 50
     if laneCenterDist in range(-8, 8):
