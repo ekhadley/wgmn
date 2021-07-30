@@ -4,7 +4,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
 
 yellow_lower = np.array([0, 50, 50])
@@ -151,11 +151,11 @@ while 1:
 
     prevLanerCenterDist = laneCenterDist
 
-    ProportionalStrength = .8
+    ProportionalStrength = 9
     IntegralStrength = 1
     DerivitiveStrength = 4
     controlBias = 0
-    finalScale = .15
+    finalScale = .1
     controlRange = 50
     if laneCenterDist in range(-8, 8):
         DerivitiveStrength = 4
