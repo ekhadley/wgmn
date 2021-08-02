@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
 
 yellow_lower = np.array([0, 50, 50])
@@ -85,25 +85,24 @@ read = reader()
 vid = cv2.VideoCapture(0)
 recentLanePositions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentControlSignals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-recentSpeeds = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-recentAcc = [0, 0, 0]
-recentSpeedDiffs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+recentSpeeds = [0, 0, 0]
 recentLaneCenters = []
 calibrating = True
 avgLanePosition = 0
 integralSignal = 0
 frameCount = 0
 switchCD = 0
-prevlaneSpeedDiff = 0
+prevLanerCenterDist = 0
 
 
 while 1:
-#getting image based on playmode and computer
+    tstart = time.time()
+    
+
     if PLAYMODE == 'test':
-        time.sleep(.05)
         if frameCount >= 3900:
             frameCount = 2
-        frameCount += 5
+        frameCount += 7
         desktopPath = cv2.imread('D:\\lvid\\caps\\frame' + str(frameCount) + ".png")
         LaptopPath = cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(frameCount) + ".png")
         if type(LaptopPath) == np.ndarray:
@@ -118,15 +117,15 @@ while 1:
     mask = read.getMask(frame)
     lanePosition = read.getCenter(frame)
 
-#calculate lane average lane position
     if lanePosition != None:    
         recentLanePositions.append(lanePosition)
         recentLanePositions.pop(0)
     avgLanePosition = sum(recentLanePositions)/len(recentLanePositions)
     recentLaneCenters.append(avgLanePosition)
-#lane center calibration and lane center distance calculation
+
     if len(recentLaneCenters) > 299:
         calibrating = False
+
     if calibrating:
         try:
             laneCenter = sum(recentLaneCenters)/len(recentLaneCenters)
@@ -134,42 +133,42 @@ while 1:
             laneCenter = 0
 
     laneCenterDist = laneCenter - avgLanePosition
-#calculate average lane speed
+
     laneSpeed = (recentLanePositions[-1] - recentLanePositions[0])/len(recentLanePositions)
     recentSpeeds.append(laneSpeed)
     recentSpeeds.pop(0)
     avgLaneSpeed = sum(recentSpeeds)/len(recentSpeeds)
-#calculate average lane acceleration
-    laneAcc = (recentSpeeds[-1] - recentSpeeds[0])/len(recentSpeeds)
-    recentSpeeds.append(laneSpeed)
-    recentSpeeds.pop(0)
-    avgLaneAcc = sum(recentSpeeds)/len(recentSpeeds)
-    limit(avgLaneAcc, -3, 3)
-#calculate difference to target velocity and average it
-    targetVelocity = laneCenterDist/6
-    laneSpeedDiff = targetVelocity - avgLaneSpeed
-    recentSpeedDiffs.append(laneSpeedDiff)
-    recentSpeedDiffs.pop(0)
-    avgLaneSpeedDiff = sum(recentSpeedDiffs)/len(recentSpeedDiffs)
-#integral term calculation
-    integralSignal += .003*avgLaneSpeedDiff
-    if not sameSign(prevlaneSpeedDiff, laneSpeedDiff):
-        integralSignal = 0
-    prevlaneSpeedDiff = laneSpeedDiff
-#PID weights
-    ProportionalStrength = .6
-    IntegralStrength = .35
-    DerivitiveStrength = 7.5
-    controlBias = 0
-    finalScale = .18
-    controlRange = 30
 
-    pidValues = [avgLaneSpeedDiff, integralSignal, -avgLaneAcc]
+    if laneCenterDist < 0:
+        integralSignal += .003*laneCenterDist
+    if laneCenterDist > 0:
+        integralSignal += .003*laneCenterDist
+    if not sameSign(prevLanerCenterDist, laneCenterDist):
+        if abs(frameCount - switchCD) > 15:
+            integralSignal /= -4
+            switchCD = frameCount
+
+    prevLanerCenterDist = laneCenterDist
+
+    ProportionalStrength = 1
+    IntegralStrength = 1
+    DerivitiveStrength = 2
+    controlBias = -5
+    finalScale = .1
+    controlRange = 50
+    if laneCenterDist in range(-8, 8):
+        DerivitiveStrength = 4
+        ProportionalStrength = .6
+        IntegralStrength = 3
+
+    pidValues = [laneCenterDist, integralSignal, -avgLaneSpeed]
+
 #   cleaning output signal
     recentControlSignals.append(PID(pidValues, ProportionalStrength*100, IntegralStrength*100, DerivitiveStrength*100))
     recentControlSignals.pop(0)
     controlStrength = finalScale*sum(recentControlSignals)/len(recentControlSignals)
     controlStrength = round(limit(controlStrength+controlBias, -controlRange, controlRange))
+
 #   sending to arduino
     try:
         if not calibrating and PLAYMODE == 'live':
@@ -179,13 +178,12 @@ while 1:
     except NameError:
         if PLAYMODE == 'test':
             time.sleep(.05)
+
 #   lines and displaying
-    cv2.line(frame, (300, 270), (300 + controlStrength, 270), (0, 60, 250), 4)
-    cv2.line(frame, (300, 295), (300 - round(targetVelocity*ProportionalStrength), 295), (215, 215, 215), 4)
-    cv2.line(frame, (300, 300), (300 - round(avgLaneSpeedDiff*ProportionalStrength), 300), (120, 50, 200), 4)
-    cv2.line(frame, (300, 305), (300 - round(avgLaneSpeed*ProportionalStrength), 305), (215, 215, 215), 4)
+    cv2.line(frame, (300, 277), (300 + controlStrength, 277), (0, 60, 250), 4)
+    cv2.line(frame, (300, 300), (300 - round(laneCenterDist*ProportionalStrength), 300), (120, 50, 200), 4)
     cv2.line(frame, (300, 330), (300 - round(integralSignal*IntegralStrength), 330), (200, 50, 120), 4)
-    cv2.line(frame, (300, 360), (300 + round(-avgLaneAcc*DerivitiveStrength), 360), (10, 200, 120), 4)
+    cv2.line(frame, (300, 360), (300 + round(-avgLaneSpeed*DerivitiveStrength), 360), (10, 200, 120), 4)
 
     cv2.circle(frame, (int(avgLanePosition), 280), 2, (200, 20, 20), 4)
     cv2.circle(cut, (int(avgLanePosition), 5), 2, (200, 20, 20), 4)
