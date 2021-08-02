@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "live"
+PLAYMODE = "test"
 
 
 yellow_lower = np.array([0, 50, 50])
@@ -141,10 +141,10 @@ while 1:
     avgLaneSpeed = sum(recentSpeeds)/len(recentSpeeds)
 #calculate average lane acceleration
     laneAcc = (recentSpeeds[-1] - recentSpeeds[0])/len(recentSpeeds)
-    recentSpeeds.append(laneSpeed)
-    recentSpeeds.pop(0)
-    avgLaneAcc = sum(recentSpeeds)/len(recentSpeeds)
-    limit(avgLaneAcc, -3, 3)
+    recentAcc.append(laneSpeed)
+    recentAcc.pop(0)
+    avgLaneAcc = sum(recentAcc)/len(recentAcc)
+    #limit(avgLaneAcc, -3, 3)
 #calculate difference to target velocity and average it
     targetVelocity = laneCenterDist/6
     laneSpeedDiff = targetVelocity - avgLaneSpeed
@@ -165,12 +165,12 @@ while 1:
     controlRange = 30
 
     pidValues = [avgLaneSpeedDiff, integralSignal, -avgLaneAcc]
-#   cleaning output signal
+#cleaning output signal
     recentControlSignals.append(PID(pidValues, ProportionalStrength*100, IntegralStrength*100, DerivitiveStrength*100))
     recentControlSignals.pop(0)
     controlStrength = finalScale*sum(recentControlSignals)/len(recentControlSignals)
     controlStrength = round(limit(controlStrength+controlBias, -controlRange, controlRange))
-#   sending to arduino
+#sending to arduino
     try:
         if not calibrating and PLAYMODE == 'live':
             package = str(-controlStrength).encode()
@@ -179,7 +179,7 @@ while 1:
     except NameError:
         if PLAYMODE == 'test':
             time.sleep(.05)
-#   lines and displaying
+#lines and displaying
     cv2.line(frame, (300, 270), (300 + controlStrength, 270), (0, 60, 250), 4)
     cv2.line(frame, (300, 295), (300 - round(targetVelocity*ProportionalStrength), 295), (215, 215, 215), 4)
     cv2.line(frame, (300, 300), (300 - round(avgLaneSpeedDiff*ProportionalStrength), 300), (120, 50, 200), 4)
@@ -196,7 +196,7 @@ while 1:
     cv2.imshow('cut', cut)
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
-        1
+        break
 
 
 
