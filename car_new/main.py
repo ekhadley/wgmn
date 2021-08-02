@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
 
 yellow_lower = np.array([0, 50, 50])
@@ -146,7 +146,7 @@ while 1:
     avgLaneAcc = sum(recentAcc)/len(recentAcc)
     #limit(avgLaneAcc, -3, 3)
 #calculate difference to target velocity and average it
-    targetVelocity = laneCenterDist/6
+    targetVelocity = laneCenterDist/4
     laneSpeedDiff = targetVelocity - avgLaneSpeed
     recentSpeedDiffs.append(laneSpeedDiff)
     recentSpeedDiffs.pop(0)
@@ -157,8 +157,8 @@ while 1:
         integralSignal = 0
     prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    ProportionalStrength = .7
-    IntegralStrength = .15
+    ProportionalStrength = .8
+    IntegralStrength = .4
     DerivitiveStrength = 3
     controlBias = 0
     finalScale = .13
