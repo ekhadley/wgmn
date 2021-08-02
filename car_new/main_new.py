@@ -155,12 +155,12 @@ while 1:
         integralSignal = 0
     prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    ProportionalStrength = .70
-    IntegralStrength = .4
-    DerivitiveStrength = 10
+    ProportionalStrength = .6
+    IntegralStrength = .35
+    DerivitiveStrength = 7.5
     controlBias = 0
-    finalScale = .1
-    controlRange = 50
+    finalScale = .18
+    controlRange = 30
 
     pidValues = [avgLaneSpeedDiff, integralSignal, -avgLaneAcc]
 #   cleaning output signal
