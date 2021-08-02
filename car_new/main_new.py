@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
 
 yellow_lower = np.array([0, 50, 50])
@@ -86,7 +86,7 @@ vid = cv2.VideoCapture(0)
 recentLanePositions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentControlSignals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentSpeeds = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-recentAcc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+recentAcc = [0, 0, 0]
 recentSpeedDiffs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentLaneCenters = []
 calibrating = True
@@ -144,7 +144,7 @@ while 1:
     recentSpeeds.pop(0)
     avgLaneAcc = sum(recentSpeeds)/len(recentSpeeds)
 #calculate difference to target velocity and average it
-    targetVelocity = laneCenterDist/5
+    targetVelocity = laneCenterDist/6
     laneSpeedDiff = targetVelocity - avgLaneSpeed
     recentSpeedDiffs.append(laneSpeedDiff)
     recentSpeedDiffs.pop(0)
@@ -155,11 +155,11 @@ while 1:
         integralSignal = 0
     prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    ProportionalStrength = .8
-    IntegralStrength = .5
-    DerivitiveStrength = 13
+    ProportionalStrength = .70
+    IntegralStrength = .4
+    DerivitiveStrength = 10
     controlBias = 0
-    finalScale = .13
+    finalScale = .1
     controlRange = 50
 
     pidValues = [avgLaneSpeedDiff, integralSignal, -avgLaneAcc]
