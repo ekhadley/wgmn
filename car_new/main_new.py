@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "live"
+PLAYMODE = "test"
 
 
 yellow_lower = np.array([0, 50, 50])
@@ -155,11 +155,11 @@ while 1:
         integralSignal = 0
     prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    ProportionalStrength = 1
-    IntegralStrength = 1
-    DerivitiveStrength = 10
+    ProportionalStrength = .8
+    IntegralStrength = .5
+    DerivitiveStrength = 13
     controlBias = 0
-    finalScale = 1
+    finalScale = .13
     controlRange = 50
 
     pidValues = [avgLaneSpeedDiff, integralSignal, -avgLaneAcc]
@@ -191,7 +191,7 @@ while 1:
     cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
     cv2.imshow('frame', frame)
-    #cv2.imshow('cut', cut)
+    cv2.imshow('cut', cut)
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         1
