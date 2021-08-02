@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "live"
+PLAYMODE = "test"
 
 
 yellow_lower = np.array([0, 50, 50])
@@ -100,9 +100,10 @@ prevlaneSpeedDiff = 0
 while 1:
 #getting image based on playmode and computer
     if PLAYMODE == 'test':
+        time.sleep(.05)
         if frameCount >= 3900:
             frameCount = 2
-        frameCount += 1
+        frameCount += 5
         desktopPath = cv2.imread('D:\\lvid\\caps\\frame' + str(frameCount) + ".png")
         LaptopPath = cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(frameCount) + ".png")
         if type(LaptopPath) == np.ndarray:
@@ -143,12 +144,13 @@ while 1:
     recentSpeeds.append(laneSpeed)
     recentSpeeds.pop(0)
     avgLaneAcc = sum(recentSpeeds)/len(recentSpeeds)
+    limit(avgLaneAcc, -3, 3)
 #calculate difference to target velocity and average it
     targetVelocity = laneCenterDist/6
     laneSpeedDiff = targetVelocity - avgLaneSpeed
     recentSpeedDiffs.append(laneSpeedDiff)
     recentSpeedDiffs.pop(0)
-    avgLaneSpeedDiff = sum(recentSpeedDiffs)/len(recentSpeedDiffs)    
+    avgLaneSpeedDiff = sum(recentSpeedDiffs)/len(recentSpeedDiffs)
 #integral term calculation
     integralSignal += .003*avgLaneSpeedDiff
     if not sameSign(prevlaneSpeedDiff, laneSpeedDiff):
