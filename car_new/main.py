@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
 
 yellow_lower = np.array([0, 50, 50])
@@ -95,7 +95,7 @@ integralSignal = 0
 frameCount = 0
 switchCD = 0
 prevlaneSpeedDiff = 0
-
+vid.set(cv2.CAP_PROP_FPS, 15)
 
 while 1:
 #getting image based on playmode and computer
@@ -153,15 +153,15 @@ while 1:
     avgLaneSpeedDiff = sum(recentSpeedDiffs)/len(recentSpeedDiffs)
 #integral term calculation
     integralSignal += .003*avgLaneSpeedDiff
-    if not sameSign(prevlaneSpeedDiff, laneSpeedDiff):
+    if laneSpeedDiff in range(-6, 6):
         integralSignal = 0
     prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    ProportionalStrength = .6
-    IntegralStrength = .35
-    DerivitiveStrength = 7.5
+    ProportionalStrength = .7
+    IntegralStrength = .15
+    DerivitiveStrength = 3
     controlBias = 0
-    finalScale = .18
+    finalScale = .13
     controlRange = 30
 
     pidValues = [avgLaneSpeedDiff, integralSignal, -avgLaneAcc]
