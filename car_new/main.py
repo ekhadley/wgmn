@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
 hold = 1
 while hold:
@@ -155,14 +155,14 @@ while 1:
         integralSignal = 0
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    proportionalStrength = 4
-    integralStrength = .3
+    proportionalStrength = 2
+    integralStrength = 1
     derivitiveStrength = 3
-    controlBias = 0
+    controlBias = -2
     finalScale = .1
     controlRange = 30
     if not sameSign(avgLaneSpeed, targetLaneSpeed):
-        proportionalStrength += 2
+        proportionalStrength += 4
     if abs(laneSpeedDiff) > 8:
         proportionalStrength += 2
     else:
