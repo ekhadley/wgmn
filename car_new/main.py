@@ -5,7 +5,7 @@ from PIL import Image
 
 PLAYMODE = "live"
 
-hold = 0
+hold = 1
 while hold:
     try:
         arduino = serial.Serial('COM6', 9600, timeout=.1)
@@ -91,9 +91,6 @@ integralSignal = 0
 frameCount = 0
 switchCD = 0
 prevlaneSpeedDiff = 0
-vid.set(cv2.CAP_PROP_FPS, 15)
-
-TESTLIST = []
 
 while 1:
     stime = time.time()
@@ -195,16 +192,19 @@ while 1:
     cv2.circle(frame, (int(laneCenter), 280), 7, (20, 200, 20), 2)
     cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
+    cv2.circle(mask, (int(avgLanePosition), 280), 2, (150), 4)
+    cv2.circle(mask, (int(laneCenter), 280), 7, (150), 2)
+
     if frameCount < 11:
         cv2.moveWindow("frame", 800, 150)
     cv2.imshow('frame', frame)
-    cv2.imshow('cut', cut)
+    #cv2.imshow('cut', cut)
     cv2.imshow('mask', mask)
 
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break
-    
+
     while 1/(time.time()-stime) > 60:
         time.sleep(.001) 
     print(1/(time.time()-stime))
