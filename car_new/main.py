@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
 hold = 1
 while hold:
