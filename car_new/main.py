@@ -170,14 +170,14 @@ while 1:
 #sending to arduino
     try:
         if not calibrating and PLAYMODE == 'live':
-            package = str(-controlStrength).encode()
+            package = str((controlStrength**2)*sign(-controlStrength)).encode()
             arduino.write(package)
             time.sleep(.05)
     except NameError:
         if PLAYMODE == 'test':
             time.sleep(.050)
 #lines and displaying
-    cv2.line(frame, (300, 270), (300 + controlStrength**2, 270), (0, 60, 250), 4)
+    cv2.line(frame, (300, 270), (300 + sign(controlStrength)*controlStrength**2, 270), (0, 60, 250), 4)
     cv2.line(frame, (300, 295), (300 - round(targetVelocity*ProportionalStrength), 295), (215, 215, 215), 4)
     cv2.line(frame, (300, 300), (300 - round(avgLaneSpeedDiff*ProportionalStrength), 300), (120, 50, 200), 4)
     cv2.line(frame, (300, 305), (300 - round(avgLaneSpeed*ProportionalStrength), 305), (215, 215, 215), 4)
@@ -200,7 +200,7 @@ while 1:
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break
     
-    print(time.time()-stime)
+    print(1/(time.time()-stime))
     
 
 
