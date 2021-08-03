@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "live"
+PLAYMODE = "test"
 
 hold = 1
 while hold:
@@ -99,10 +99,9 @@ while 1:
     stime = time.time()
 #getting image based on playmode and computer
     if PLAYMODE == 'test':
-        time.sleep(.05)
         if frameCount >= 3900:
             frameCount = 2
-        frameCount += 5
+        frameCount += 1
         desktopPath = cv2.imread('D:\\lvid\\caps\\frame' + str(frameCount) + ".png")
         LaptopPath = cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(frameCount) + ".png")
         if type(LaptopPath) == np.ndarray:
@@ -156,7 +155,7 @@ while 1:
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
     proportionalStrength = 2
-    integralStrength = 1
+    integralStrength = 3
     derivitiveStrength = 3
     controlBias = -2
     finalScale = .1
@@ -179,9 +178,9 @@ while 1:
             package = str(-controlStrength+1*sign(controlStrength)).encode()
             arduino.write(package)
             time.sleep(.05)
-    except NameError:
+    except Exception:
         if PLAYMODE == 'test':
-            time.sleep(.050)
+            time.sleep(.05)
 #lines and displaying
     cv2.line(frame, (300, 270), (300 + round(controlStrength*finalScale), 270), (0, 60, 250), 4)
     cv2.line(frame, (300, 295), (300 - round(targetLaneSpeed*proportionalStrength), 295), (215, 215, 215), 4)
@@ -206,6 +205,8 @@ while 1:
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break
     
+    while 1/(time.time()-stime) > 60:
+        time.sleep(.001) 
     print(1/(time.time()-stime))
     
 
