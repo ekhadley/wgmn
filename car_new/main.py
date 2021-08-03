@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "live"
+PLAYMODE = "test"
 
 hold = 1
 while hold:
@@ -96,10 +96,11 @@ vid.set(cv2.CAP_PROP_FPS, 15)
 TESTLIST = []
 
 while 1:
+    stime = time.time()
 #getting image based on playmode and computer
     if PLAYMODE == 'test':
         time.sleep(.05)
-        if frameCount >= 3900:
+        if frameCount >= 8500:
             frameCount = 2
         frameCount += 5
         desktopPath = cv2.imread('D:\\lvid\\caps\\frame' + str(frameCount) + ".png")
@@ -158,7 +159,7 @@ while 1:
     IntegralStrength = .4
     DerivitiveStrength = 3
     controlBias = 0
-    finalScale = .1
+    finalScale = .05
     controlRange = 30
 #cleaning output signal
     pidValues = [avgLaneSpeedDiff, integralSignal, -avgLaneAcc]
@@ -176,7 +177,7 @@ while 1:
         if PLAYMODE == 'test':
             time.sleep(.050)
 #lines and displaying
-    cv2.line(frame, (300, 270), (300 + controlStrength, 270), (0, 60, 250), 4)
+    cv2.line(frame, (300, 270), (300 + controlStrength**2, 270), (0, 60, 250), 4)
     cv2.line(frame, (300, 295), (300 - round(targetVelocity*ProportionalStrength), 295), (215, 215, 215), 4)
     cv2.line(frame, (300, 300), (300 - round(avgLaneSpeedDiff*ProportionalStrength), 300), (120, 50, 200), 4)
     cv2.line(frame, (300, 305), (300 - round(avgLaneSpeed*ProportionalStrength), 305), (215, 215, 215), 4)
@@ -193,11 +194,14 @@ while 1:
         cv2.moveWindow("frame", 800, 150)
     cv2.imshow('frame', frame)
     cv2.imshow('cut', cut)
+    cv2.imshow('mask', mask)
+
 
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break
-
-
+    
+    print(time.time()-stime)
+    
 
 
 
