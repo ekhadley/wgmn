@@ -174,7 +174,7 @@ while 1:
             time.sleep(.05)
     except NameError:
         if PLAYMODE == 'test':
-            time.sleep(.05)
+            time.sleep(.050)
 #lines and displaying
     cv2.line(frame, (300, 270), (300 + controlStrength, 270), (0, 60, 250), 4)
     cv2.line(frame, (300, 295), (300 - round(targetVelocity*ProportionalStrength), 295), (215, 215, 215), 4)
