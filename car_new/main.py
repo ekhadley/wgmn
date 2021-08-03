@@ -3,9 +3,9 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
-hold = 1
+hold = 0
 while hold:
     try:
         arduino = serial.Serial('COM6', 9600, timeout=.1)
