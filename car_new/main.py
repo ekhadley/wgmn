@@ -3,11 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "live"
-
-
-yellow_lower = np.array([0, 50, 50])
-yellow_upper = np.array([35, 255, 255])
+PLAYMODE = "test"
 
 hold = 1
 while hold:
@@ -113,7 +109,7 @@ while 1:
     if PLAYMODE == 'live':
         ret, frame = vid.read()
         frameCount += 1
-
+#reading image data
     cut = read.getTile(frame)
     mask = read.getMask(frame)
     lanePosition = read.getCenter(frame)
@@ -153,7 +149,7 @@ while 1:
     avgLaneSpeedDiff = sum(recentSpeedDiffs)/len(recentSpeedDiffs)
 #integral term calculation
     integralSignal += .003*avgLaneSpeedDiff
-    if laneSpeedDiff in range(-6, 6):
+    if avgLaneSpeedDiff in range(-6, 6):
         integralSignal = 0
     prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
@@ -188,10 +184,12 @@ while 1:
     cv2.line(frame, (300, 360), (300 + round(-avgLaneAcc*DerivitiveStrength), 360), (10, 200, 120), 4)
 
     cv2.circle(frame, (int(avgLanePosition), 280), 2, (200, 20, 20), 4)
-    cv2.circle(cut, (int(avgLanePosition), 5), 2, (200, 20, 20), 4)
+    #v2.circle(cut, (int(avgLanePosition), 5), 2, (200, 20, 20), 4)
     cv2.circle(frame, (int(laneCenter), 280), 7, (20, 200, 20), 2)
     cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
+    if frameCount < 11:
+        cv2.moveWindow("frame", 1200, 150)
     cv2.imshow('frame', frame)
     cv2.imshow('cut', cut)
 

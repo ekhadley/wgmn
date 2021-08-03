@@ -81,10 +81,10 @@ def draw():
     global happies
     background(30)
 
-    if mouse_is_pressed:
-        if mouse_button == 37:
+    if mousePressed:
+        if mouseButton == 37:
             started = 1
-            l = light(mouse_x, mouse_x, 1)
+            l = light(mouseX, mouseY, 1)
             branches = 0
             trunk = branch(w/2, h, random.uniform(-1, 1), random.uniform(-1, .1))
             

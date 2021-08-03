@@ -1,4 +1,4 @@
-from p5 import *
+
 """ shit to add
 use Vectors becuase its cleaner
 variable transferral/mutation rates based on change of fitness of recent generations
@@ -37,15 +37,15 @@ class food():
    
     def show(self):
         fill(230, 30, 30)
-        ellipse((self.x, self.y), self.r, self.r)
+        ellipse(self.x, self.y, self.r, self.r)
 
 class walker():
-    def __init__(self, x, y):
+    def __init__(self, x, y, dlen):
         self.x = x
         self.y = y
         self.vx = 0
         self.vy = 0
-        self.dna = randomDNA(500)
+        self.dna = randomDNA(dlen)
         self.place = 0
         self.fitness = 10000
         self.dead = 0
@@ -112,9 +112,9 @@ class walker():
     def show(self):
         fill(self.marker)
         translate(self.x, self.y)
-        rotate(Vector(self.vx, self.vy).heading() + PI/2)
+        rotate(PVector(self.vx, self.vy).heading() + PI/2)
         triangle(0, -10, -5, 10, 5, 10)
-        reset_matrix()
+        resetMatrix()
 
 poolsize = 500
 borgir = food(50, 50, 30)
@@ -124,6 +124,7 @@ gen = 1
 started = False
 avg = 0
 solved = False
+dnaLength = 250
 
 points = []
 walls = []
@@ -147,26 +148,26 @@ def draw():
     global thresh
     global points
 
-    load_pixels()
+    loadPixels()
     background(50)
     borgir.show()
     fill(200, 15, 200)
-    #text_size(30)
+    textSize(30)
 
     stroke(50)
-    if mouse_button == 37:
+    if mouseButton == 37:
         if [mouseX, mouseY] not in points:
             points.append([mouseX, mouseY])
         fill(15, 130, 250)
     if not started:
-        if mouse_button == 39:
+        if mouseButton == 39:
             started = True 
             for i in range(0, poolsize):
-                pool.append(walker(mouseX, mouseY))
-    no_stroke()
+                pool.append(walker(mouseX, mouseY, dnaLength))
+    noStroke()
     for i in points:
         fill(15, 130, 250)
-        ellipse((i[0], i[1]), 24, 24)
+        ellipse(i[0], i[1], 24, 24)
     stroke(50)
     if started:  
         for i in pool:
@@ -207,8 +208,7 @@ def draw():
         pass
     fill(250, 15, 200)
     text(gen, 710, 40)
-    
-run()
+
     
     
     
