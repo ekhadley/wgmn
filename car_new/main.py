@@ -144,22 +144,22 @@ while 1:
     avgLaneAcc = sum(recentAcc)/len(recentAcc)
     #limit(avgLaneAcc, -3, 3)
 #calculate difference to target velocity and average it
-    targetVelocity = laneCenterDist/20
+    targetVelocity = laneCenterDist/13
     laneSpeedDiff = targetVelocity - avgLaneSpeed
     recentSpeedDiffs.append(laneSpeedDiff)
     recentSpeedDiffs.pop(0)
     avgLaneSpeedDiff = sum(recentSpeedDiffs)/len(recentSpeedDiffs)
 #integral term calculation
     integralSignal += .005*avgLaneSpeedDiff
-    if avgLaneSpeedDiff > -3 and avgLaneSpeedDiff < 3:
+    if avgLaneSpeedDiff > -1 and avgLaneSpeedDiff < 1:
         integralSignal = 0
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    ProportionalStrength = 4.5
-    IntegralStrength = .4
+    ProportionalStrength = 6
+    IntegralStrength = .6
     DerivitiveStrength = 3
     controlBias = 0
-    finalScale = .05
+    finalScale = .04
     controlRange = 30
 #cleaning output signal
     pidValues = [avgLaneSpeedDiff, integralSignal, -avgLaneAcc]
@@ -170,7 +170,7 @@ while 1:
 #sending to arduino
     try:
         if not calibrating and PLAYMODE == 'live':
-            package = str((controlStrength**2)*sign(-controlStrength)).encode()
+            package = str(((controlStrength**2)*sign(-controlStrength))+1*sign(controlStrength)).encode()
             arduino.write(package)
             time.sleep(.05)
     except NameError:
