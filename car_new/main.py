@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
 hold = 1
 while hold:
@@ -200,7 +200,7 @@ while 1:
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break
     
-    print(time.time()-stime)
+    print(1/(time.time()-stime))
     
 
 
