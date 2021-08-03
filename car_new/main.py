@@ -93,6 +93,8 @@ switchCD = 0
 prevlaneSpeedDiff = 0
 vid.set(cv2.CAP_PROP_FPS, 15)
 
+TESTLIST = []
+
 while 1:
 #getting image based on playmode and computer
     if PLAYMODE == 'test':
@@ -148,14 +150,14 @@ while 1:
     recentSpeedDiffs.pop(0)
     avgLaneSpeedDiff = sum(recentSpeedDiffs)/len(recentSpeedDiffs)
 #integral term calculation
-    integralSignal += .003*avgLaneSpeedDiff
-    if avgLaneSpeedDiff in range(-6, 6):
+    integralSignal += .005*avgLaneSpeedDiff
+    if avgLaneSpeedDiff > -3 and avgLaneSpeedDiff < 3:
         integralSignal = 0
-    prevlaneSpeedDiff = laneSpeedDiff
+    #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    ProportionalStrength = .8
+    ProportionalStrength = 2
     IntegralStrength = .4
-    DerivitiveStrength = 3
+    DerivitiveStrength = 4
     controlBias = 0
     finalScale = .13
     controlRange = 30
@@ -183,8 +185,9 @@ while 1:
     cv2.line(frame, (300, 330), (300 - round(integralSignal*IntegralStrength), 330), (200, 50, 120), 4)
     cv2.line(frame, (300, 360), (300 + round(-avgLaneAcc*DerivitiveStrength), 360), (10, 200, 120), 4)
 
+
     cv2.circle(frame, (int(avgLanePosition), 280), 2, (200, 20, 20), 4)
-    #v2.circle(cut, (int(avgLanePosition), 5), 2, (200, 20, 20), 4)
+    #cv2.circle(cut, (int(avgLanePosition), 5), 2, (200, 20, 20), 4)
     cv2.circle(frame, (int(laneCenter), 280), 7, (20, 200, 20), 2)
     cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
