@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
 hold = 1
 while hold:
@@ -115,7 +115,6 @@ while 1:
     cut = read.getTile(frame)
     mask = read.getMask(frame)
     lanePosition = read.getCenter(frame)
-
 #calculate lane average lane position
     if lanePosition != None:    
         recentLanePositions.append(lanePosition)
@@ -144,7 +143,7 @@ while 1:
     avgLaneAcc = sum(recentAcc)/len(recentAcc)
     #limit(avgLaneAcc, -3, 3)
 #calculate difference to target velocity and average it
-    targetVelocity = laneCenterDist/4
+    targetVelocity = laneCenterDist/20
     laneSpeedDiff = targetVelocity - avgLaneSpeed
     recentSpeedDiffs.append(laneSpeedDiff)
     recentSpeedDiffs.pop(0)
@@ -155,15 +154,14 @@ while 1:
         integralSignal = 0
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    ProportionalStrength = 2
+    ProportionalStrength = 4.5
     IntegralStrength = .4
-    DerivitiveStrength = 4
+    DerivitiveStrength = 3
     controlBias = 0
-    finalScale = .13
+    finalScale = .1
     controlRange = 30
-
-    pidValues = [avgLaneSpeedDiff, integralSignal, -avgLaneAcc]
 #cleaning output signal
+    pidValues = [avgLaneSpeedDiff, integralSignal, -avgLaneAcc]
     recentControlSignals.append(PID(pidValues, ProportionalStrength*100, IntegralStrength*100, DerivitiveStrength*100))
     recentControlSignals.pop(0)
     controlStrength = finalScale*sum(recentControlSignals)/len(recentControlSignals)
@@ -192,7 +190,7 @@ while 1:
     cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
     if frameCount < 11:
-        cv2.moveWindow("frame", 1200, 150)
+        cv2.moveWindow("frame", 800, 150)
     cv2.imshow('frame', frame)
     cv2.imshow('cut', cut)
 
