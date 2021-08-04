@@ -153,7 +153,7 @@ while 1:
 #PID weights
     proportionalStrength = 2
     integralStrength = 3
-    derivitiveStrength = 3
+    derivitiveStrength = 0
     controlBias = -2
     finalScale = 1
     controlRange = 30
