@@ -83,7 +83,7 @@ recentLanePositions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentControlSignals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentSpeeds = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentAcc = [0, 0, 0]
-recentSpeedDiffs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+recentAccDiffs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 recentLaneCenters = []
 calibrating = True
 avgLanePosition = 0
@@ -139,15 +139,15 @@ while 1:
     recentAcc.pop(0)
     avgLaneAcc = sum(recentAcc)/len(recentAcc)
     #limit(avgLaneAcc, -3, 3)
-#calculate difference to target velocity and average it
-    targetLaneSpeed = laneCenterDist/13
-    laneSpeedDiff = targetLaneSpeed - avgLaneSpeed
-    recentSpeedDiffs.append(laneSpeedDiff)
-    recentSpeedDiffs.pop(0)
-    avgLaneSpeedDiff = sum(recentSpeedDiffs)/len(recentSpeedDiffs)
+#calculate difference to target acc and average it
+    targetLaneAcc = laneCenterDist/15
+    laneAccDiff = targetLaneAcc - avgLaneAcc
+    recentAccDiffs.append(laneAccDiff)
+    recentAccDiffs.pop(0)
+    avgLaneAccDiff = sum(recentAccDiffs)/len(recentAccDiffs)
 #integral term calculation
-    integralSignal += .005*avgLaneSpeedDiff
-    if avgLaneSpeedDiff > -1 and avgLaneSpeedDiff < 1:
+    integralSignal += .005*avgLaneAccDiff
+    if avgLaneAccDiff > -1 and avgLaneAccDiff < 1:
         integralSignal = 0
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
@@ -155,16 +155,11 @@ while 1:
     integralStrength = 3
     derivitiveStrength = 3
     controlBias = -2
-    finalScale = .1
+    finalScale = 1
     controlRange = 30
-    if not sameSign(avgLaneSpeed, targetLaneSpeed):
-        proportionalStrength += 4
-    if abs(laneSpeedDiff) > 8:
-        proportionalStrength += 2
-    else:
-        proportionalStrength = 6
+
 #cleaning output signal
-    pidValues = [avgLaneSpeedDiff, integralSignal, -avgLaneAcc]
+    pidValues = [targetLaneAcc, integralSignal, -avgLaneAcc]
     recentControlSignals.append(PID(pidValues, proportionalStrength*100, integralStrength*100, derivitiveStrength*100))
     recentControlSignals.pop(0)
     controlStrength = finalScale*sum(recentControlSignals)/len(recentControlSignals)
@@ -180,9 +175,9 @@ while 1:
             time.sleep(.05)
 #lines and displaying
     cv2.line(frame, (300, 270), (300 + round(controlStrength*finalScale), 270), (0, 60, 250), 4)
-    cv2.line(frame, (300, 295), (300 - round(targetLaneSpeed*proportionalStrength), 295), (215, 215, 215), 4)
-    cv2.line(frame, (300, 300), (300 - round(avgLaneSpeedDiff*proportionalStrength), 300), (120, 50, 200), 4)
-    cv2.line(frame, (300, 305), (300 - round(avgLaneSpeed*proportionalStrength), 305), (215, 215, 215), 4)
+    cv2.line(frame, (300, 295), (300 - round(targetLaneAcc*proportionalStrength), 295), (215, 215, 215), 4)
+    cv2.line(frame, (300, 300), (300 - round(targetLaneAcc*proportionalStrength), 300), (120, 50, 200), 4)
+    cv2.line(frame, (300, 305), (300 - round(avgLaneAcc*proportionalStrength), 305), (215, 215, 215), 4)
     cv2.line(frame, (300, 330), (300 - round(integralSignal*integralStrength), 330), (200, 50, 120), 4)
     cv2.line(frame, (300, 360), (300 + round(-avgLaneAcc*derivitiveStrength), 360), (10, 200, 120), 4)
 
