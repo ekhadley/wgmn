@@ -5,7 +5,7 @@ from PIL import Image
 
 PLAYMODE = "live"
 
-hold = 0
+hold = 1
 while hold:
     try:
         arduino = serial.Serial('COM6', 9600, timeout=.1)
@@ -79,11 +79,11 @@ def PID(val, P, I, D):
 read = reader()
 
 vid = cv2.VideoCapture(0)
-recentLanePositions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-recentControlSignals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-recentSpeeds = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+recentLanePositions = [0, 0, 0]
+recentControlSignals = [0, 0, 0]
+recentSpeeds = [0, 0, 0]
 recentAcc = [0, 0, 0]
-recentAccDiffs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+recentAccDiffs = [0, 0, 0]
 recentLaneCenters = []
 calibrating = True
 avgLanePosition = 0
@@ -154,14 +154,14 @@ while 1:
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
     proportionalStrength = 2
-    integralStrength = 3
-    derivitiveStrength = 0
+    integralStrength = 2
+    derivitiveStrength = 1.8
     controlBias = -2
-    finalScale = 1
+    finalScale = .8
     controlRange = 30
 
 #cleaning output signal
-    pidValues = [targetLaneAcc, integralSignal, -avgLaneAcc]
+    pidValues = [targetLaneAcc, integralSignal, -avgLaneSpeed]
     recentControlSignals.append(PID(pidValues, proportionalStrength*100, integralStrength*100, derivitiveStrength*100))
     recentControlSignals.pop(0)
     controlStrength = finalScale*sum(recentControlSignals)/len(recentControlSignals)
