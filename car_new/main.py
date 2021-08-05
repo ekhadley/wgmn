@@ -91,6 +91,7 @@ integralSignal = 0
 frameCount = 0
 switchCD = 0
 prevlaneSpeedDiff = 0
+vid.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
 while 1:
     stime = time.time()
