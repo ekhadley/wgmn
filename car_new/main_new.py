@@ -159,9 +159,9 @@ while 1:
     controlBias = -2
     finalScale = .8
     controlRange = 30
-
+    
 #cleaning output signal
-    pidValues = [targetLaneAcc, integralSignal, -avgLaneSpeed]
+    pidValues = [laneAccDiff, integralSignal, -avgLaneAcc]
     recentControlSignals.append(PID(pidValues, proportionalStrength*100, integralStrength*100, derivitiveStrength*100))
     recentControlSignals.pop(0)
     controlStrength = finalScale*sum(recentControlSignals)/len(recentControlSignals)
@@ -178,10 +178,10 @@ while 1:
 #lines and displaying
     cv2.line(frame, (300, 270), (300 + round(controlStrength*finalScale), 270), (0, 60, 250), 4)
     cv2.line(frame, (300, 295), (300 - round(targetLaneAcc*proportionalStrength), 295), (215, 215, 215), 4)
-    cv2.line(frame, (300, 300), (300 - round(targetLaneAcc*proportionalStrength), 300), (120, 50, 200), 4)
+    cv2.line(frame, (300, 300), (300 - round(pidValues[0]*proportionalStrength), 300), (120, 50, 200), 4)
     cv2.line(frame, (300, 305), (300 - round(avgLaneAcc*proportionalStrength), 305), (215, 215, 215), 4)
-    cv2.line(frame, (300, 330), (300 - round(integralSignal*integralStrength), 330), (200, 50, 120), 4)
-    cv2.line(frame, (300, 360), (300 + round(-avgLaneAcc*derivitiveStrength), 360), (10, 200, 120), 4)
+    cv2.line(frame, (300, 330), (300 - round(pidValues[1]*integralStrength), 330), (200, 50, 120), 4)
+    cv2.line(frame, (300, 360), (300 + round(-pidValues[2]*derivitiveStrength), 360), (10, 200, 120), 4)
 
 
     cv2.circle(frame, (int(avgLanePosition), 280), 2, (200, 20, 20), 4)
