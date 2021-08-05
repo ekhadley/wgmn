@@ -161,7 +161,7 @@ while 1:
     controlRange = 30
     
 #cleaning output signal
-    pidValues = [laneAccDiff, integralSignal, -avgLaneAcc]
+    pidValues = [avgLaneAccDiff, integralSignal, -avgLaneAcc]
     recentControlSignals.append(PID(pidValues, proportionalStrength*100, integralStrength*100, derivitiveStrength*100))
     recentControlSignals.pop(0)
     controlStrength = finalScale*sum(recentControlSignals)/len(recentControlSignals)
