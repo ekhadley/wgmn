@@ -30,7 +30,7 @@ void loop()
 }
 
 
-'''
+
 #include <Servo.h>
 Servo left;
 Servo right;
@@ -58,12 +58,6 @@ void loop()
      left.write(ctrl+127);
      right.write(ctrl+127);
 }
-
-'''
-
-
-
-
 
 
 

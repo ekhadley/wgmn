@@ -91,6 +91,7 @@ integralSignal = 0
 frameCount = 0
 switchCD = 0
 prevlaneSpeedDiff = 0
+vid.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
 while 1:
     stime = time.time()
@@ -140,14 +141,16 @@ while 1:
     avgLaneAcc = sum(recentAcc)/len(recentAcc)
     #limit(avgLaneAcc, -3, 3)
 #calculate difference to target acc and average it
-    targetLaneAcc = laneCenterDist/15
+    laneSpeedDiff = laneCenterDist/13 - avgLaneSpeed
+
+    targetLaneAcc = laneSpeedDiff/3
     laneAccDiff = targetLaneAcc - avgLaneAcc
     recentAccDiffs.append(laneAccDiff)
     recentAccDiffs.pop(0)
     avgLaneAccDiff = sum(recentAccDiffs)/len(recentAccDiffs)
 #integral term calculation
     integralSignal += .005*avgLaneAccDiff
-    if avgLaneAccDiff > -1 and avgLaneAccDiff < 1:
+    if avgLaneAccDiff > -5 and avgLaneAccDiff < 5:
         integralSignal = 0
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
