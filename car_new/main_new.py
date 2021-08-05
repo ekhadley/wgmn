@@ -3,9 +3,9 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
-hold = 1
+hold = 0
 while hold:
     try:
         arduino = serial.Serial('COM6', 9600, timeout=.1)
@@ -141,8 +141,7 @@ while 1:
     avgLaneAcc = sum(recentAcc)/len(recentAcc)
     #limit(avgLaneAcc, -3, 3)
 #calculate difference to target acc and average it
-    laneSpeedDiff = laneCenterDist/13 - avgLaneSpeed
-
+    laneSpeedDiff = laneCenterDist/13 - avgLaneSpeed 
     targetLaneAcc = laneSpeedDiff/3
     laneAccDiff = targetLaneAcc - avgLaneAcc
     recentAccDiffs.append(laneAccDiff)
@@ -203,8 +202,9 @@ while 1:
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break
 
-    while 1/(time.time()-stime) > 60:
-        time.sleep(.001) 
+    if PLAYMODE == 'test':
+        while 1/(time.time()-stime) > 60:
+            time.sleep(.001) 
     print(1/(time.time()-stime))
     
 

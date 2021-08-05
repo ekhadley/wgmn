@@ -3,9 +3,9 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
-hold = 1
+hold = 0
 while hold:
     try:
         arduino = serial.Serial('COM6', 9600, timeout=.1)
@@ -91,7 +91,7 @@ integralSignal = 0
 frameCount = 0
 switchCD = 0
 prevlaneSpeedDiff = 0
-vid.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+vid.set(cv2.CAP_PROP_BUFFERSIZE, 2)
 
 while 1:
     stime = time.time()

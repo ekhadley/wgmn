@@ -1,5 +1,5 @@
 puzzles = [1]
-for i in range(3, 131):
+for i in range(2, 132):
     puzzles.append(i)
 
 while 1:
@@ -7,5 +7,5 @@ while 1:
     try:
         puzzles.remove(new)
     except Exception:
-        print('peice not found')
+        print('peice not found \n\n\n')
     print(f'you still need: {puzzles}')
