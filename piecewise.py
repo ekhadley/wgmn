@@ -1,5 +1,5 @@
 puzzles = [1]
-for i in range(2, 132):
+for i in range(3, 132):
     puzzles.append(i)
 
 while 1:
