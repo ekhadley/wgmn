@@ -148,16 +148,16 @@ while 1:
     recentAccDiffs.pop(0)
     avgLaneAccDiff = sum(recentAccDiffs)/len(recentAccDiffs)
 #integral term calculation
-    integralSignal += .005*avgLaneAccDiff
-    if avgLaneAccDiff > -5 and avgLaneAccDiff < 5:
+    integralSignal += .005*laneCenterDist
+    if laneCenterDist > -3 and laneCenterDist < 3:
         integralSignal = 0
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    proportionalStrength = 2.2
-    integralStrength = 2
-    derivitiveStrength = 1.7
+    proportionalStrength = 2.6
+    integralStrength = 1
+    derivitiveStrength = 1.68
     controlBias = -2
-    finalScale = .4
+    finalScale = .37
     controlRange = 30
     
 #cleaning output signal
@@ -169,7 +169,7 @@ while 1:
 #sending to arduino
     try:
         if not calibrating and PLAYMODE == 'live':
-            package = str(-controlStrength+1*sign(controlStrength)).encode()
+            package = str(-controlStrength+0*sign(controlStrength)).encode()
             arduino.write(package)
             time.sleep(.05)
     except Exception:
