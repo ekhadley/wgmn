@@ -155,9 +155,9 @@ while 1:
 #PID weights
     proportionalStrength = 2.2
     integralStrength = 2
-    derivitiveStrength = 1.8
+    derivitiveStrength = 1.7
     controlBias = -2
-    finalScale = .3
+    finalScale = .4
     controlRange = 30
     
 #cleaning output signal
