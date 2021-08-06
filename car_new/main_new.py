@@ -5,7 +5,7 @@ from PIL import Image
 
 PLAYMODE = "live"
 
-hold = 1
+hold = 0
 while hold:
     try:
         arduino = serial.Serial('COM6', 9600, timeout=.1)
@@ -202,9 +202,8 @@ while 1:
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break
 
-    if PLAYMODE == 'test':
-        while 1/(time.time()-stime) > 60:
-            time.sleep(.001) 
+    while 1/(time.time()-stime) > 60:
+        time.sleep(.001) 
     print(1/(time.time()-stime))
     
 
