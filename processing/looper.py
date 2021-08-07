@@ -10,8 +10,12 @@ class wave():
         global waves
         global ripDist
         self.path = []
+        self.marker = color(0, 80, 255)
+        self.weight = 3
         
     def show(self):
+        stroke(self.marker)
+        strokeWeight(self.weight)
         for i in range(len(self.path)):
             ellipse(self.path[i].x, self.path[i].y, 2, 2)
             try:
@@ -19,9 +23,7 @@ class wave():
             except:
                 line(self.path[0].x, self.path[0].y, self.path[-1].x, self.path[-1].y)
     def uncross(self):
-        for i in range(len(self.path)):
-            for j in range(len(self.path)):
-                pass
+        pass
     
     def ripple(self):
         waves.append(wave())
@@ -35,16 +37,14 @@ class wave():
                 leadVec = PVector(self.path[i].x - self.path[i+1].x, self.path[i].y - self.path[i+1].y)
             curveTan = (lagVec+leadVec)/2
             curveTan.rotate(PI/2)
-            try:
-                curveTan /= (curveTan.mag()/ripDist)
-            except:
-                curveTan = PVector(0, 0)
-            waves[-1].path.append(PVector(self.path[i].x + curveTan.x, self.path[i].y + curveTan.y))
+            curveTan /= (curveTan.mag()/ripDist)
 
+            waves[-1].path.append(PVector(self.path[i].x + curveTan.x, self.path[i].y + curveTan.y))
 
 w = wave()
 wstate = 0
 waves = [w]
+
 rippleCD = 0
 ripDist = 30
 
@@ -56,7 +56,7 @@ def draw():
     if mouseButton == 37:
         block = 0
         for i in w.path:
-            if dist(mouseX, mouseY, i.x, i.y) < 15:
+            if dist(mouseX, mouseY, i.x, i.y) < 5:
                 block = 1
         if not block:
             w.path.append(PVector(mouseX, mouseY))
