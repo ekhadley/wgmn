@@ -3,9 +3,9 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "live"
+PLAYMODE = "test"
 
-hold = 0
+hold = 1
 while hold:
     try:
         arduino = serial.Serial('COM6', 9600, timeout=.1)
@@ -92,6 +92,7 @@ frameCount = 0
 switchCD = 0
 prevlaneSpeedDiff = 0
 vid.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+displayFrames = 1
 
 while 1:
     stime = time.time()
@@ -153,11 +154,11 @@ while 1:
         integralSignal = 0
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    proportionalStrength = 2.6
+    proportionalStrength = 2.7
     integralStrength = 1
     derivitiveStrength = 1.68
     controlBias = -2
-    finalScale = .37
+    finalScale = .2
     controlRange = 30
     
 #cleaning output signal
@@ -176,38 +177,34 @@ while 1:
         if PLAYMODE == 'test':
             time.sleep(.05)
 #lines and displaying
-    cv2.line(frame, (300, 270), (300 + round(controlStrength*finalScale), 270), (0, 60, 250), 4)
-    cv2.line(frame, (300, 295), (300 - round(targetLaneAcc*proportionalStrength), 295), (215, 215, 215), 4)
-    cv2.line(frame, (300, 300), (300 - round(pidValues[0]*proportionalStrength), 300), (120, 50, 200), 4)
-    cv2.line(frame, (300, 305), (300 - round(avgLaneAcc*proportionalStrength), 305), (215, 215, 215), 4)
-    cv2.line(frame, (300, 330), (300 - round(pidValues[1]*integralStrength), 330), (200, 50, 120), 4)
-    cv2.line(frame, (300, 360), (300 + round(-pidValues[2]*derivitiveStrength), 360), (10, 200, 120), 4)
+    if displayFrames:
+        cv2.line(frame, (300, 270), (300 + round(controlStrength*finalScale), 270), (0, 60, 250), 4)
+        cv2.line(frame, (300, 295), (300 - round(targetLaneAcc*proportionalStrength), 295), (215, 215, 215), 4)
+        cv2.line(frame, (300, 300), (300 - round(pidValues[0]*proportionalStrength), 300), (120, 50, 200), 4)
+        cv2.line(frame, (300, 305), (300 - round(avgLaneAcc*proportionalStrength), 305), (215, 215, 215), 4)
+        cv2.line(frame, (300, 330), (300 - round(pidValues[1]*integralStrength), 330), (200, 50, 120), 4)
+        cv2.line(frame, (300, 360), (300 + round(-pidValues[2]*derivitiveStrength), 360), (10, 200, 120), 4)
 
 
-    cv2.circle(frame, (int(avgLanePosition), 280), 2, (200, 20, 20), 4)
-    #cv2.circle(cut, (int(avgLanePosition), 5), 2, (200, 20, 20), 4)
-    cv2.circle(frame, (int(laneCenter), 280), 7, (20, 200, 20), 2)
-    cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
+        cv2.circle(frame, (int(avgLanePosition), 280), 2, (200, 20, 20), 4)
+        #cv2.circle(cut, (int(avgLanePosition), 5), 2, (200, 20, 20), 4)
+        cv2.circle(frame, (int(laneCenter), 280), 7, (20, 200, 20), 2)
+        cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
-    cv2.circle(mask, (int(avgLanePosition), 280), 2, (150), 4)
-    cv2.circle(mask, (int(laneCenter), 280), 7, (150), 2)
-
-    if frameCount < 11:
-        cv2.moveWindow("frame", 800, 150)
-    cv2.imshow('frame', frame)
-    #cv2.imshow('cut', cut)
-    cv2.imshow('mask', mask)
+        cv2.circle(mask, (int(avgLanePosition), 280), 2, (150), 4)
+        cv2.circle(mask, (int(laneCenter), 280), 7, (150), 2)
 
 
+        cv2.imshow('frame', frame)
+        cv2.imshow('cut', cut)
+        cv2.imshow('mask', mask)
+#shit
     if cv2.waitKey(1) & 0xFF == ord('q'): 
-        break
+        displayFrames = not displayFrames
 
     while 1/(time.time()-stime) > 60:
         time.sleep(.001) 
-    print(1/(time.time()-stime))
-    
-
-
+    print(1/(time.time()-stime), f'         frame: {frameCount}')
 
 
 
