@@ -3,7 +3,7 @@ import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
 hold = 1
 while hold:
@@ -92,7 +92,7 @@ frameCount = 0
 switchCD = 0
 prevlaneSpeedDiff = 0
 vid.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-displayFrames = 1
+displayFrames = 0
 
 while 1:
     stime = time.time()
@@ -158,7 +158,7 @@ while 1:
     integralStrength = 1
     derivitiveStrength = 1.68
     controlBias = -2
-    finalScale = .2
+    finalScale = .25
     controlRange = 30
     
 #cleaning output signal
@@ -195,12 +195,12 @@ while 1:
         cv2.circle(mask, (int(laneCenter), 280), 7, (150), 2)
 
 
-        cv2.imshow('frame', frame)
-        cv2.imshow('cut', cut)
-        cv2.imshow('mask', mask)
+        #cv2.imshow('frame', frame)
+        #cv2.imshow('cut', cut)
+        #cv2.imshow('mask', mask)
 #shit
     if cv2.waitKey(1) & 0xFF == ord('q'): 
-        displayFrames = not displayFrames
+        break
 
     while 1/(time.time()-stime) > 60:
         time.sleep(.001) 
