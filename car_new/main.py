@@ -1,9 +1,9 @@
 import numpy as np
 import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
+import matplotlib as plt
 
-
-PLAYMODE = "live"
+PLAYMODE = "test"
 
 hold = 1
 while hold:
@@ -195,9 +195,9 @@ while 1:
         cv2.circle(mask, (int(laneCenter), 280), 7, (150), 2)
 
 
-        #cv2.imshow('frame', frame)
-        #cv2.imshow('cut', cut)
-        #cv2.imshow('mask', mask)
+        #plt.imshow('frame', frame)
+        #plt.imshow('cut', cut)
+        #plt.imshow('mask', mask)
 #shit
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break
