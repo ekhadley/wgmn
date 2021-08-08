@@ -4,7 +4,10 @@ def setup():
     stroke(0, 80, 255)
     strokeWeight(3)
     background(50)
-    
+
+def crossed(w, x, y, z):
+    pass
+
 class wave():
     def __init__(self):
         global waves
@@ -39,10 +42,13 @@ class wave():
             curveTan.rotate(PI/2)
             curveTan /= (curveTan.mag()/ripDist)
 
+            line(self.path[i].x, self.path[i].y, self.path[i].x + curveTan.x, self.path[i].y + curveTan.y)
+
             waves[-1].path.append(PVector(self.path[i].x + curveTan.x, self.path[i].y + curveTan.y))
 
+
 w = wave()
-wstate = 0
+w.marker = color(0, 10, 255)
 waves = [w]
 
 rippleCD = 0
@@ -51,8 +57,8 @@ ripDist = 30
 def draw():
     global wstate
     global rippleCD
-    
-    background(0, 140, 255)
+
+    background(0, 140, 235)
     if mouseButton == 37:
         block = 0
         for i in w.path:
@@ -62,13 +68,12 @@ def draw():
             w.path.append(PVector(mouseX, mouseY))
 
 
-    if frameCount - rippleCD > 20:
-        if mouseButton == 39:
+    if (mousePressed) and (mouseButton == 39) and (frameCount-rippleCD > 5):
             rippleCD = frameCount
             waves[-1].ripple()
 
     for i in waves:
-        #i.uncross()
+        i.uncross()
         i.show()
 
 
