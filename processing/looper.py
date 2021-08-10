@@ -5,7 +5,7 @@ def setup():
     strokeWeight(3)
     background(50)
 
-def crossed(w, x, y, z):
+def crossed(a, b, c, d):
     pass
 
 class wave():
@@ -67,8 +67,8 @@ def draw():
         if not block:
             w.path.append(PVector(mouseX, mouseY))
 
-
-    if (mousePressed) and (mouseButton == 39) and (frameCount-rippleCD > 5):
+    sinceRipple = frameCount-rippleCD
+    if (mousePressed) and (mouseButton == 39) and (sinceRipple > 5):
             rippleCD = frameCount
             waves[-1].ripple()
 
