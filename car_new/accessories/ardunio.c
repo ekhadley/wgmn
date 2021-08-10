@@ -20,20 +20,20 @@ String input;
 char next;
 bool brake;
 bool butt;
-bool pwr;
+bool pwr = 1;
 
 void loop()
 {
   butt = digitalRead(5);
   brake = digitalRead(6);
-  if(butt){
-    pwr = false;
-  }
-  if(brake){
+  if(!butt){
     pwr = true;
   }
+  if(brake){
+    pwr = false;
+  }
   digitalWrite(9, !pwr);
-  
+  Serial.println(butt);
     if(Serial.available() > 0){
         input = Serial.readString();
         ctrl = input.toInt();
