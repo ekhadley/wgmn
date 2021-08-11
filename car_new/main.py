@@ -2,7 +2,7 @@ import numpy as np
 import serial, time, cv2, keyboard, tkinter as tk
 from PIL import Image
 
-PLAYMODE = "test"
+PLAYMODE = "live"
 
 hold = 1
 while hold:
@@ -153,22 +153,22 @@ while 1:
         integralSignal = 0
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    proportionalStrength = 2.7
+    proportionalStrength = 2.9
     integralStrength = 1
-    derivitiveStrength = 1.68
-    controlBias = -2
-    finalScale = .25
+    derivitiveStrength = 1.75
+    controlBias = 0
+    finalScale = .2
     controlRange = 30
     
 #cleaning output signal
-    pidValues = [avgLaneAccDiff, integralSignal, -avgLaneAcc]
+    pidValues = [avgLaneAccDiff, integralSignal, -avgLaneSpeed]
     recentControlSignals.append(PID(pidValues, proportionalStrength*100, integralStrength*100, derivitiveStrength*100))
     recentControlSignals.pop(0)
     controlStrength = finalScale*sum(recentControlSignals)/len(recentControlSignals)
     controlStrength = round(limit(controlStrength+controlBias, -controlRange, controlRange))
 #sending to arduino
     try:
-        if not calibrating and PLAYMODE == 'live':
+        if not calibrating:
             package = str(-controlStrength+0*sign(controlStrength)).encode()
             arduino.write(package)
             time.sleep(.05)
@@ -193,11 +193,11 @@ while 1:
         cv2.circle(mask, (int(avgLanePosition), 280), 2, (150), 4)
         cv2.circle(mask, (int(laneCenter), 280), 7, (150), 2)
 
-        '''
-        cv2.imshow('frame', frame)
-        cv2.imshow('cut', cut)
-        cv2.imshow('mask', mask)
-        '''
+        
+        #cv2.imshow('frame', frame)
+        #cv2.imshow('cut', cut)
+        #cv2.imshow('mask', mask)
+        
 #shit
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break

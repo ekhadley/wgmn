@@ -33,7 +33,7 @@ void loop()
     pwr = false;
   }
   digitalWrite(9, !pwr);
-  Serial.println(butt);
+
     if(Serial.available() > 0){
         input = Serial.readString();
         ctrl = input.toInt();
