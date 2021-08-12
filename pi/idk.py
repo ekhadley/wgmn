@@ -85,7 +85,8 @@ if 1:
 #function definitions
 if 1:
     def powerOn():
-        write(o, 7, 110)
+        write(n
+error: src refspec origin does not match any.o, 7, 110)
         write(o, 7, 0)
     def powerOff():
         write(w, 37, 110)
