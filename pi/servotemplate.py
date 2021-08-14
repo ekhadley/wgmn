@@ -22,7 +22,7 @@ class servo():
 x = servo(9)
 
 while 1:
-    x.write(0)
+    x.write(14)
     time.sleep(3)
     x.write(100)
     time.sleep(3)
