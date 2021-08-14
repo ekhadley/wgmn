@@ -24,7 +24,7 @@ x = servo(7)
 while 1:
     x.write(0)
     time.sleep(3)
-    write(100)
+    x.write(100)
     time.sleep(3)
 
 
