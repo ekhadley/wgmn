@@ -19,7 +19,7 @@ class servo():
         time.sleep(1)
         self.w.ChangeDutyCycle(0)
 
-x = servo(7)
+x = servo(9)
 
 while 1:
     x.write(0)
