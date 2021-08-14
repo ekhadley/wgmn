@@ -26,7 +26,7 @@ while 1:
     time.sleep(3)
     x.write(100)
     time.sleep(3)
-
+#yo
 
 
 
