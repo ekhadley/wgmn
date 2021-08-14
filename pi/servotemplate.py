@@ -8,18 +8,18 @@ class servo():
     def __init__(self, pin):
         self.pin = pin
 
-        GPIO.setup(7, GPIO.OUT)
-        self.w = GPIO.PWM(7, 50)
+        GPIO.setup(self.pin, GPIO.OUT)
+        self.w = GPIO.PWM(self.pin, 50)
         self.w.start(0)
 
-    def write(angle, self):
+    def write(self, angle):
         duty = (angle/18) + 2.5
         GPIO.output(self.pin, True)
         self.w.ChangeDutyCycle(duty)
         time.sleep(1)
         self.w.ChangeDutyCycle(0)
 
-x = servo(9)
+x = servo(3)
 
 while 1:
     x.write(4)
