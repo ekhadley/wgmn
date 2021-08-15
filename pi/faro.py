@@ -112,7 +112,10 @@ def predict(width, height, confidences, boxes, prob_threshold, iou_threshold=0.4
 video_capture = cv2.VideoCapture(0)
 
 onnx_path = 'C:\\Users\\ek\\Desktop\\ultra_light_640.onnx'
-onnx_model = onnx.load(onnx_path)
+try:
+    onnx_model = onnx.load(onnx_path)
+except:
+    onnx_model = onnx.load('home/pi/Desktop/sdfghj/wgmn/ultra_light_640_onnx')
 predictor = prepare(onnx_model)
 ort_session = ort.InferenceSession(onnx_path)
 input_name = ort_session.get_inputs()[0].name

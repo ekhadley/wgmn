@@ -1,16 +1,15 @@
 import numpy as np
-import cv2, serial
+import cv2, serial, time
 from PIL import Image
 
+PLAYMODE = "live"
 
-PLAYMODE = "test"
-
-hold = 1
+hold = 0
 while hold:
     try:
         arduino = serial.Serial('COM6', 9600, timeout=.1)
         time.sleep(1)
-        hold = 0
+        hold=0
     except Exception:
         if PLAYMODE == 'test':
             hold = 0
@@ -92,6 +91,7 @@ frameCount = 0
 switchCD = 0
 prevlaneSpeedDiff = 0
 vid.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+displayFrames = 0
 
 while 1:
     stime = time.time()
@@ -100,8 +100,15 @@ while 1:
         if frameCount >= 3900:
             frameCount = 2
         frameCount += 1
-        desktopPath = cv2.imread('\\home\\pi\\Desktop\\lvid\\lvid' + str(frameCount) + '.png')
-        frame = np.array(desktopPath)
+        desktopPath = cv2.imread('D:\\lvid\\caps\\frame' + str(frameCount) + ".png")
+        LaptopPath = cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(frameCount) + ".png")
+        piPath = cv2.imread("/home/pi/Desktop/testvid/cap/lvid/frame" + str(frameCount) + ".png")
+        if type(LaptopPath) == np.ndarray:
+            frame = np.array(LaptopPath)
+        if type(desktopPath) == np.ndarray:
+            frame = np.array(desktopPath)
+        if type(piPath) == np.ndarray:
+            frame = np.array(piPath)
     if PLAYMODE == 'live':
         ret, frame = vid.read()
         frameCount += 1
@@ -144,62 +151,102 @@ while 1:
     recentAccDiffs.pop(0)
     avgLaneAccDiff = sum(recentAccDiffs)/len(recentAccDiffs)
 #integral term calculation
-    integralSignal += .005*avgLaneAccDiff
-    if avgLaneAccDiff > -5 and avgLaneAccDiff < 5:
+    integralSignal += .005*laneCenterDist
+    if laneCenterDist > -3 and laneCenterDist < 3:
         integralSignal = 0
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
-    proportionalStrength = 2.2
-    integralStrength = 2
-    derivitiveStrength = 1.7
-    controlBias = -2
-    finalScale = .4
+    proportionalStrength = 2.9
+    integralStrength = 1
+    derivitiveStrength = 1.75
+    controlBias = 0
+    finalScale = .2
     controlRange = 30
     
 #cleaning output signal
-    pidValues = [avgLaneAccDiff, integralSignal, -avgLaneAcc]
+    pidValues = [avgLaneAccDiff, integralSignal, -avgLaneSpeed]
     recentControlSignals.append(PID(pidValues, proportionalStrength*100, integralStrength*100, derivitiveStrength*100))
     recentControlSignals.pop(0)
     controlStrength = finalScale*sum(recentControlSignals)/len(recentControlSignals)
     controlStrength = round(limit(controlStrength+controlBias, -controlRange, controlRange))
 #sending to arduino
     try:
-        if not calibrating and PLAYMODE == 'live':
-            package = str(-controlStrength+1*sign(controlStrength)).encode()
+        if not calibrating and mode == 'live':
+            package = str(-controlStrength+0*sign(controlStrength)).encode()
             arduino.write(package)
             time.sleep(.05)
     except Exception:
         if PLAYMODE == 'test':
             time.sleep(.05)
 #lines and displaying
-    cv2.line(frame, (300, 270), (300 + round(controlStrength*finalScale), 270), (0, 60, 250), 4)
-    cv2.line(frame, (300, 295), (300 - round(targetLaneAcc*proportionalStrength), 295), (215, 215, 215), 4)
-    cv2.line(frame, (300, 300), (300 - round(pidValues[0]*proportionalStrength), 300), (120, 50, 200), 4)
-    cv2.line(frame, (300, 305), (300 - round(avgLaneAcc*proportionalStrength), 305), (215, 215, 215), 4)
-    cv2.line(frame, (300, 330), (300 - round(pidValues[1]*integralStrength), 330), (200, 50, 120), 4)
-    cv2.line(frame, (300, 360), (300 + round(-pidValues[2]*derivitiveStrength), 360), (10, 200, 120), 4)
+    if displayFrames:
+        cv2.line(frame, (300, 270), (300 + round(controlStrength*finalScale), 270), (0, 60, 250), 4)
+        cv2.line(frame, (300, 295), (300 - round(targetLaneAcc*proportionalStrength), 295), (215, 215, 215), 4)
+        cv2.line(frame, (300, 300), (300 - round(pidValues[0]*proportionalStrength), 300), (120, 50, 200), 4)
+        cv2.line(frame, (300, 305), (300 - round(avgLaneAcc*proportionalStrength), 305), (215, 215, 215), 4)
+        cv2.line(frame, (300, 330), (300 - round(pidValues[1]*integralStrength), 330), (200, 50, 120), 4)
+        cv2.line(frame, (300, 360), (300 + round(-pidValues[2]*derivitiveStrength), 360), (10, 200, 120), 4)
 
 
-    cv2.circle(frame, (int(avgLanePosition), 280), 2, (200, 20, 20), 4)
-    #cv2.circle(cut, (int(avgLanePosition), 5), 2, (200, 20, 20), 4)
-    cv2.circle(frame, (int(laneCenter), 280), 7, (20, 200, 20), 2)
-    cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
+        cv2.circle(frame, (int(avgLanePosition), 280), 2, (200, 20, 20), 4)
+        #cv2.circle(cut, (int(avgLanePosition), 5), 2, (200, 20, 20), 4)
+        cv2.circle(frame, (int(laneCenter), 280), 7, (20, 200, 20), 2)
+        cv2.putText(frame, str(frameCount), (15, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (180, 30, 180), 2, cv2.LINE_AA)
 
-    cv2.circle(mask, (int(avgLanePosition), 280), 2, (150), 4)
-    cv2.circle(mask, (int(laneCenter), 280), 7, (150), 2)
+        cv2.circle(mask, (int(avgLanePosition), 280), 2, (150), 4)
+        cv2.circle(mask, (int(laneCenter), 280), 7, (150), 2)
 
-    if frameCount < 11:
-        cv2.moveWindow("frame", 800, 150)
-    cv2.imshow('frame', frame)
-    #cv2.imshow('cut', cut)
-    cv2.imshow('mask', mask)
-
-
+        
+        #cv2.imshow('frame', frame)
+        #cv2.imshow('cut', cut)
+        #cv2.imshow('mask', mask)
+        
+#shit
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break
 
-    if PLAYMODE == 'test':
-        while 1/(time.time()-stime) > 60:
-            time.sleep(.001) 
-    print(1/(time.time()-stime))
-    
+    while 1/(time.time()-stime) > 60:
+        time.sleep(.001) 
+    print(1/(time.time()-stime), f'         frame: {frameCount}')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

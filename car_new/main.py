@@ -1,10 +1,10 @@
 import numpy as np
-import serial, time, cv2, keyboard, tkinter as tk
+import cv2, serial, time
 from PIL import Image
 
 PLAYMODE = "live"
 
-hold = 1
+hold = 0
 while hold:
     try:
         arduino = serial.Serial('COM6', 9600, timeout=.1)
@@ -102,10 +102,13 @@ while 1:
         frameCount += 1
         desktopPath = cv2.imread('D:\\lvid\\caps\\frame' + str(frameCount) + ".png")
         LaptopPath = cv2.imread('C:\\users\\ekhad\\Desktop\\lvid\\frame' + str(frameCount) + ".png")
+        piPath = cv2.imread("/home/pi/Desktop/testvid/cap/lvid/frame" + str(frameCount) + ".png")
         if type(LaptopPath) == np.ndarray:
             frame = np.array(LaptopPath)
         if type(desktopPath) == np.ndarray:
             frame = np.array(desktopPath)
+        if type(piPath) == np.ndarray:
+            frame = np.array(piPath)
     if PLAYMODE == 'live':
         ret, frame = vid.read()
         frameCount += 1
@@ -168,7 +171,7 @@ while 1:
     controlStrength = round(limit(controlStrength+controlBias, -controlRange, controlRange))
 #sending to arduino
     try:
-        if not calibrating:
+        if not calibrating and mode == 'live':
             package = str(-controlStrength+0*sign(controlStrength)).encode()
             arduino.write(package)
             time.sleep(.05)

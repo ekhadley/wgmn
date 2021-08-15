@@ -1,4 +1,4 @@
-import time, math
+import time, math, servotemplate
 from datetime import datetime
 import RPi.GPIO as GPIO
 '''
