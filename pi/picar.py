@@ -1,6 +1,8 @@
 import numpy as np
 import cv2, serial, time
 from PIL import Image
+import servotemplate as servo
+import RPi.GPIO as GPIO
 
 PLAYMODE = "live"
 
@@ -93,6 +95,13 @@ prevlaneSpeedDiff = 0
 vid.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 displayFrames = 0
 
+left = servo(8)
+right = servo(9)
+GPIO.setup(21, OUTPUT)
+GPIO.setup(40, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(8, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(26, GPIO.OUT)
+
 while 1:
     stime = time.time()
 #getting image based on playmode and computer
@@ -169,15 +178,19 @@ while 1:
     recentControlSignals.pop(0)
     controlStrength = finalScale*sum(recentControlSignals)/len(recentControlSignals)
     controlStrength = round(limit(controlStrength+controlBias, -controlRange, controlRange))
-#sending to arduino
-    try:
-        if not calibrating and mode == 'live':
-            package = str(-controlStrength+0*sign(controlStrength)).encode()
-            arduino.write(package)
-            time.sleep(.05)
-    except Exception:
-        if PLAYMODE == 'test':
-            time.sleep(.05)
+# gpio / servos
+
+    button = GPIO.input(40)
+    brake = GPIO.input(8)
+    if button:
+        pwr = 1
+    if brake:
+        pwr = 0
+    GPIO.write(9, not pwr)
+
+    left.write(controlStrength + 127)
+    right.write(controlStrength + 127)
+
 #lines and displaying
     if displayFrames:
         cv2.line(frame, (300, 270), (300 + round(controlStrength*finalScale), 270), (0, 60, 250), 4)
