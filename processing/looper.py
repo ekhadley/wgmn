@@ -1,3 +1,8 @@
+'''add this shit 
+detection of self-crossed loops result in re-ordering or deletion of loop
+support for multiple initial shapes
+'''
+
 import time
 def setup():
     size(800, 800)

@@ -1,3 +1,7 @@
+'''
+delete this stupid fucking file lol
+'''
+
 import random
 w = 300
 h = 300

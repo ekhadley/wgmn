@@ -1,5 +1,5 @@
 """ shit to add
-use PVectors becuase its cleaner
+use PVectors becuase its cleaner (?)
 variable transferral/mutation rates based on change of fitness of recent generations
 only search local space for walls (segmented lists based on position)
 """

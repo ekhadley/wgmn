@@ -1,5 +1,5 @@
 '''add this shit
-stupid fucking getReach function is broken for no reason
+stupid fucking getReach function is broken for no reason (bioluminescence)
 '''
 import random, time
 w = 800

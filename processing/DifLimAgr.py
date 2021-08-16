@@ -1,3 +1,10 @@
+'''add this shit
+
+optimize for more particles by only doing local search of sorted list of particles
+
+'''
+
+
 import random, time
 w = 600
 h = 600
@@ -12,18 +19,16 @@ class particle():
         self.pos = PVector(x, y)
         self.marker = color(20, 250, 125)
         self.state = 1
+        self.ord = int(round(self.pos.x/50) + round(self.pos.y/50)*w/50)
         global particles
         global cells
-    
-    def cellSort(self):
         
-    
     def show(self):
         fill(self.marker)
         ellipse(self.pos.x, self.pos.y, 8, 8)
         
     def update(self):
-        self.ord = round(self.pos.x/50) + round(self.pos.y/50)*w/50
+        self.ord = int(round(self.pos.x/50) + round(self.pos.y/50)*w/50)
         for i in particles:
             d = dist(self.pos.x, self.pos.y, i.pos.x, i.pos.y)
             if d < 8 and not i.state:
