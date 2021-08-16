@@ -6,8 +6,8 @@ optimize for more particles by only doing local search of sorted list of particl
 
 
 import random, time
-w = 600
-h = 600
+w = 800
+h = 800
 def setup():
     size(w, h)
     background(30)
@@ -21,45 +21,51 @@ class particle():
         self.state = 1
         self.ord = int(round(self.pos.x/50) + round(self.pos.y/50)*w/50)
         global particles
-        global cells
+        global deadparticles
         
     def show(self):
         fill(self.marker)
-        ellipse(self.pos.x, self.pos.y, 8, 8)
+        ellipse(self.pos.x, self.pos.y, 5, 5)
         
     def update(self):
-        self.ord = int(round(self.pos.x/50) + round(self.pos.y/50)*w/50)
-        for i in particles:
+        self.ord = self.pos.y*w + self.pos.x
+        for i in deadparticles:
             d = dist(self.pos.x, self.pos.y, i.pos.x, i.pos.y)
-            if d < 8 and not i.state:
+            if d < 5 and not i.state:
                 self.state = 0
         if self.state:
-            self.pos += PVector(random.randint(-5, 5)*.8, random.randint(-5, 5)*.8)
+            self.pos += PVector(random.randint(-5, 5), random.randint(-5, 5))
         else:
-            self.marker = color(250, 30, 5)
+            self.marker = color(255+frameCount*.1, 15, frameCount*.1)
         
 
-particles = [particle(w/2, h/2)]
-particles[0].state = 0
-for i in range(100):
+particles = []
+
+for i in range(1000):
     particles.append(particle(random.randint(0, w), random.randint(0, h)))
 
-cells = []
-for i in range(w/50*h/50):
-    cells.append([])
+deadparticles = [particle(w/2, h/2)]
+deadparticles[0].state = 0
+deadparticles[0].marker = color(255, 15, 0)
 
 def draw():
     stime = time.time()
     background(30)
     
-    for i in particles:
-        i.update()
+    for i in range(len(particles)-1):
+        particles[i].update()
+        particles[i].show()
+        if particles[i].pos.x not in range(0, w) or particles[i].pos.y not in range(0, h):
+            particles.pop(i)
+            particles.append(particle(random.randint(0, w), random.randint(0, h)))
+        if not particles[i].state:
+            deadparticles.append(particles[i])
+            particles.pop(i)
+            particles.append(particle(random.randint(0, w), random.randint(0, h)))
+    for i in deadparticles:
         i.show()
-
-    mcell = round(mouseX/50) + round(mouseY/50)*w/50
-    print(mcell)
-
-    #print(1/(time.time()-stime))
+    
+    print(1/(time.time()-stime))
 
 
 
