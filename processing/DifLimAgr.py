@@ -5,7 +5,7 @@ def setup():
     size(w, h)
     background(30)
     noStroke()
-    
+     
 
 class particle():
     def __init__(self, x, y):
@@ -13,7 +13,11 @@ class particle():
         self.marker = color(20, 250, 125)
         self.state = 1
         global particles
+        global cells
+    
+    def cellSort(self):
         
+    
     def show(self):
         fill(self.marker)
         ellipse(self.pos.x, self.pos.y, 8, 8)
