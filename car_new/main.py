@@ -2,7 +2,7 @@ import numpy as np
 import cv2, serial, time
 from PIL import Image
 
-PLAYMODE = "live"
+PLAYMODE = "test"
 
 hold = 1
 while hold:
@@ -152,7 +152,7 @@ while 1:
     avgLaneAccDiff = sum(recentAccDiffs)/len(recentAccDiffs)
 #integral term calculation
     integralSignal += .005*laneCenterDist
-    if laneCenterDist > -3 and laneCenterDist < 3:
+    if laneCenterDist > -5 and laneCenterDist < 5:
         integralSignal = 0
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
@@ -160,9 +160,14 @@ while 1:
     integralStrength = .8
     derivitiveStrength = 1.8
     controlBias = 0
-    finalScale = .2
-    controlRange = 30
-    
+    finalScale = .3
+    controlRange = 25
+    if sameSign(-avgLaneSpeed, laneCenterDist):
+        finalScale -= .1
+    if laneCenterDist in range(-8, 8):
+        finalScale -= .1
+        derivitiveStrength += .25
+
 #cleaning output signal
     pidValues = [avgLaneAccDiff, integralSignal, -avgLaneSpeed]
     recentControlSignals.append(PID(pidValues, proportionalStrength*100, integralStrength*100, derivitiveStrength*100))
@@ -197,9 +202,9 @@ while 1:
         cv2.circle(mask, (int(laneCenter), 280), 7, (150), 2)
 
         
-        #cv2.imshow('frame', frame)
-        #cv2.imshow('cut', cut)
-        #cv2.imshow('mask', mask)
+        cv2.imshow('frame', frame)
+        cv2.imshow('cut', cut)
+        cv2.imshow('mask', mask)
         
 #shit
     if cv2.waitKey(1) & 0xFF == ord('q'): 
