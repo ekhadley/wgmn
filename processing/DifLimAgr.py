@@ -1,6 +1,6 @@
 '''add this shit
 
-optimize for more particles by only doing local search of sorted list of particles
+optimize for more particles by only doing local search of sorted list of frozen particles
 
 '''
 
