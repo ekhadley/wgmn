@@ -4,7 +4,7 @@ from PIL import Image
 
 PLAYMODE = "live"
 
-hold = 0
+hold = 1
 while hold:
     try:
         arduino = serial.Serial('COM6', 9600, timeout=.1)
@@ -144,7 +144,7 @@ while 1:
     avgLaneAcc = sum(recentAcc)/len(recentAcc)
     #limit(avgLaneAcc, -3, 3)
 #calculate difference to target acc and average it
-    laneSpeedDiff = laneCenterDist/13 - avgLaneSpeed 
+    laneSpeedDiff = laneCenterDist/10 - avgLaneSpeed 
     targetLaneAcc = laneSpeedDiff/3
     laneAccDiff = targetLaneAcc - avgLaneAcc
     recentAccDiffs.append(laneAccDiff)
@@ -157,10 +157,10 @@ while 1:
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
     proportionalStrength = 2.9
-    integralStrength = 1
+    integralStrength = 2
     derivitiveStrength = 1.75
     controlBias = 0
-    finalScale = .2
+    finalScale = .16
     controlRange = 30
     
 #cleaning output signal
@@ -171,7 +171,7 @@ while 1:
     controlStrength = round(limit(controlStrength+controlBias, -controlRange, controlRange))
 #sending to arduino
     try:
-        if not calibrating and mode == 'live':
+        if not calibrating:
             package = str(-controlStrength+0*sign(controlStrength)).encode()
             arduino.write(package)
             time.sleep(.05)
