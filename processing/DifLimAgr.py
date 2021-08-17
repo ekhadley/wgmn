@@ -19,7 +19,7 @@ class particle():
         self.pos = PVector(x, y)
         self.marker = color(20, 250, 125)
         self.state = 1
-        self.ord = int(round(self.pos.x/50) + round(self.pos.y/50)*w/50)
+        self.ord = self.pos.y*w + self.pos.x
         global particles
         global deadparticles
         
@@ -41,7 +41,7 @@ class particle():
 
 particles = []
 
-for i in range(1000):
+for i in range(100):
     particles.append(particle(random.randint(0, w), random.randint(0, h)))
 
 deadparticles = [particle(w/2, h/2)]
@@ -50,6 +50,7 @@ deadparticles[0].marker = color(255, 15, 0)
 
 def draw():
     stime = time.time()
+    loadPixels()
     background(30)
     
     for i in range(len(particles)-1):
@@ -65,7 +66,8 @@ def draw():
     for i in deadparticles:
         i.show()
     
-    print(1/(time.time()-stime))
+    print(pixels[mouseX+mouseY*w])
+    #print(1/(time.time()-stime))
 
 
 

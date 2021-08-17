@@ -157,10 +157,10 @@ while 1:
     #prevlaneSpeedDiff = laneSpeedDiff
 #PID weights
     proportionalStrength = 2.9
-    integralStrength = 2
-    derivitiveStrength = 1.75
+    integralStrength = .8
+    derivitiveStrength = 1.8
     controlBias = 0
-    finalScale = .16
+    finalScale = .2
     controlRange = 30
     
 #cleaning output signal
