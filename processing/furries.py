@@ -1,5 +1,5 @@
 '''add this shit
-stupid fucking getReach function is broken for no reason (bioluminescence)
+¯\_(ツ)_/¯
 '''
 import random, time
 w = 800
@@ -11,19 +11,19 @@ def setup():
 class tater():
     def  __init__(self, x, y, r, v):
         self.pos = PVector(x, y)
-        self.vec = PVector(r, 0)
+        self.vec = PVector(r, 0).rotate(radians(random.randint(0, 360)))
         self.v = v*.05
         self.r = r
         self.child = None
         self.marker = color(random.randint(100, 255), random.randint(100, 255), random.randint(100, 255))
-   
+        
     def getReach(self):
-        if self.child != None:
-            self.child.getReach()
+        global reach
+        if self.child == None:
+            reach = (self.pos + self.vec)
         else:
-            return self.pos + self.vec
-            print("huh????")
-            
+            self.child.getReach()
+    
     def attach(self, r, v):
         if self.child == None:
             self.child = tater(self.pos.x+self.r, self.pos.y, r, v)
@@ -48,29 +48,20 @@ class tater():
             self.child.vshow(mode)
 
 
-t = tater(w/2, h/2, 80, 1)
-
-t.attach(70, 2)
-
-t.attach(60, -5)
-
-t.attach(50, 4)
-
-t.attach(40, -5)
-
-t.attach(30, 8)
-
-
+t = tater(w/2, h/2, random.randint(1, 10), random.randint(-10, 10))
+for i in range(650):
+    t.attach(random.randint(1, 10), random.randint(-3, 3))
+    #t.attach(5, random.randint(-2, 2))
 
 trail = []
-reach = PVector(0, 0)
+
 def draw():
     global reach
     background(30)
     
     t.spin()
-    t.vshow("")
-    print(t.getReach())
+    t.vshow()
+    t.getReach()
     
     trail.append(reach)
     for i in range(len(trail)):
