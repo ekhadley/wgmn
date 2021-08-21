@@ -13,23 +13,16 @@ def setup():
     background(50)
     rectMode(CORNERS)
 
-def edgePoint(w, h):
-    r = random.randint(0, 3)
-    if r == 0:
-        return PVector(0, random.randint(0, h))
-    if r == 1:
-        return PVector(w, random.randint(0, h))
-    if r == 2:
-        return PVector(random.randint(0, w), h)
-    if r == 3:
-        return PVector(random.randint(0, w), 0)
+def isBetween(x, u, l):
+    if x > l and x < u:
+        return True
+    return False
 
-def oob(o, w, h):
-    if o.pos.x not in range(-5, w+5):
-        v
-    if o.pos.y not in range(-5, h+5):
-        return False
-    return True
+def inSquare(pos, x1, y1, x2, y2):
+    return (isBetween(pos.x, x1, x2) and isBetween(pos.y, y1, y2))
+
+def inView(pos):
+    return inSquare(pos, 0, 0, w, h)
 
 class player():
     def __init__(self, x, y, v):
@@ -53,7 +46,7 @@ class player():
         if dist(self.pos.x, self.pos.y, self.dest.x, self.dest.y) < self.v:
             self.pos = self.dest
             self.dir = PVector(0, 0)
-    def getHit(self):
+    def takeHit(self):
         pass
     
                 
@@ -91,15 +84,16 @@ class turret():
         fill(250, 30, 80)
         ellipse(w/2, 100, 25, 25)
         translate(self.pos.x, self.pos.y)
-        a = acos(self.target.pos.y)youve signed up 
-        rotate(atan(self.target.pos.x/self.target.pos.y))
+        rotate(PVector(self.target.pos.x - self.pos.x, self.target.pos.y - self.pos.y).heading() - PI/2)
         rect(-5, 0, 5, 25)
         resetMatrix()
     def shoot(self):
+        distToTarget = dist(self.pos.x, self.pos.y, self.target.pos.x, self.target.pos.y)
+        
         projectiles.append(projectile(self.pos.x, self.pos.y, self.target, self.pspeed, self.psize))
 
 projectiles = []
-stime = time.time()
+
 
 
 playerSize = 50
@@ -111,8 +105,9 @@ spawnChance = .03
 swain = player(w/3, h/4, playerSpeed)
 gun = turret(w/2, 100, swain, projectileSpeed, projectileSize)
 def draw():
+    stime = time.time()
     background(30)
-    ptime = time.time()-stime
+    
     
     if mousePressed:
         if mouseButton == 39:
@@ -123,11 +118,13 @@ def draw():
 #        projectiles.append(projectile(spos.x, spos.y, swain, projectileSpeed, projectileSize))
         gun.shoot()
     
-    for i in projectiles:
-        i.run()
+    for i in range(len(projectiles)):
+        projectiles[i].run()
+        if inView(projectiles[i].pos):
+            projectiles.pop(i)
 
-           
-    print(len(projectiles), ", ", ptime)
+    #print(len(projectiles), 1/(time.time()-stime+.00001))
+    print(mouseX, mouseY, isBetween(mouseX, 0, w))
     gun.show()
     swain.update()
     swain.show()
