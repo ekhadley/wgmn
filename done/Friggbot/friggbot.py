@@ -83,7 +83,7 @@ async def on_message(message):
         except AttributeError:
             await message.channel.send('https://tenor.com/view/who-dat-snoop-gif-15116696')
 
-client.run("NjY5NjQ5OTk2NTM0MTIwNDU4.XitbaQ.igzUKAJ3uUdSRvVKPIlITyNUsE0")
+client.run("ODc5NDg4MjkzNDA5MDA5Njg1.YSQdTQ.FTXqFt1rZut5El0ZVdoD1Mlqesk")
 
 
 
