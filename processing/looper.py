@@ -11,10 +11,6 @@ def setup():
     background(50)
 
 
-
-
-
-        
 class wave():
     def __init__(self):
         global waves
@@ -42,6 +38,8 @@ class wave():
             line(self.path[i%len(self.path)].x, self.path[i%len(self.path)].y,
                  self.path[(i+1)%len(self.path)].x, self.path[(i+1)%len(self.path)].y)
 
+    def uncross(self):
+        pass
     
     def ripple(self):
         waves.append(wave())
