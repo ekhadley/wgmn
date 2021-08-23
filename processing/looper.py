@@ -10,9 +10,11 @@ def setup():
     strokeWeight(3)
     background(50)
 
-def crossed(a, b, c, d):
-    pass
 
+
+
+
+        
 class wave():
     def __init__(self):
         global waves
@@ -20,18 +22,26 @@ class wave():
         self.path = []
         self.marker = color(0, 80, 255)
         self.weight = 3
-        
+    
+    def showSmooth(self):
+        stroke(self.marker)
+        strokeWeight(self.weight)
+        for i in range(0, len(self.path), 3):
+            ellipse(self.path[i].x, self.path[i].y, 2, 2)
+            noFill()
+            bezier(self.path[i%len(self.path)].x, self.path[i%len(self.path)].y, 
+                   self.path[(i+1)%len(self.path)].x, self.path[(i+1)%len(self.path)].y,
+                   self.path[(i+2)%len(self.path)].x, self.path[(i+2)%len(self.path)].y,
+                   self.path[(i+3)%len(self.path)].x, self.path[(i+3)%len(self.path)].y)
+    
     def show(self):
         stroke(self.marker)
         strokeWeight(self.weight)
         for i in range(len(self.path)):
             ellipse(self.path[i].x, self.path[i].y, 2, 2)
-            try:
-                line(self.path[i].x, self.path[i].y, self.path[i+1].x, self.path[i+1].y)
-            except:
-                line(self.path[0].x, self.path[0].y, self.path[-1].x, self.path[-1].y)
-    def uncross(self):
-        pass
+            line(self.path[i%len(self.path)].x, self.path[i%len(self.path)].y,
+                 self.path[(i+1)%len(self.path)].x, self.path[(i+1)%len(self.path)].y)
+
     
     def ripple(self):
         waves.append(wave())
@@ -43,6 +53,20 @@ class wave():
             else:
                 lagVec = PVector(self.path[i-1].x - self.path[i].x, self.path[i-1].y - self.path[i].y)
                 leadVec = PVector(self.path[i].x - self.path[i+1].x, self.path[i].y - self.path[i+1].y)
+            curveTan = (lagVec+leadVec)/2
+            curveTan.rotate(PI/2)
+            curveTan /= (curveTan.mag()/ripDist)
+
+            line(self.path[i].x, self.path[i].y, self.path[i].x + curveTan.x, self.path[i].y + curveTan.y)
+
+            waves[-1].path.append(PVector(self.path[i].x + curveTan.x, self.path[i].y + curveTan.y))
+    def rippleNew(self):
+        waves.append(wave())
+        for i in range(len(self.path)):
+            lagVec = PVector(self.path[(i-1)%len(self.path)].x - self.path[(i)%len(self.path)].x, 
+                self.path[(i-1)%len(self.path)].y - self.path[(i)%len(self.path)].y)
+            leadVec = PVector(self.path[(i)%len(self.path)].x - self.path[(i+1)%len(self.path)].x, 
+                self.path[(i)%len(self.path)].y - self.path[(i+1)%len(self.path)].y)
             curveTan = (lagVec+leadVec)/2
             curveTan.rotate(PI/2)
             curveTan /= (curveTan.mag()/ripDist)
@@ -75,12 +99,11 @@ def draw():
     sinceRipple = frameCount-rippleCD
     if (mousePressed) and (mouseButton == 39) and (sinceRipple > 5):
             rippleCD = frameCount
-            waves[-1].ripple()
+            waves[-1].rippleNew()
 
     for i in waves:
         i.uncross()
-        i.show()
-
+        i.showSmooth()
 
 
 
