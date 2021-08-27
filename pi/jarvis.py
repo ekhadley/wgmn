@@ -148,42 +148,7 @@ while 1:
     if '01:11:11' in tim:
         print("WATAAAAAAAA\n(PEPEPAINS)")
         water()
-    
-    #printmodes
-    if 1:
-        if mode == 'counting':
-            print(mode + ', ' + str(int(c)) + '/' + str(math.floor(((100-CheckPercent)/100)*CounterTime)) + ', ' + tim + ', ' + str(state))
-        if mode == 'sleeping':
-            print(mode + ', ' + str(int(l)) + '/200' + ', ' + tim + ', ' + str(state) + ', ' + str(sleepytime))
-        if mode == 'awake':
-            print(mode + ', ' + tim + ', ' + str(state))
-
-    #sleep modes/behaviors
-    if mode == 'awake':
-        planetOn()
-        if state == True:
-            planetOff()
-            l += 1
-        else:
-            l = 0
-        if l == 200:
-            mode = 'sleeping'
-            lightsOff()
-            l = 0
-    if mode == 'sleeping':
-        sleepytime += 1
-        if state == False:
-            l += 1
-        else:
-            l = 0
-        if l > 200:
-            mode = 'awake'
-            l = 0
-            planetOn()
-            lightsOn()
-            if sleepytime > 25000:
-                kettleStart()
-            sleepytime = 0
+z
 
 
 
