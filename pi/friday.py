@@ -1,34 +1,32 @@
 import time, math, servotemplate
 from datetime import datetime
 import RPi.GPIO as GPIO
+import servotemplate
 
 tim = datetime.now()
 tim =  tim.strftime("%H:%M:%S")
 
-GPIO.setup(5, GPIO.OUT)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(7, GPIO.OUT)
 
-live = 0
+live = 1
 while live: 
+    time.sleep(.05)
     tim = datetime.now().strftime("%H:%M:%S")
     sex = datetime.now().strftime("%S")
-
+    print(tim)
     
-    if '01:11:11' in tim:
+    if '18:00:00' in tim:
         print("WATAAAAAAAA\n(PEPEPAINS)")
-        fghdgfhfdghgdf
+        GPIO.output(7, 1)
+        time.sleep(3)
+        GPIO.output(7, 0)
 
 
 while not live: 
-    time.sleep(5)
-    GPIO.output(5, 1)
-    time.sleep(2)
-    GPIO.output(5, 0)
-
-
-
-
-
-
-
+    time.sleep(3)
+    GPIO.output(7, 1)
+    time.sleep(3)
+    GPIO.output(7, 0)
 
             
