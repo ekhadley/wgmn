@@ -19,23 +19,24 @@ still posess humanity.
 
 advertisements are omnipresent from every view in los angeles (7:37) The corporations of this 
 future are towering and monolothic. beams like spotlights scan the room in many indoor scenes. LA itself seems to
-press in upon you in every scene, and the eyes of the towering structures are never closed.
+press in upon you in every scene, and the eyes of the powers above are never closed.
 
 "A new life awaits you in the off-world colonies. The chance to begin again in a golden land
 of opportunity and adventure" (7:44)
 
 Deckard seems to be indifferent as he looks at the ship advertising the offworld colonies (8:30)
 
-The future depicted has flying cars, space travel, and "machines" that perform all dangerous or unsavory work.
-all typical elements of fantasical future depictions, yet the world depicted is in reality bleak
+The future depicted has flying cars, space travel, and "machines" that perform all dangerous or undesirable
+work. all typical elements of fantasical future depictions, yet the world depicted is in reality bleak
 and suffocating.
 
-gaff's frist origami, a chicken follows the line from captain bryant:
+gaff's frist origami, a chicken, follows the line from captain bryant:
 "if youre not cop you're little people"(12:44)
 
 the replicants have "incept dates" not birthdays. another example of dehumanizing language. The replicants
 are not fulled with wires and gears. they are grown from human eggs as adults, yet people talk about 
-like they are robots. (more examples needed)
+like they are robots. 
+(more examples needed)
 
 "they were designed to copy humans in every ... " (15:45)
 
@@ -77,13 +78,12 @@ Gaff leaves an origami unicorn on Deckard's doorstep, hinting that Gaff has acce
 implanted memories the same way deckard had access to rachel's
 
 the high-class club where deckard meets taffy is almost comically opposed with the rest of the places 
-depicted in LA (high-class and everybody else) (people pretending the world is different from how it is)
+depicted in LA (high-class and everybody else) (people pretending the world is different from how it is (like the offworld ads))
 
 Deckard asks both about the snake and the owl if they are real; it seems to be a pertinent question to him
 
-When rachel asks if deckard would attempt to retire her, her eyes shine like they did during the 
+When rachel asks if deckard would attempt to "retire" her, her eyes shine like they did during the 
 void comp, and like the owl's did (1:05:30)
-
 "but somebody would" as deckard's eyes shine the same way, yet out of focus
 
 Rachel attempts to leave after Deckard begins being affectionate towards her. She is hesitant to 
@@ -98,13 +98,17 @@ in his home: they are all set to leave this world too soon.
 
 Priss' eyes shine replicant-ily as she asks about JF's disease.
 
+Leon's attempt to kill deckard after he kills Zhora mirrors the actions of Roy Batty. Roy says "time to die", " Painful to
+live in fear" (Roy instead says "quite an experience to live in fear, isnt it?"), and he attempts to gouge deckard's eyes like
+roy later does to tyrell.
+
 Tyrell seems almost proud of his creation in roy, despite what he must know roy has done to meet him in person,
-and encourages roy to "revel in his time"
+and encourages roy to "revel in his time", whereas roy shows something close to regret about his actions.
 
 Roy kills his father/creator/god by gouging out his eyes (eyes/perception of reality theme)
 
 Roy revels in his last minutes during his pursuit of deckard. He teases Deckard, and does not 
-kill him when he has the chance, despite the recent death of his compains including priss. his attitude only 
+kill him when he has the chance, despite the recent death of his companions including priss. his attitude only 
 really changes in the very last moments.
 
 Roy becomes a christ-ian figure as he pushes a nail through his hand to regain its feeling during the final chase.
@@ -112,18 +116,30 @@ This is cemented upon the act of saving deckard on the rooftop. Up until now Roy
 extend his lifespan, and in doing so has done many terrible things. Yet in his last moments, he realizes that
 for his life to have amounted to anything more than animal instinct, it must be spent in an act of humanity:
 saving deckard's life. In Roy's ending monologue, he accepts the finite nature of his life ("time to die") and 
-is left only with his regret not that he failed to prolong himself, but that the spectacular and awesome
-sights he has seen along the way would be lost with him, "like tears in rain"
+is left only with his regret, not of that he failed to prolong himself, but that the spectacular and awesome
+sights he has seen during the journey would be lost with him, "like tears in rain"
 
 "its too bad she wont live. but then again who does?" (1:48:55)
 
 the origami unicorn of the last scene is the second half of the proof that deckard is a replicant: gaff somehow
 knew of deckard's connection to the image.
 
-Roy's eyes never seem to have the yellow glow shown by almost every other synthetic human or animal
+'''
+Roy's eyes never seem to have the yellow glow shown by almost every other synthetic human or animal. Even Deckard, 
+whose authentic human status is intentionally ambiguous has a scene where his eyes have the glow. Yet, Roy, the character
+who is literally defined by his status as a replicant rebelling from his place given to him by society 
+(society judges him by his states as a replicant, often times this status is hinted through the glow), never has this
+ubiqiquous characteristic. This is a mark that the film thinks that roy is among the most "human" characters. It is
+quintissentially human to strive to fear death, and to weigh your own needs above the needs of others, and
+perhaps most importantly, to grow and come to realize your mistakes, as he does in his final redemptive
+act of humanity in saving deckard on the rooftop. THIS IS WRONG ROY;S EYES GLOW AT (1:24:02) DURING HIS CONV W/ TYRELL
+'''
 
-
-
+The driving forces of both Deckard and Roy is a notable symmetry, and notable irony found in the movie. Both men are driven
+unwillingly to undertake quests and along the way they do many things they regret. yet, Deckard the "human" character 
+acts as an extension of the law or the government or society: he is not an autonomous agent: he acts on the wishes of a 
+"master" if you will. Roy, the "non-human" character also undertakes his quest unwillingly, yet it is a quest he begins 
+in pursuit of life, and as a rejection of his place as a disposable means to an end of society.
 
 
 
