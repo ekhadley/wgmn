@@ -22,8 +22,8 @@ async def on_message(message):
     if "patrick" in message.content:
         await message.channel.send("https://cdn.discordapp.com/attachments/785014933758410796/785218539350523944/nyooo.mp4")
 
-    if "ddd" in message.content:
-        await message.channel.send("https://cdn.discordapp.com/attachments/785015097927139348/785218908252012564/ddd.mp4")
+    #if "ddd" in message.content:
+    #    await message.channel.send("https://cdn.discordapp.com/attachments/785015097927139348/785218908252012564/ddd.mp4")
 
     if "weirdchamp" in message.content:
         await message.channel.send("https://cdn.discordapp.com/attachments/785015097927139348/785219023654354964/lmao.png")
@@ -83,7 +83,7 @@ async def on_message(message):
         except AttributeError:
             await message.channel.send('https://tenor.com/view/who-dat-snoop-gif-15116696')
 
-client.run("ODc5NDg4MjkzNDA5MDA5Njg1.YSQdTQ.FTXqFt1rZut5El0ZVdoD1Mlqesk")
+client.run("NjY5NjQ5OTk2NTM0MTIwNDU4.Xii6KA.bnOLBkr4gmaPbve10txg68y7zqs")
 
 
 
