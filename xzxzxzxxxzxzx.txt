@@ -139,16 +139,49 @@ The driving forces of both Deckard and Roy is a notable symmetry, and notable ir
 unwillingly to undertake quests and along the way they do many things they regret. yet, Deckard the "human" character 
 acts as an extension of the law or the government or society: he is not an autonomous agent: he acts on the wishes of a 
 "master" if you will. Roy, the "non-human" character also undertakes his quest unwillingly, yet it is a quest he begins 
-in pursuit of life, and as a rejection of his place as a disposable means to an end of society.
+in pursuit of life, and as a rejection of his place as a disposable means to an end of society. 
 
 
-
-
-
-
-
-
-
+***plot summary***
+    The version of Bldae runner on which my analysis is based is called the Finl Cut. This version includes a few very
+crucial scenes which were omitted from the theatrical or director's cut release. Final Cut is the only version over which
+director Ridley Scott had complete creative control.
+    Blade Runner was released in theatres in 1982. It takes place in Los Angeles in the year 2019. The opening text explains
+that "the Tyrell Corporation advanced robot evolution into the Nexus phase - a being virtually identical to a human - known
+as a Replicant. The Nexus 6 replicants were superior in strength and agility, and at least equal to the genetic engineers
+who created them."  The text calls them robots, but they are actually genetically engineered humans who are grown as adults
+and somehow "programmed" to act as expendable slave labor. Specifically for use on off-world colonies. These replicants 
+are supposed to be completely subservient, and without emotional responses. Yet, after a small group of these replicants 
+rebelled, and murdered their way onto a colonial ship, replicants were outlawed. Special police units called Blade Runners
+were tasked with the discovery and "retiring" of any replicants found.
+    In the opening scene we see a man, who appears to be slightly nervous, sitting in a metallic room in the monolothic pyramid of 
+Tyrell headquarters. A man walks in and sits down. He sets up a small machine which records the nervous man, named Leon.
+The machine observes Leon's eye as the other man asks him a question about a tortoise flipped on its back in the middle
+of the desert. Leon seems entranced, and slightly afraid as the man reads the question. The man explains that it is a test
+ for identifying replicants designed to provoke an emotinal response which the machine detects by observing the eye.
+ After asking his second question, Leon shoots the interview, and the scene cuts away abruptly.
+    The next character to whom we are introduced is blade runner Rick Deckard. He is brought in to the police station, 
+where he explains to his superior that he was quit; no longer a blade runner. His suprior officer convinces convinces/forces 
+Deckard to undertake the task of hunting down the escaped replicants from the intro text. He agrees reluctantly, and the 
+captain explains some of the identity of the escaped replicants. They are Leon, the man we saw in the first scene, Priss, a 
+pleasure Replicant, Zhora, designed for political assasination and espionage, and the leader, Roy Batty, a fully equipped
+combat model, posessing superhuman speed, strength, and durability. Deckard asks why they chose to return to Earth, stating it
+was unusual. The captain reponds it was his job to find out. The captain also sends Deckard to the Tyrell Corp HQ to do a voight-compf
+test (the machine used by the man in the first scene) on another Nexus-6 replicant, the same model as the escapees he was to track.
+    This is the frist time we, and Deckard meet Rachel. Tyrell asks Deckard to demonstrate the test on a human, and tells him to
+try it on Rachel. After a longer test that is usual, the test reveals Rachel is a replicant. Rachel is asked to leave and
+Tyrell explains that Rachel beleives she is human becuase she has been given memory implants.
+    Deckard then searches Leon's hotel room and finds a stash of pictures, and some kind of scale in the bathtub. Rachel visits
+him as he looks through the pictures for clues. She suspects she is not human, and Deckard confirms this: he tells her about
+memories she had implanted which she had never told anybody. Rachel is distressed and walks out on Deckard, who seems uncomfortable.
+Deckard goes to a local market where synthetic, "replicant" animals are made or designed. He learns the scale is snake, and tracks
+the seller. He goes to the location of the buyer and finds the snake used in part of a performance. he attempts to invite Rachel 
+to the bar, but she declines.He recognizes one of the women as Zhora, one of the escaped replicants. He confronts her and 
+is attacked. As she attempts to flee Deckard shoots and kills her.
+    Leon confronts Deckard almost immediately after killing Zhora, and attempts to kill him. Rachel saves Deckard's life,
+shooting Leon with Deckard's gun that had been lost in the fight. Deckard and Rachel go back to Deckard's apartment, where Deckard
+makes a romantic advance. Rachel at first tries to leave and seems hesitant to accept her feelings, but  she returns his advances and the
+scnee cuts away.
 
 
 
