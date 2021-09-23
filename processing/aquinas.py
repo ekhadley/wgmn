@@ -45,7 +45,7 @@ class toggle():
         self.OUT = []
     def update(self):
         global mouses
-        if (not mouses[0] and mouses[1]) and (mouseButton == 37) and (dist(mouseX, self.pos.x, mouseY, self.pos.y) < 30):
+        if (not mouses[0] and mouses[1]) and (mouseButton == 37) and (dist(mouseX, mouseY, self.pos.x, self.pos.y) < 30):
             self.state = not self.state
         for i in self.OUT:
             i.state = self.state
@@ -54,8 +54,7 @@ class toggle():
         ellipse(self.pos.x, self.pos.y, 30, 30)
     
 w = wire(300, 300, 500, 450)
-a = toggle(300, 300)
-b = toggle()
+t = toggle(300, 300)
 t.OUT.append(w)
 
 mouses = [0, 0]
