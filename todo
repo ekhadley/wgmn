@@ -1,0 +1,3 @@
+- put friggbot authkey in txt file and make friggbot read from file on startup
+- fix bed sensors
+- make qlearning environment (visual representation and giving inputs, collecting rewards, etc)
