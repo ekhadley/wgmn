@@ -3,24 +3,30 @@ import tensorflow
 from tensorflow import keras
 
 
+
+
 class env():
     def __init__(self):
-        self.env = []
+        self.grid = []
         for i in range(0, 10):
-            self.env.append([])
-            for j in range(0, 10):
-                self.env[i-1].append([])
+            self.grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        
 
     def step(self):
         pass
 
     def display(self):
-        pass
+       s = ''
+       for i in range(len(self.grid)):
+           print('\n')
+           for j in range(len(self.grid[i])):
+                s += str(self.grid[i][j])
+                print(s)
 
 
 world = env()
-print(world.env)
-    
+
+world.display()
 
 
 
