@@ -2,3 +2,5 @@
 - make qlearning environment (visual representation and giving inputs, collecting rewards, etc)
 - put resistors on all input pins to rc
 - setup webcam for print monitoring w/ rc
+- scratch 3d viewer
+- logic circuit builder
