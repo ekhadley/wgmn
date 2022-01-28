@@ -36,14 +36,10 @@ async def on_message(message):
             await message.channel.send("https://media.discordapp.net/attachments/551246526924455937/750147906828370071/unknown.png?width=440&height=244")
         else:
             await message.channel.send("https://media.discordapp.net/attachments/551246526924455937/783217821776740352/image0.gif?width=305&height=330")
-    
 
     if "gracie" in message.content:
         if message.author.id == 345135505043750912:
             await message.channel.send("https://cdn.discordapp.com/attachments/785015097927139348/785219345290100786/gmaings.png")
-
-    if "nigga" in message.content or "nigger" in message.content:
-        await message.channel.send("https://cdn.discordapp.com/attachments/785014933758410796/785256309267234856/racism.mp4")
 
     if "rocky" in message.content:
         await message.channel.send("!play https://www.youtube.com/watch?v=DhlPAj38rHc")
