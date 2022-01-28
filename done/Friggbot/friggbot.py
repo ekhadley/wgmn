@@ -42,9 +42,6 @@ async def on_message(message):
         if message.author.id == 345135505043750912:
             await message.channel.send("https://cdn.discordapp.com/attachments/785015097927139348/785219345290100786/gmaings.png")
 
-    if "nigga" in message.content or "nigger" in message.content:
-        await message.channel.send("https://cdn.discordapp.com/attachments/785014933758410796/785256309267234856/racism.mp4")
-
     if "rocky" in message.content:
         await message.channel.send("!play https://www.youtube.com/watch?v=DhlPAj38rHc")
 
