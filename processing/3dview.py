@@ -8,31 +8,34 @@ def setup():
 
 
 def getSpherical(pos):
-    theta = atan2(pos.x/pos.y)
-    phi = atan2(z/sqrt(pos.x**2+pos.y**2))
+    theta = atan2(pos.x,pos.y)
+    phi = atan2(pos.z,sqrt(pos.x**2+pos.y**2))
+    print(theta, phi)
     return PVector(theta, phi)
+    
 
 class pointy():
     def __init__(self, pos, marker, girth):
         self.pos = pos
         self.marker = marker
         self.girth = girth
-    
+        self.showPos = PVector(0,0)
+
     def getScreenPos(self, cam):
             diff = PVector(cam.pos.x-self.pos.x,
                            cam.pos.y-self.pos.y,
                            cam.pos.z-self.pos.z)
             sphericalDiff = getSpherical(diff)
-            sphericalCamAngle = getSpherical(cam.dir.x, cam.dir.y, cam.dir.z)
+            sphericalCamAngle = getSpherical(cam.dir)
             sphericalViewAngleDiff = PVector(sphericalCamAngle.x-sphericalDiff.x,
                                              sphericalCamAngle.y-sphericalDiff.y,)
-            return PVector(sphericalViewAngle.x*w/cam.fov, sphericalViewAngle.y*h/cam.fov)
+            self.showPos = PVector(sphericalViewAngleDiff.x*w/cam.fov, sphericalViewAngleDiff.y*h/cam.fov)
             
     
-    def show(self, screenPos):
+    def show(self):
         strokeWeight(self.girth)
         stroke(self.marker)
-        point(screenPos.x, screenPos.y)
+        point(self.showPos.x, self.showPos.y)
 
 
 class  cam():
@@ -41,12 +44,14 @@ class  cam():
         self.dir = dir
         self.fov = fov
 
-kodak = cam(PVector(-10, 0, 0), PVector(1, 0, 0), 90)
-joe = pointy(0, 0, 0)
+kodak = cam(PVector(-10, 0, 0), PVector(0, 0, 0), PI/2)
+joe = pointy(PVector(1, 1, 1), color(30, 200, 80), 5)
 
 def draw():
     
-    joe.show(joe.getScreenPosition(kodak))
+    joe.getScreenPos(kodak)
+    joe.show()
+    
     background(30)
 
 
