@@ -2,6 +2,9 @@ import requests, time, websocket
 from datetime import datetime
 from blinkstick import blinkstick
 
+# may god have mercy on my soul for this mess
+# i wrote it a long time ago ok...
+
 ws = websocket.WebSocket()
 ws.connect("wss://stream.pushbullet.com/websocket/o.GfFQafU2ftZ3FtYmi8QKeDPlmKO3vhnS")
 

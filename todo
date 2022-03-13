@@ -1,3 +1,47 @@
-- put friggbot authkey in txt file and make friggbot read from file on startup
-- fix bed sensors
-- make qlearning environment (visual representation and giving inputs, collecting rewards, etc)
+- fix bed sensors (get bed sensors?) (meh?)
+- fix printer
+- setup webcam for print monitoring w/ rc
+- scratch 3d renderer
+- investigate fdm vinyl record/ fdm vinyl record player
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

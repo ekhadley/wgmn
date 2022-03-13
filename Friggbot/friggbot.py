@@ -36,7 +36,6 @@ async def on_message(message):
             await message.channel.send("https://media.discordapp.net/attachments/551246526924455937/750147906828370071/unknown.png?width=440&height=244")
         else:
             await message.channel.send("https://media.discordapp.net/attachments/551246526924455937/783217821776740352/image0.gif?width=305&height=330")
-    
 
     if "gracie" in message.content:
         if message.author.id == 345135505043750912:
