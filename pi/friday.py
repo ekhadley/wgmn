@@ -9,8 +9,9 @@ tim =  tim.strftime("%H:%M:%S")
 GPIO.setmode(GPIO.BOARD)
 
 def water():
+    plant.off()
     plant.on()
-    time.sleep(8)
+    time.sleep(3.5)
     plant.off()
 
 def getstates(l):
@@ -71,13 +72,14 @@ while live:
         kettle.write(100)
         kettle.write(200)
 
-    if '12:08:20' in tim:
+    if '12:00:00' in tim:
         print("WATAAAAAAAA\n(PEPEPAINS)")
         water()
 
+lights.on()
 while not live:
     water()
-    time.sleep(5)
+    time.sleep(15)
 
 
             
