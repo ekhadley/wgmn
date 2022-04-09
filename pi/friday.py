@@ -52,14 +52,17 @@ while live:
     lbprev = lightbutton.state
     lightbutton.read()
 
+    '''
     for i in beds:
         i.read()
     bstates = []
     for i in range(len(beds)):
         bstates.append(not beds[i].state)
-    
+
 
     print(tim, f', kettle: {kettlebutton.read()};', f'light control: {lightbutton.state};', f'bed: {bstates[0]}')
+    '''
+    print(tim, f', kettle: {kettlebutton.read()};', f'light control: {lightbutton.state};')
 
     if not lbprev and lightbutton.state:
         lightstate = not lightstate
