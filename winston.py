@@ -12,11 +12,11 @@ api.get_authorization(username, password)
 
 circles =  api.get_circles()
 print(circles)
-
+'''
 id = circles[0]['id']
 
 circle = api.get_circle(id)
-
+'''
 
 
 
