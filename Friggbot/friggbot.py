@@ -9,6 +9,9 @@ grace = False
 async def on_message(message):  
     if "gaming" in message.content:
         await message.channel.send("GÅMING!")
+        
+    if "!beef" in message.content:
+        await message.channel.send("gavin and ek have official beef to be settled irl")
 
     if "lith" in message.content:
         await message.channel.send("https://cdn.discordapp.com/attachments/785014933758410796/785032262206226442/image0.jpg")
