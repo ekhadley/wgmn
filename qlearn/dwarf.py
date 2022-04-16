@@ -6,6 +6,13 @@ foodReward = 10
 bombPenalty = -10
 movePenalty = -1
 
+blankTile = 0
+foodTile = 1
+bombTile = 3
+
+foodCount = 3
+bombCount = 3
+
 def makePlane(size, tile):
     row = []
     plane = []
@@ -26,33 +33,55 @@ def plant(array, val, find):
 
 class agent():
     def __init__(self, posx, posy):
-        self.x = X
-        self.y = y
+        self.x = posx
+        self.y = posy
+        episodeReward = 0
+
 
 class env:
     def __init__(self, size, food, bomb):
         self.size=size
-        self.env = makePlane(size, 0)
+        self.moves = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+        
 
+        self.env = makePlane(size, blankTile)
         for i in range(0, food):
-            self.env = plant(self.env, 1, 0)
+            self.env = plant(self.env, foodTile, blankTile)
         for i in range(0, bomb):
-            self.env = plant(self.env, 3, 0)
+            self.env = plant(self.env, bombTile, blankTile)
 
+    def reset(self, food, bomb):
+        self.env = makePlane(size, blankTile)
+        for i in range(0, food):
+            self.env = plant(self.env, foodTile, blankTile)
+        for i in range(0, bomb):
+            self.env = plant(self.env, bombTile, blankTile)
     def get(self, x, y):
         return self.env[y][x]
     def set(self, x, y, val):
         self.env[y][x] = val
 
     def takeAction(self, agent, move):
+        moveDirection = self.moves[move]
         
+        agent.x += moveDirection[0]
+        agent.y += moveDirection[1]
+
+        dest = self.get(agent.y, agent.y)
+        
+        if dest == blankTile:
+            return movePenalty
+        if dest == foodTile:
+            return foodReward + movePenalty
+        if dest == bombTile:
+            return bombPenalty + movePenalty
 
     def show(self):
         for i in self.env:
             print(i)
 
 
-earth = env(10, 3, 3)
+earth = env(15, 1, 15)
 earth.show()
 
 
