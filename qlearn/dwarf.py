@@ -1,65 +1,59 @@
-import cv2, tensorflow, os, keyboard as kb, time, cv2, numpy as np
+from re import X
+import cv2, tensorflow, os, keyboard as kb, time, cv2, numpy as np, random
 from tensorflow import keras
 
+foodReward = 10
+bombPenalty = -10
+movePenalty = -1
 
-class env():
-    def __init__(self):
-        self.grid = []
-        for i in range(0, 10):
-            self.grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-        self.pos = [4, 8]
-        self.grid[self.pos[1]][self.pos[0]] = 1
-        self.actionspace = ['x', 'n', 'e', 's', 'w']
-        self.action = None
-        self.done = 0
-        self.age = 0
-        self.score = 0
+def makePlane(size, tile):
+    row = []
+    plane = []
+    for i in range(1, size):
+        row.append(tile)
+    for i in range(1, size):
+        plane.append(row.copy())
+    return plane
 
-    def choose(self):
-        self.action = 0
-        if kb.on_release_key('w'):
-            self.action = 1            
-        if kb.on_release_key('a'):
-            self.action = 4            
-        if kb.on_release_key('s'):
-            self.action = 3            
-        if kb.on_release_key('d'):
-            self.action = 2
-        print(self.action)
-        return self.actionspace[self.action]
+def plant(array, val, find):
+    y = random.randint(0, len(array)-1)
+    x = random.randint(0, len(array[y])-1)
+    while(array[y][x] != find):
+        y = random.randint(0, len(array)-1)
+        x = random.randint(0, len(array[y])-1)
+    array[y][x]=val
+    return array
 
-    def reset(self):
-        pass
+class agent():
+    def __init__(self, posx, posy):
+        self.x = X
+        self.y = y
 
-    def step(self, action):
-        if action == 'N':
-            self.grid[self.pos[1]][self.pos[0]] = 0
-            self.pos[1] += 1
-        if action == 'E':
-            self.grid[self.pos[1]][self.pos[0]] = 0
-            self.pos[0] += 1
-        if action == 'S':
-            self.grid[self.pos[1]][self.pos[0]] = 0
-            self.pos[1] -= 1
-        if action == 'W':
-            self.grid[self.pos[1]][self.pos[0]] = 0
-            self.pos[0] -= 1
+class env:
+    def __init__(self, size, food, bomb):
+        self.size=size
+        self.env = makePlane(size, 0)
 
-    def display(self):
-        img = np.array(self.grid)
-        print(img)
-        #cv2.imshow('img', img)
+        for i in range(0, food):
+            self.env = plant(self.env, 1, 0)
+        for i in range(0, bomb):
+            self.env = plant(self.env, 3, 0)
+
+    def get(self, x, y):
+        return self.env[y][x]
+    def set(self, x, y, val):
+        self.env[y][x] = val
+
+    def takeAction(self, agent, move):
+        
+
+    def show(self):
+        for i in self.env:
+            print(i)
 
 
-world = env()
-
-while 1:
-    world.reset()
-    while not world.done:
-        world.choose()
-        world.step(world.choose())
-        world.display()
-
+earth = env(10, 3, 3)
+earth.show()
 
 
 
