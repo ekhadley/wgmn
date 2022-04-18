@@ -131,13 +131,13 @@ class env:
         cv2.waitKey(1)
 
     def show(self):
-        colorDict = {agentTile:bcolors.OKBLUE, blankTile:bcolors.WARNING, bombTile:bcolors.FAIL, foodTile:bcolors.OKGREEN}
+        colorDict = {agentTile:bcolors.OKBLUE, blankTile:bcolors.WARNING, bombTile:bcolors.FAIL, foodTile:bcolors.OKCYAN}
         colorEnv = self.env.copy()
         for i in range(len(colorEnv)):
             print()
             for j in range(len(colorEnv[i])):
-                print(f"{colorDict[colorEnv[i][j]]}{colorEnv[i][j]} ", end=None)
-
+                print(f"{colorDict[colorEnv[i][j]]}{colorEnv[i][j]} ", end="")
+        print()
 
 episodes = 100
 episodeLength = 15
