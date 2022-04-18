@@ -1,19 +1,15 @@
-import tensorflow, time, cv2, random, numpy as np
-from tensorflow import keras
+import cv2, random, numpy as np
 
 foodReward = 10
-bombPenalty = -10
+bombPenalty = -25
 movePenalty = -1
 
-foodCount = 5
-bombCount = 5
 
 blankTile = 0
 foodTile = 1
 bombTile = 2
-agentTile = 7
+agentTile = 3
 
-worldSize = 10
 
 def makePlane(size, tile):
     row = []
@@ -47,7 +43,14 @@ class bcolors:
 class env:
     def __init__(self, size, food, bomb):
         self.size=size
+        self.food = food
+        self.bomb = bomb
         self.moves = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+        self.colorDict = {agentTile:bcolors.OKBLUE, 
+                          blankTile:bcolors.ENDC, 
+                          bombTile:bcolors.FAIL, 
+                          foodTile:bcolors.OKGREEN}
+
         self.env = makePlane(size, blankTile)
         self.episodeReward = 0
         self.step = 0
@@ -59,17 +62,16 @@ class env:
         for i in range(0, bomb):
             plant(self.env, bombTile, blankTile)
 
-    def reset(self, food, bomb):
+    def reset(self):
         t = self.episodeReward
+        self.env = makePlane(self.size, blankTile)
         self.episodeReward = 0
         self.step = 0
-
-        self.env = makePlane(self.size, blankTile)
         self.posx, self.posy = plant(self.env, agentTile, blankTile)
-        for i in range(0, food):
-            self.env = plant(self.env, foodTile, blankTile)
-        for i in range(0, bomb):
-            self.env = plant(self.env, bombTile, blankTile)
+        for i in range(0, self.food):
+            plant(self.env, foodTile, blankTile)
+        for i in range(0, self.bomb):
+            plant(self.env, bombTile, blankTile)
         return t
 
     def get(self, x, y):
@@ -131,32 +133,16 @@ class env:
         cv2.waitKey(1)
 
     def show(self):
-        colorDict = {agentTile:bcolors.OKBLUE, blankTile:bcolors.WARNING, bombTile:bcolors.FAIL, foodTile:bcolors.OKCYAN}
         colorEnv = self.env.copy()
         for i in range(len(colorEnv)):
             print()
             for j in range(len(colorEnv[i])):
-                print(f"{colorDict[colorEnv[i][j]]}{colorEnv[i][j]} ", end="")
+                print(f"{self.colorDict[colorEnv[i][j]]}{colorEnv[i][j]}, ", end="")
         print()
 
-episodes = 100
-episodeLength = 15
-avgReward = 0
 
-windowSize = 20
 
-e = env(worldSize, foodCount, bombCount)
 
-for i in range(0, episodes):
-    e.show()
-    move = e.getUserMove()
-    r = e.applyMove(move)
-    print(f"Step: {e.step}      Total episode reward: {e.episodeReward}     Last move reward: {r}")
-    if e.step > episodeLength:
-        avgReward += e.reset(foodCount, bombCount)
-
-avgReward /= episodes
-print(avgReward)
 
 
 
