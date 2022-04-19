@@ -9,7 +9,8 @@ episodeLength = 25
 
 
 e = dwarf.env(worldSize, foodCount, bombCount)
-c = bond.agent(disc=.9,eps=.2,lr=.9)
+c = bond.agent(e, disc=.9,eps=.2,lr=.9)
+
 
 avgReward = 0
 for i in range(0, episodes):
@@ -21,3 +22,6 @@ for i in range(0, episodes):
 
 avgReward /= episodes
 print(avgReward)
+
+
+
