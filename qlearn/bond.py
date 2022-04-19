@@ -11,4 +11,8 @@ class agent:
 
         self.initialWeights = np.random.uniform()
         self.net = keras.models.Sequential()
-        self.net.add(keras.layers.Conv2D(32, input_shape=(self.env.size, self.env.size, 1), activation = "relu"))
+        self.net.add(keras.layers.Conv2D(32, (3,3)input_shape=(self.env.size, self.env.size, 1), activation = "relu"))
+        self.net.add(keras.layers.Flatten())
+        self.net.add(keras.layers.Dense(64))
+        self.net.add(keras.layers.Dense(4, activation="linear"))
+        self.net.compile(loss="mse", optimizer = keras.optimizers.Adam(lr=self.lr), metrics = ['accuracy']))
