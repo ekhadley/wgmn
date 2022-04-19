@@ -8,7 +8,11 @@ fov = '40'
 
 urls = []
 for i in coords:
-    urls.append("https://maps.googleapis.com/maps/api/streetview?size="+imgsize+"x"+imgsize+"&location="+i[0]+","+i[1]+"&fov="+fov+"&heading="+heading+"&pitch="+pitch+"&key=AIzaSyC4CFILOjXwmKqd7ehYgUwA9SkjE0D9HlA")
+    urls.append("https://maps.googleapis.com/maps/api/streetview?size="+
+                imgsize+"x"+imgsize+"&location="+i[0]+","+i[1]+"&fov="+fov+"&heading="+heading+"&pitch="+pitch
+                +"&key=AIzaSyC4CFILOjXwmKqd7ehYgUwA9SkjE0D9HlA")
+
+print(urls[1])
 
 for i in range(len(urls)):
     img = requests.get(urls[i], stream=True).content
