@@ -41,7 +41,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 class env:
-    def __init__(self, size, food, bomb):
+    def __init__(self, size, food, bomb, env = None):
         self.size=size
         self.food = food
         self.bomb = bomb
@@ -50,17 +50,18 @@ class env:
                           blankTile:bcolors.ENDC, 
                           bombTile:bcolors.FAIL, 
                           foodTile:bcolors.OKGREEN}
-
-        self.env = makePlane(size, blankTile)
         self.episodeReward = 0
         self.step = 0
 
-        self.posx, self.posy = plant(self.env, agentTile, blankTile)
-
-        for i in range(0, food):
-            plant(self.env, foodTile, blankTile)
-        for i in range(0, bomb):
-            plant(self.env, bombTile, blankTile)
+        if not env:
+            self.env = makePlane(size, blankTile)
+            self.posx, self.posy = plant(self.env, agentTile, blankTile)
+            for i in range(0, food):
+                plant(self.env, foodTile, blankTile)
+            for i in range(0, bomb):
+                plant(self.env, bombTile, blankTile)
+        else:
+            self.env = env
 
     def reset(self):
         t = self.episodeReward
@@ -86,7 +87,7 @@ class env:
             move = input("Not recognized, use W, A, S, D \n").upper()
         return map.index(move)
 
-    def applyMove(self, move):
+    def applyAction(self, move):
         moveReward = 0
         moveDirection = self.moves[move]
         self.step += 1
@@ -112,7 +113,25 @@ class env:
         self.set(self.posx, self.posy, agentTile)
 
         self.episodeReward += moveReward
-        return moveReward
+        return moveReward, self.env
+
+    def emulateAction(self, move):
+        copyEnv = self.clone()
+        return copyEnv.applyAction(move), copyEnv.env
+
+    def clone(self):
+        cp = env(self.size, self.food, self.bomb, env = [r[:] for r in self.env])
+        cp.posx = self.posx
+        cp.posy = self.posy
+        return cp
+
+    def show(self):
+        colorEnv = self.env.copy()
+        for i in range(len(colorEnv)):
+            print()
+            for j in range(len(colorEnv[i])):
+                print(f"{self.colorDict[colorEnv[i][j]]}{colorEnv[i][j]}, ", end="")
+        print()
 
     def display(self):
         colors = {blankTile:np.array([0, 0, 0]), agentTile:np.array([200, 200, 100]), 
@@ -131,14 +150,6 @@ class env:
 
         cv2.imshow("game", rbgArray)
         cv2.waitKey(1)
-
-    def show(self):
-        colorEnv = self.env.copy()
-        for i in range(len(colorEnv)):
-            print()
-            for j in range(len(colorEnv[i])):
-                print(f"{self.colorDict[colorEnv[i][j]]}{colorEnv[i][j]}, ", end="")
-        print()
 
 
 

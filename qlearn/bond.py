@@ -20,4 +20,9 @@ class agent:
 
     def chooseAction(self):
         if np.random.uniform() < self.eps:
-            return 
+            return self.net.predict(np.array(self.env.state))
+        else:
+            return random.choice([0, 1, 2, 3])
+        
+    def doAction(self, action):
+        reward = self.env.applyAction(action)
