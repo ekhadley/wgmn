@@ -46,7 +46,7 @@ class env:
         self.food = food
         self.bomb = bomb
         self.moves = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-        self.colorDict = {agentTile:bcolors.OKBLUE, 
+        self.colorDict = {agentTile:bcolors.OKBLUE + bcolors.BOLD, 
                           blankTile:bcolors.ENDC, 
                           bombTile:bcolors.FAIL, 
                           foodTile:bcolors.OKGREEN}
@@ -80,7 +80,7 @@ class env:
     def set(self, x, y, val):
         self.env[y][x] = val
 
-    def getUserMove(self):
+    def getUserAction(self):
         move = input("What direction would you like to move in? (W, A, S, D)\n").upper()
         map = ["D", "S", "A", "W"]
         while(move not in map):
@@ -115,7 +115,7 @@ class env:
         self.episodeReward += moveReward
         return moveReward, self.env
 
-    def emulateAction(self, move):
+    def simAction(self, move):
         copyEnv = self.clone()
         return copyEnv.applyAction(move), copyEnv.env
 
@@ -131,9 +131,9 @@ class env:
             print()
             for j in range(len(colorEnv[i])):
                 print(f"{self.colorDict[colorEnv[i][j]]}{colorEnv[i][j]}, ", end="")
-        print()
+        print(bcolors.BOLD + bcolors.WARNING)
 
-    def display(self):
+    def display(self, windowSize):
         colors = {blankTile:np.array([0, 0, 0]), agentTile:np.array([200, 200, 100]), 
                   bombTile:np.array([250, 0, 40]), foodTile:np.array([200, 30, 0])}
 

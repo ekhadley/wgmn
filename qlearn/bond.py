@@ -1,3 +1,4 @@
+from concurrent.futures import process
 import tensorflow as tf, time, random, dwarf, bond, numpy as np
 from tensorflow import keras
 
@@ -6,7 +7,7 @@ class agent:
         self.env = env
         self.memories = []
 
-    def genModel(self, disc, eps, ler):
+    def genModels(self, disc, eps, ler):
         self.disc = disc
         self.eps = eps
         self.ler = ler
@@ -16,13 +17,23 @@ class agent:
         self.net.add(keras.layers.Flatten())
         self.net.add(keras.layers.Dense(64))
         self.net.add(keras.layers.Dense(4, activation="linear"))
+        
+        self.targetNet = keras.models.clone_model(self.net)
         self.net.compile(loss="mse", optimizer = keras.optimizers.Adam(lr=self.ler), metrics = ['accuracy'])
+        self.targetNet.compile(loss="mse", optimizer = keras.optimizers.Adam(lr=self.ler), metrics = ['accuracy'])
 
-    def chooseAction(self):
+    def genAction(self):
+        npEnv = np.array([r[:] for r in self.env.env])
+        processedEnv = npEnv*1/9
         if np.random.uniform() < self.eps:
-            return self.net.predict(np.array(self.env.state))
+            return self.net.predict(processedEnv)
         else:
             return random.choice([0, 1, 2, 3])
-        
-    def doAction(self, action):
-        reward = self.env.applyAction(action)
+
+    def remember(self, memory):
+        self.memories.append(memory)
+
+    def sampleAction(self, action):
+        state = [r[:] for r in self.env.env]
+        reward, newEnv = self.env.simAction(action)
+        return [state, action, reward, newEnv]
