@@ -113,7 +113,7 @@ class env:
         self.set(self.posx, self.posy, agentTile)
 
         self.episodeReward += moveReward
-        return moveReward, self.env
+        return self.env, moveReward
 
     def simAction(self, move):
         copyEnv = self.clone()

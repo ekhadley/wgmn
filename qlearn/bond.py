@@ -16,6 +16,7 @@ class agent:
         self.net.add(keras.layers.Conv2D(32, (3,3), input_shape=(self.env.size, self.env.size, 1), activation = "relu"))
         self.net.add(keras.layers.Flatten())
         self.net.add(keras.layers.Dense(64))
+        self.net.add(keras.layers.Dropout(.2))
         self.net.add(keras.layers.Dense(4, activation="linear"))
         
         self.targetNet = keras.models.clone_model(self.net)
@@ -26,9 +27,9 @@ class agent:
         npEnv = np.array([r[:] for r in self.env.env])
         processedEnv = npEnv*1/9
         if np.random.uniform() < self.eps:
-            return self.net.predict(processedEnv)
+            return np.argmax(self.net.predict(processedEnv.reshape(-1, self.env.size, self.env.size, 1))), 'exploit'
         else:
-            return random.choice([0, 1, 2, 3])
+            return random.choice([0, 1, 2, 3]), 'explore'
 
     def remember(self, memory):
         self.memories.append(memory)
