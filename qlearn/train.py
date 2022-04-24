@@ -1,35 +1,45 @@
 import tensorflow as tf, time, random, dwarf, bond, numpy as np
 
-worldSize = 10
-foodCount = 15
-bombCount = 15
+worldSize = 7
+foodCount = 10
+bombCount = 10
 
-episodes = 100
-episodeLength = 25
+episodes = 14
+episodeLength = 10
 
 
 e = dwarf.env(worldSize, foodCount, bombCount)
 c = bond.agent(e)
-c.genModels(disc=.99,eps=.8,ler=.01)
+c.genModels(discount=.99,epsilon=.8,learnRate=.01, updateRate = 20)
 
 avgReward = 0
-for i in range(0, episodes):
-    time.sleep(1)
+avgEpTime = 0
+
+
+for i in range(1, episodes+1):
+    e.reset()
     e.show()
 
+    c.updateModel()
 
-    action, type = c.genAction()
-    prev = [r[:] for r in e]
-    stepReward, newState = e.applyAction(action)
-    c.remember([prev, action, stepReward, [r[:] for r in e.env]])
+    stime = time.time()
+    for j in range(0, episodeLength):
+#        time.sleep(1)
+#        e.show()
+        
+        action, type = c.genAction()
+#        action, type = e.getUserAction()
+        currentState = e.getObs()
+        newState, stepReward = e.applyAction(action)
+        c.remember([currentState, action, stepReward, newState])
 
-    print(f"{action}: {type}")
-    print(f"\033[0m Step: {e.step}   Total episode reward: {e.episodeReward}   Last move reward: {stepReward}")
-    if e.step > episodeLength:
-        avgReward += e.reset()
+        c.train()
 
-avgReward /= episodes
-print(avgReward)
+        print(f"{action}: {type}")
+        print(f"\033[0mEpisode {i}, Step {e.step}   Total episode reward: {e.episodeReward}   Last move reward: {stepReward}")
+    avgEpTime += time.time()-stime
+    avgReward += e.episodeReward
+    print(f"\033[91m\033[1mAverage reward: {avgReward/i}, {(time.time()-stime)/i} seconds per episode")
 
 
 

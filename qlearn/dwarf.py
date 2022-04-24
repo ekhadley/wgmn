@@ -1,7 +1,7 @@
 import cv2, random, numpy as np
 
 foodReward = 10
-bombPenalty = -25
+bombPenalty = -30
 movePenalty = -1
 
 
@@ -23,6 +23,7 @@ def makePlane(size, tile):
 def plant(arr, val, find):
     y = random.randint(0, len(arr)-1)
     x = random.randint(0, len(arr[y])-1)
+    tries = 0
     while(arr[y][x] != find):
         y = random.randint(0, len(arr)-1)
         x = random.randint(0, len(arr[y])-1)
@@ -75,8 +76,28 @@ class env:
             plant(self.env, bombTile, blankTile)
         return t
 
+    def getObs(self):
+        obs = []
+        numfood = self.food
+        numbomb = self.bomb
+        for y in range(0, self.size):
+            for x, e in enumerate(self.env[y]):
+                if e == foodTile:
+                    obs.insert(0, [1, x-self.posx, y-self.posy])
+                    numfood -= 1
+                if e == bombTile:
+                    obs.append([-1, x-self.posx, y-self.posy])
+                    numbomb -= 1
+        for i in range(0, numfood):
+            obs.insert(0, [1, 0, 0])
+        for i in range(0, numbomb):
+            obs.append([-1, 0, 0])
+
+        return obs
+
     def get(self, x, y):
         return self.env[y][x]
+
     def set(self, x, y, val):
         self.env[y][x] = val
 
@@ -85,7 +106,7 @@ class env:
         map = ["D", "S", "A", "W"]
         while(move not in map):
             move = input("Not recognized, use W, A, S, D \n").upper()
-        return map.index(move)
+        return map.index(move), 'user input'
 
     def applyAction(self, move):
         moveReward = 0
@@ -113,17 +134,20 @@ class env:
         self.set(self.posx, self.posy, agentTile)
 
         self.episodeReward += moveReward
-        return self.env, moveReward
+        return self.getObs(), moveReward
 
     def simAction(self, move):
         copyEnv = self.clone()
-        return copyEnv.applyAction(move), copyEnv.env
+        return copyEnv.applyAction(move)
 
     def clone(self):
-        cp = env(self.size, self.food, self.bomb, env = [r[:] for r in self.env])
+        cp = env(self.size, self.food, self.bomb, env = self.getState())
         cp.posx = self.posx
         cp.posy = self.posy
         return cp
+
+    def getState(self):
+        return self.env
 
     def show(self):
         colorEnv = self.env.copy()
