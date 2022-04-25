@@ -42,10 +42,11 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 class env:
-    def __init__(self, size, food, bomb, env = None):
+    def __init__(self, size, food, bomb, eplen, env = None):
         self.size=size
         self.food = food
         self.bomb = bomb
+        self.epLen = eplen
         self.moves = [[1, 0], [0, 1], [-1, 0], [0, -1]]
         self.colorDict = {agentTile:bcolors.OKBLUE + bcolors.BOLD, 
                           blankTile:bcolors.ENDC, 

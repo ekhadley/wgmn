@@ -1,20 +1,22 @@
+from types import new_class
 import tensorflow as tf, time, random, dwarf, bond, numpy as np
 from tensorflow import keras
 
 class agent:
-    def __init__(self, env):
+    def __init__(self, env, updateRate):
         self.env = env
         self.memories = []
         self.memlen = 100000
-        self.memreq = 100
+        self.memreq = 64
+        self.updateRate = updateRate
+        self.sinceUpdate = 0
         self.numtargets = self.env.food + self.env.bomb
         self.batchSize = 64
 
-    def genModels(self, discount, epsilon, learnRate,updateRate):
+    def genModels(self, discount, epsilon, learnRate):
         self.disc = discount
         self.eps = epsilon
         self.ler = learnRate
-        self.updateRate = updateRate
 
         self.net = keras.models.Sequential()
         self.net.add(keras.layers.Conv2D(64, (3,3), input_shape=(self.numtargets, 3, 1), activation = "relu"))
@@ -31,23 +33,50 @@ class agent:
         if len(self.memories) < self.memreq:
             return
         batch = random.sample(self.memories, self.batchSize)
-        obs, moves, rewards, nextObs = np.array(batch[:,0]), batch[:,1], batch[:,2], np.array(batch[:,3])
-        Qpredictions = self.model.predict(obs.reshape(self.batchSize, self.numtargets, 3, 1))
-        futureQPredictions = self.model.predict(nextObs.reshape(self.batchSize, self.numtargets, 3, 1))
+        states, moves, rewards, nextStates = [], [], [], []
+
+
+        for m in batch:
+            states.append(m[0])
+            moves.append(m[1])
+            rewards.append(m[2])
+            nextStates.append(m[3])
+
+        states = np.array(states)
+        nextStates = np.array(nextStates)
+
+        Qpredictions = self.net.predict(states.reshape(self.batchSize, self.numtargets, 3, 1))
+        futureQPredictions = self.net.predict(nextStates.reshape(self.batchSize, self.numtargets, 3, 1))
+        
+        for i, (obs, move, reward, nextObs) in enumerate(self.memories):
+            if self.env.step < self.env.epLen:
+                maxFutureQ = np.max(futureQPredictions)
+                newQ = reward + maxFutureQ*self.eps
+            if self.env.step > self.env.epLen:
+                newQ = reward
+            if self.env.step ==  self.env.epLen:
+                if self.sinceUpdate == self.updateRate:
+                    self.sinceUpdate = 0
+                    self.updateTarget()
+                else:
+                    self.sinceUpdate += 1
+
         
 
+        self.model.fit()
+
+
+
     def genAction(self):
-        npObs = np.array(self.env.getObs())
-        for e in npObs:
-            e[1] *= .1
-            e[2] *= .1
+        npObs = np.array(self.env.getObs())[:]*.1
+
         if np.random.uniform() < self.eps:
-            return np.argmax(self.net.predict(npObs.reshape(-1, self.numtargets, 3, 1))), 'exploit'
+            return np.argmax(self.targetNet.predict(npObs.reshape(-1, self.numtargets, 3, 1))), 'exploit'
         else:
             return random.choice([0, 1, 2, 3]), 'explore'
 
-    def updateModel(self):
-        pass
+    def updateTarget(self):
+        self.targetNet.set_weights(self.net.get_weights())
 
     def remember(self, memory):
         self.memories.append(memory)
