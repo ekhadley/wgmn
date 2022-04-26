@@ -1,17 +1,20 @@
-from types import new_class
-import tensorflow as tf, time, random, dwarf, bond, numpy as np
+import tensorflow as tf, time, random, dwarf, bond, numpy as np, datetime
 from tensorflow import keras
+
+log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+
+tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 class agent:
     def __init__(self, env, updateRate):
         self.env = env
         self.memories = []
         self.memlen = 100000
-        self.memreq = 64
+        self.memreq = 1000
         self.updateRate = updateRate
         self.sinceUpdate = 0
         self.numtargets = self.env.food + self.env.bomb
-        self.batchSize = 64
+        self.batchSize = 500
 
     def genModels(self, discount, epsilon, learnRate):
         self.disc = discount
@@ -48,24 +51,24 @@ class agent:
         Qpredictions = self.net.predict(states.reshape(self.batchSize, self.numtargets, 3, 1))
         futureQPredictions = self.net.predict(nextStates.reshape(self.batchSize, self.numtargets, 3, 1))
         
-        for i, (obs, move, reward, nextObs) in enumerate(self.memories):
+        for i, (obs, move, reward, nextObs) in enumerate(batch):
             if self.env.step < self.env.epLen:
                 maxFutureQ = np.max(futureQPredictions)
                 newQ = reward + maxFutureQ*self.eps
-            if self.env.step > self.env.epLen:
+            if self.env.step >= self.env.epLen:
                 newQ = reward
-            if self.env.step ==  self.env.epLen:
-                if self.sinceUpdate == self.updateRate:
-                    self.sinceUpdate = 0
-                    self.updateTarget()
-                else:
-                    self.sinceUpdate += 1
 
-        
+            Qpredictions[i][move] = newQ
 
-        self.model.fit()
+        if self.env.step ==  self.env.epLen:
+            if self.sinceUpdate == self.updateRate:
+                self.sinceUpdate = 0
+                self.updateTarget()
+            else:
+                self.sinceUpdate += 1
 
-
+        self.net.fit(np.array(states).reshape(self.batchSize, self.numtargets, 3, 1), np.array(Qpredictions), 
+                     batch_size = self.batchSize, verbose=1, callbacks = [tensorboard_callback])
 
     def genAction(self):
         npObs = np.array(self.env.getObs())[:]*.1
