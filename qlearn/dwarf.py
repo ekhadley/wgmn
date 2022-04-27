@@ -1,7 +1,7 @@
 import cv2, random, numpy as np
 
 foodReward = 10
-bombPenalty = -30
+bombPenalty = -10
 movePenalty = -1
 
 
@@ -42,7 +42,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 class env:
-    def __init__(self, size, food, bomb, eplen, env = None):
+    def __init__(self, size, food, bomb, eplen, env = None, pos = None):
         self.size=size
         self.food = food
         self.bomb = bomb
@@ -57,13 +57,17 @@ class env:
 
         if not env:
             self.env = makePlane(size, blankTile)
-            self.posx, self.posy = plant(self.env, agentTile, blankTile)
             for i in range(0, food):
                 plant(self.env, foodTile, blankTile)
             for i in range(0, bomb):
                 plant(self.env, bombTile, blankTile)
         else:
             self.env = env
+        if not pos:
+            self.posx, self.posy = plant(self.env, agentTile, blankTile)
+        else:
+            self.posx = pos[0]
+            self.posy = pos[1]
 
     def reset(self):
         t = self.episodeReward
@@ -138,13 +142,10 @@ class env:
         return self.getObs(), moveReward
 
     def simAction(self, move):
-        copyEnv = self.clone()
-        return copyEnv.applyAction(move)
+        return self.clone().applyAction(move)
 
     def clone(self):
-        cp = env(self.size, self.food, self.bomb, env = self.getState())
-        cp.posx = self.posx
-        cp.posy = self.posy
+        cp = env(self.size, self.food, self.bomb, self.epLen, env = [r[:] for r in self.env], pos = [self.posx, self.posy])
         return cp
 
     def getState(self):

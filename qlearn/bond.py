@@ -1,6 +1,6 @@
 import tensorflow as tf, random, numpy as np, datetime
 from tensorflow import keras
-from tensorflow.keras import tensorboard
+#from keras.callbacks import tensorboard
 
 log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
@@ -37,29 +37,23 @@ class agent:
         if len(self.memories) < self.memreq:
             return
         batch = random.sample(self.memories, self.batchSize)
-        states, moves, rewards, nextStates = [], [], [], []
-
-
+        states, nextStates, rewardOptions = [], [], []
         for m in batch:
             states.append(m[0])
-            moves.append(m[1])
-            rewards.append(m[2])
-            nextStates.append(m[3])
+            rewardOptions.append(m[1])
+            nextStates.append(m[2])
 
         states = np.array(states)
         nextStates = np.array(nextStates)
 
-        Qpredictions = self.net.predict(states.reshape(self.batchSize, self.numtargets, 3, 1))
+        #Qpredictions = self.net.predict(states.reshape(self.batchSize, self.numtargets, 3, 1))
         futureQPredictions = self.net.predict(nextStates.reshape(self.batchSize, self.numtargets, 3, 1))
-        
-        for i, (obs, move, reward, nextObs) in enumerate(batch):
-            if self.env.step < self.env.epLen:
-                maxFutureQ = np.max(futureQPredictions)
-                newQ = reward + maxFutureQ*self.eps
-            if self.env.step >= self.env.epLen:
-                newQ = reward
+        #print(futureQPredictions)
+        for i, (obs, rewards, nextObs) in enumerate(batch):
+            for q in range(0, len(rewards)):
+                if self.env.step < self.env.epLen:
+                    rewardOptions[i][q] += futureQPredictions[q]*self.eps
 
-            Qpredictions[i][move] = newQ
 
         if self.env.step ==  self.env.epLen:
             if self.sinceUpdate == self.updateRate:
@@ -68,8 +62,11 @@ class agent:
             else:
                 self.sinceUpdate += 1
 
-        self.net.fit(np.array(states).reshape(self.batchSize, self.numtargets, 3, 1), np.array(Qpredictions), 
-                     batch_size = self.batchSize, verbose=1, callbacks = [tensorboard_callback])
+        for i in rewardOptions:
+            print(i)
+
+        self.net.fit(np.array(states).reshape(self.batchSize, self.numtargets, 3, 1), np.array(rewardOptions),
+                    batch_size = self.batchSize, verbose=1, callbacks = None)
 
     def genAction(self):
         npObs = np.array(self.env.getObs())[:]*.1
