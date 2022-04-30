@@ -1,10 +1,10 @@
-import tensorflow as tf, random, numpy as np, datetime
+import random, numpy as np, datetime
 from tensorflow import keras
-#from keras.callbacks import tensorboard
+from tensorflow.keras.callbacks import TensorBoard
 
-log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-
-tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+#log_dir = "qlearn/qlearnlogs" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+log_dir = "qlearn/qlearnlogs"
+tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 class agent:
     def __init__(self, env, updateRate):
@@ -23,7 +23,8 @@ class agent:
         self.ler = learnRate
 
         self.net = keras.models.Sequential()
-        self.net.add(keras.layers.Conv2D(64, (3,3), input_shape=(self.numtargets, 3, 1), activation = "relu"))
+#        self.net.add(keras.layers.Conv2D(64, (3,3), input_shape=(self.numtargets, 3, 1), activation = "relu"))
+        self.net.add(keras.layers.Conv2D(64, (3,3), input_shape=(self.size, self.size, 3, 1), activation = "relu"))
         self.net.add(keras.layers.Flatten())
         self.net.add(keras.layers.Dense(64))
         self.net.add(keras.layers.Dropout(.2))
@@ -37,23 +38,24 @@ class agent:
         if len(self.memories) < self.memreq:
             return
         batch = random.sample(self.memories, self.batchSize)
-        states, nextStates, rewardOptions = [], [], []
+        states, nextStates, moves, rewards = [], [], [], []
         for m in batch:
             states.append(m[0])
-            rewardOptions.append(m[1])
-            nextStates.append(m[2])
+            moves.append(m[1])
+            rewards.append(m[2])
+            nextStates.append(m[3])
 
         states = np.array(states)
         nextStates = np.array(nextStates)
 
-        #Qpredictions = self.net.predict(states.reshape(self.batchSize, self.numtargets, 3, 1))
-        futureQPredictions = self.net.predict(nextStates.reshape(self.batchSize, self.numtargets, 3, 1))
-        #print(futureQPredictions)
-        for i, (obs, rewards, nextObs) in enumerate(batch):
-            for q in range(0, len(rewards)):
-                if self.env.step < self.env.epLen:
-                    rewardOptions[i][q] += futureQPredictions[q]*self.eps
+        Qpredictions = self.net.predict(states.reshape(self.batchSize, self.numtargets, 3, 1))
+        futureQPredictions = self.targetNet.predict(nextStates.reshape(self.batchSize, self.numtargets, 3, 1))
 
+        for i, (obs, action, reward, nextObs) in enumerate(batch):
+            if self.env.step < self.env.epLen:
+                Qpredictions[i][action] = reward + futureQPredictions[i][action]*self.eps
+            else:
+                Qpredictions[i][action] = reward
 
         if self.env.step ==  self.env.epLen:
             if self.sinceUpdate == self.updateRate:
@@ -62,17 +64,22 @@ class agent:
             else:
                 self.sinceUpdate += 1
 
-        for i in rewardOptions:
-            print(i)
-
-        self.net.fit(np.array(states).reshape(self.batchSize, self.numtargets, 3, 1), np.array(rewardOptions),
+        #print(Qpredictions[:])
+        self.net.fit(np.array(states).reshape(self.batchSize, self.numtargets, 3, 1), np.array(Qpredictions),
                     batch_size = self.batchSize, verbose=1, callbacks = None)
 
-    def genAction(self):
-        npObs = np.array(self.env.getObs())[:]*.1
+    def predict(self, obs):
+        npObs = np.array(obs)[:]*.1
+        return self.targetNet.predict(npObs.reshape(-1, self.numtargets, 3, 1))
+
+    def genAction(self, show=False):
+        npObs = np.array(self.env.env)[:]*.1
 
         if np.random.uniform() < self.eps:
-            return np.argmax(self.targetNet.predict(npObs.reshape(-1, self.numtargets, 3, 1))), 'exploit'
+            prediction = self.targetNet.predict(npObs.reshape(-1, self.env.size, self.env.size, 1))
+            if show:
+                print(prediction)
+            return np.argmax(prediction), 'exploit'
         else:
             return random.choice([0, 1, 2, 3]), 'explore'
 
