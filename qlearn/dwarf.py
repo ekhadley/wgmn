@@ -1,6 +1,7 @@
 import cv2, random, numpy as np
+from PIL import Image
 
-foodReward = 10
+foodReward = 30
 bombPenalty = -10
 movePenalty = -1
 
@@ -159,22 +160,22 @@ class env:
                 print(f"{self.colorDict[colorEnv[i][j]]}{colorEnv[i][j]}, ", end="")
         print(bcolors.BOLD + bcolors.WARNING)
 
-    def display(self, windowSize):
-        colors = {blankTile:np.array([0, 0, 0]), agentTile:np.array([200, 200, 100]), 
-                  bombTile:np.array([250, 0, 40]), foodTile:np.array([200, 30, 0])}
+    def display(self):
+        colors = {blankTile:np.array([0, 0, 0]), agentTile:np.array([200, 50, 10]), 
+                  bombTile:np.array([40, 0, 250]), foodTile:np.array([50, 250, 0])}
 
-        envArray = np.array(self.env)
-        envArray = np.kron(envArray, np.ones((windowSize, windowSize)))
-        rbgArray = np.zeros((self.size*windowSize, self.size*windowSize, 3))
-
-        for i in range(0, self.size*windowSize):
-            for j in range(0, self.size*windowSize):
+        envArray = np.array(self.env, dtype=np.uint8)
+        rbgArray = np.zeros((self.size, self.size, 3), dtype=np.uint8)
+        for i in range(0, self.size):
+            for j in range(0, self.size):
                 for k in colors:    
                     if envArray[i][j] == k:
                         rbgArray[i][j] = colors[k]
                         break
 
-        cv2.imshow("game", rbgArray)
+        im = Image.fromarray(rbgArray, "RGB")
+        im = im.resize((400, 400), resample=Image.NEAREST)
+        cv2.imshow("game", np.array(im))
         cv2.waitKey(1)
 
 
