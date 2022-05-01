@@ -17,9 +17,9 @@ a = []
 avgReward = 0
 avgEpTime = 0
 
-worldSize = 8
-foodCount = 16
-bombCount = 16
+worldSize = 4
+foodCount = 1
+bombCount = 1
 
 episodes = 1000
 episodeLength = 15
@@ -27,7 +27,7 @@ episodeLength = 15
 e = dwarf.env(worldSize, foodCount, bombCount, episodeLength)
 c = bond.agent(e, updateRate = 10)
 c.genModels(discount=.8,epsilon=.95,learnRate=.7)
-c.memreq = 500
+c.memreq = 200
 c.batchSize = 64
 
 stime = time.time()
@@ -35,20 +35,13 @@ for i in range(1, episodes+1):
     e.reset()
     e.display()
     for j in range(0, e.epLen):
-#        time.sleep(1)
         e.display()
 #        action, type = e.getUserAction()
 
-        '''
-        possibleRewards = []
-        for m in [0, 1, 2, 3]:
-            dontcare, r = e.simAction(m)
-            possibleRewards.append(r)
-        '''
-        optimalAction, type = c.genAction(show=True)
+        action, type = c.genAction(show=True)
 
-        newState, stepReward = e.applyAction(optimalAction)
-        c.remember([e.getObs(), optimalAction, stepReward, newState])
+        newState, stepReward = e.applyAction(action)
+        c.remember([e.getObs(), action, stepReward, newState])
         c.train()
 
         #print(f"{action}: {type}")
