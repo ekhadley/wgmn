@@ -23,10 +23,10 @@ class agent:
         self.ler = learnRate
 
         self.net = keras.models.Sequential()
-#        self.net.add(keras.layers.Conv2D(64, (3,3), input_shape=(self.numtargets, 3, 1), activation = "relu"))
-        self.net.add(keras.layers.Conv2D(64, (3,3), input_shape=(self.size, self.size, 3, 1), activation = "relu"))
+        self.net.add(keras.layers.Conv2D(64, (1,1), input_shape=(self.numtargets, 3, 1), activation = "relu"))
+#        self.net.add(keras.layers.Conv2D(64, (3,3), input_shape=(self.size, self.size, 3, 1), activation = "relu"))
         self.net.add(keras.layers.Flatten())
-        self.net.add(keras.layers.Dense(64))
+        self.net.add(keras.layers.Dense(128))
         self.net.add(keras.layers.Dropout(.2))
         self.net.add(keras.layers.Dense(4, activation="linear"))
         
@@ -41,8 +41,6 @@ class agent:
         states, nextStates, moves, rewards = [], [], [], []
         for m in batch:
             states.append(m[0])
-            moves.append(m[1])
-            rewards.append(m[2])
             nextStates.append(m[3])
 
         states = np.array(states)
@@ -51,11 +49,13 @@ class agent:
         Qpredictions = self.net.predict(states.reshape(self.batchSize, self.numtargets, 3, 1))
         futureQPredictions = self.targetNet.predict(nextStates.reshape(self.batchSize, self.numtargets, 3, 1))
 
+        print(Qpredictions[:])
         for i, (obs, action, reward, nextObs) in enumerate(batch):
             if self.env.step < self.env.epLen:
                 Qpredictions[i][action] = reward + futureQPredictions[i][action]*self.eps
             else:
                 Qpredictions[i][action] = reward
+        print(Qpredictions[:])
 
         if self.env.step ==  self.env.epLen:
             if self.sinceUpdate == self.updateRate:
@@ -73,10 +73,10 @@ class agent:
         return self.targetNet.predict(npObs.reshape(-1, self.numtargets, 3, 1))
 
     def genAction(self, show=False):
-        npObs = np.array(self.env.env)[:]*.1
+        npObs = np.array(self.env.getObs())[:]*.1
 
         if np.random.uniform() < self.eps:
-            prediction = self.targetNet.predict(npObs.reshape(-1, self.env.size, self.env.size, 1))
+            prediction = self.targetNet.predict(npObs.reshape(-1, self.numtargets, 3, 1))
             if show:
                 print(prediction)
             return np.argmax(prediction), 'exploit'
