@@ -38,18 +38,14 @@ class agent:
         if len(self.memories) < self.memreq:
             return
         batch = random.sample(self.memories, self.batchSize)
-        states, nextStates, moves, rewards = [], [], [], []
-        for m in batch:
-            states.append(m[0])
-            nextStates.append(m[3])
 
-        states = np.array(states)
-        nextStates = np.array(nextStates)
+        states = np.array([s[0][:] for s in batch])[:]*.1
+        nextStates = np.array([s[3][:] for s in batch])[:]*.1
 
         Qpredictions = self.net.predict(states.reshape(self.batchSize, self.numtargets, 3, 1))
         futureQPredictions = self.targetNet.predict(nextStates.reshape(self.batchSize, self.numtargets, 3, 1))
 
-        print(Qpredictions[:])
+        print(futureQPredictions[:])
         for i, (obs, action, reward, nextObs) in enumerate(batch):
             if self.env.step < self.env.epLen:
                 Qpredictions[i][action] = reward + futureQPredictions[i][action]*self.eps
@@ -68,7 +64,7 @@ class agent:
         self.net.fit(np.array(states).reshape(self.batchSize, self.numtargets, 3, 1), np.array(Qpredictions),
                     batch_size = self.batchSize, verbose=1, callbacks = None)
 
-    def predict(self, obs):
+    def predict(self, obs, target = True):
         npObs = np.array(obs)[:]*.1
         return self.targetNet.predict(npObs.reshape(-1, self.numtargets, 3, 1))
 

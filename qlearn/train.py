@@ -27,8 +27,9 @@ episodeLength = 15
 e = dwarf.env(worldSize, foodCount, bombCount, episodeLength)
 c = bond.agent(e, updateRate = 10)
 c.genModels(discount=.8,epsilon=.95,learnRate=.7)
-c.memreq = 200
-c.batchSize = 64
+
+c.memreq = 25
+c.batchSize = 4
 
 stime = time.time()
 for i in range(1, episodes+1):
