@@ -43,15 +43,17 @@ class agent:
         nextStates = np.array([s[3][:] for s in batch])[:]*.1
 
         Qpredictions = self.net.predict(states.reshape(self.batchSize, self.numtargets, 3, 1))
-        futureQPredictions = self.targetNet.predict(nextStates.reshape(self.batchSize, self.numtargets, 3, 1))
+        #futureQPredictions = self.targetNet.predict(nextStates.reshape(self.batchSize, self.numtargets, 3, 1))
 
-        print(futureQPredictions[:])
+        print(Qpredictions)
         for i, (obs, action, reward, nextObs) in enumerate(batch):
             if self.env.step < self.env.epLen:
-                Qpredictions[i][action] = reward + futureQPredictions[i][action]*self.eps
+                #Qpredictions[i][action] = reward + futureQPredictions[i][action]*self.eps
+                Qpredictions[i][action] = reward
             else:
                 Qpredictions[i][action] = reward
-        print(Qpredictions[:])
+        print(Qpredictions)
+
 
         if self.env.step ==  self.env.epLen:
             if self.sinceUpdate == self.updateRate:

@@ -70,7 +70,7 @@ class env:
             self.posx = pos[0]
             self.posy = pos[1]
 
-    def reset(self):s
+    def reset(self):
         t = self.episodeReward
         self.env = makePlane(self.size, blankTile)
         self.episodeReward = 0
