@@ -11,25 +11,19 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-a = []
-
-
-avgReward = 0
-avgEpTime = 0
 
 worldSize = 5
-foodCount = 1
-bombCount = 1
+foodCount = 4
+bombCount = 4
 
-episodes = 1000
+episodes = 100000
 episodeLength = 15
 
 e = dwarf.env(worldSize, foodCount, bombCount, episodeLength)
-c = bond.agent(e, updateRate = 10)
-c.genModels(discount=.8,epsilon=.95,learnRate=.7)
+c = bond.agent(e, updateRate = 10, discount=.8,epsilon=.95,learnRate=.1)
 
-c.memreq = 200
-c.batchSize = 32
+c.memreq = 300
+c.batchSize = 64
 
 stime = time.time()
 for i in range(1, episodes+1):
@@ -48,10 +42,7 @@ for i in range(1, episodes+1):
         #print(f"{action}: {type}")
         print(f"{bcolors.OKGREEN}Episode {i}, Step {e.step}   Last move reward: {stepReward}   Total episode reward: {e.episodeReward}{bcolors.OKBLUE}")
 
-    if i*episodeLength > c.memreq:
-        avgEpTime += time.time()-stime
-        avgReward += e.episodeReward
-        print(f"\033[91m\033[1mEp{i}: Average reward: {avgReward/i}, {(time.time()-stime)/i} seconds per episode")
+
 
 
 

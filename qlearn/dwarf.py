@@ -1,10 +1,9 @@
 import cv2, random, numpy as np
 from PIL import Image
 
-foodReward = 30
-bombPenalty = -10
+foodReward = 100
+bombPenalty = -100
 movePenalty = -1
-
 
 blankTile = 0
 foodTile = 1
@@ -44,12 +43,12 @@ class bcolors:
 
 class env:
     def __init__(self, size, food, bomb, eplen, env = None, pos = None):
-        self.size=size
+        self.size = size
         self.food = food
         self.bomb = bomb
         self.epLen = eplen
         self.moves = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-        self.colorDict = {agentTile:bcolors.OKBLUE + bcolors.BOLD, 
+        self.colorDict = {agentTile:bcolors.OKCYAN + bcolors.BOLD, 
                           blankTile:bcolors.ENDC, 
                           bombTile:bcolors.FAIL, 
                           foodTile:bcolors.OKGREEN}
@@ -120,7 +119,6 @@ class env:
         self.step += 1
 
         self.set(self.posx, self.posy, blankTile)
-
         self.posx += moveDirection[0]
         self.posy += moveDirection[1]
 
@@ -128,7 +126,6 @@ class env:
         self.posx = 0 if self.posx<0 else self.posx
         self.posy = self.size-1 if self.posy>=self.size else self.posy
         self.posy = 0 if self.posy<0 else self.posy
-
         dest = self.get(self.posx, self.posy)
 
         if dest == foodTile:
@@ -138,7 +135,6 @@ class env:
         moveReward += movePenalty
 
         self.set(self.posx, self.posy, agentTile)
-
         self.episodeReward += moveReward
         return self.getObs(), moveReward
 
@@ -177,69 +173,6 @@ class env:
         im = im.resize((400, 400), resample=Image.NEAREST)
         cv2.imshow("game", np.array(im))
         cv2.waitKey(1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

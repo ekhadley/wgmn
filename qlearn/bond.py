@@ -6,8 +6,19 @@ from tensorflow.keras.callbacks import TensorBoard
 log_dir = "qlearn/qlearnlogs"
 tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 class agent:
-    def __init__(self, env, updateRate):
+    def __init__(self, env, updateRate, discount, epsilon, learnRate):
         self.env = env
         self.memories = []
         self.memlen = 100000
@@ -17,43 +28,41 @@ class agent:
         self.numtargets = self.env.food + self.env.bomb
         self.batchSize = 500
 
-    def genModels(self, discount, epsilon, learnRate):
+        self.net = self.genModel(discount, epsilon, learnRate)
+        self.targetNet = self.genModel(discount, epsilon, learnRate)
+        self.updateTarget()
+
+    def genModel(self, discount, epsilon, learnRate):
         self.disc = discount
         self.eps = epsilon
         self.ler = learnRate
 
-        self.net = keras.models.Sequential()
-        self.net.add(keras.layers.Conv2D(64, (1,1), input_shape=(self.numtargets, 3, 1), activation = "relu"))
+        net = keras.models.Sequential()
+        net.add(keras.layers.Conv2D(64, (3, 3), input_shape=(self.numtargets, 3, 1), activation = "relu"))
 #        self.net.add(keras.layers.Conv2D(64, (3,3), input_shape=(self.size, self.size, 3, 1), activation = "relu"))
-        self.net.add(keras.layers.Flatten())
-        self.net.add(keras.layers.Dense(128))
-        self.net.add(keras.layers.Dropout(.2))
-        self.net.add(keras.layers.Dense(4, activation="linear"))
+        net.add(keras.layers.Flatten())
+        net.add(keras.layers.Dense(128))
+        net.add(keras.layers.Dropout(.2))
+        net.add(keras.layers.Dense(len(self.env.moves), activation="linear"))
         
-        self.targetNet = keras.models.clone_model(self.net)
-        self.net.compile(loss="mse", optimizer = keras.optimizers.Adam(lr=self.ler), metrics = ['accuracy'])
-        self.targetNet.compile(loss="mse", optimizer = keras.optimizers.Adam(lr=self.ler), metrics = ['accuracy'])
+        net.compile(loss="mse", optimizer = keras.optimizers.Adam(lr=self.ler), metrics = ['accuracy'])
+        return net
+
 
     def train(self):
         if len(self.memories) < self.memreq:
             return
         batch = random.sample(self.memories, self.batchSize)
-
         states = np.array([s[0][:] for s in batch])[:]*.1
         nextStates = np.array([s[3][:] for s in batch])[:]*.1
-
         Qpredictions = self.net.predict(states.reshape(self.batchSize, self.numtargets, 3, 1))
-        #futureQPredictions = self.targetNet.predict(nextStates.reshape(self.batchSize, self.numtargets, 3, 1))
+        futureQPredictions = self.targetNet.predict(nextStates.reshape(self.batchSize, self.numtargets, 3, 1))
 
-        print(Qpredictions)
         for i, (obs, action, reward, nextObs) in enumerate(batch):
             if self.env.step < self.env.epLen:
-                #Qpredictions[i][action] = reward + futureQPredictions[i][action]*self.eps
-                Qpredictions[i][action] = reward
+                Qpredictions[i][action] = reward + np.max(futureQPredictions[i])*self.eps
             else:
                 Qpredictions[i][action] = reward
-        print(Qpredictions)
-
 
         if self.env.step ==  self.env.epLen:
             if self.sinceUpdate == self.updateRate:
@@ -93,3 +102,4 @@ class agent:
         obs = self.env.getObs()
         reward, newEnv = self.env.simAction(action)
         return [obs, action, reward, newEnv]
+
