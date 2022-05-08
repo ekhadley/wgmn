@@ -157,7 +157,7 @@ class env:
         print(bcolors.BOLD + bcolors.WARNING)
 
     def display(self):
-        colors = {blankTile:np.array([0, 0, 0]), agentTile:np.array([200, 50, 10]), 
+        colors = {blankTile:np.array([0, 0, 0]), agentTile:np.array([250, 200, 10]), 
                   bombTile:np.array([40, 0, 250]), foodTile:np.array([50, 250, 0])}
 
         envArray = np.array(self.env, dtype=np.uint8)
