@@ -2,10 +2,6 @@ import random, numpy as np, datetime
 from tensorflow import keras
 from tensorflow.keras.callbacks import TensorBoard
 
-#log_dir = "qlearn/qlearnlogs" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-log_dir = "qlearn/qlearnlogs"
-tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
-
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -24,9 +20,13 @@ class agent:
         self.memlen = 100000
         self.memreq = 1000
         self.updateRate = updateRate
-        self.sinceUpdate = 0
+        self.episode = 0
         self.numtargets = self.env.food + self.env.bomb
         self.batchSize = 500
+
+        #log_dir = "qlearn/qlearnlogs" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        log_dir = f"qlearn/logs/step{self.episode*self.env.epLen + self.env.step}"
+        self.tb = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
         self.net = self.genModel(discount, epsilon, learnRate)
         self.targetNet = self.genModel(discount, epsilon, learnRate)
@@ -48,7 +48,6 @@ class agent:
         net.compile(loss="mse", optimizer = keras.optimizers.Adam(lr=self.ler), metrics = ['accuracy'])
         return net
 
-
     def train(self):
         if len(self.memories) < self.memreq:
             return
@@ -65,15 +64,13 @@ class agent:
                 Qpredictions[i][action] = reward
 
         if self.env.step ==  self.env.epLen:
-            if self.sinceUpdate == self.updateRate:
-                self.sinceUpdate = 0
+            self.episode = 1
+            if self.episode%self.updateRate == 0:
                 self.updateTarget()
-            else:
-                self.sinceUpdate += 1
 
         #print(Qpredictions[:])
         self.net.fit(np.array(states).reshape(self.batchSize, self.numtargets, 3, 1), np.array(Qpredictions),
-                    batch_size = self.batchSize, verbose=1, callbacks = None)
+                    batch_size = self.batchSize, verbose=1, callbacks = [self.tb])
 
     def predict(self, obs, target = True):
         npObs = np.array(obs)[:]*.1
