@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup as bs4
-import requests, discord
+import requests, discord, random
 
 client = discord.Client()
 grace = False
