@@ -81,8 +81,8 @@ async def on_message(message):
         except AttributeError:
             await message.channel.send('https://tenor.com/view/who-dat-snoop-gif-15116696')
 
-#key = open("C:\\Users\\ekhad\\Desktop\\frigkey.txt", "r")
-key = open("C:\\Users\\ek\\Desktop\\frigkey.txt", "r")
+key = open("C:\\Users\\ekhad\\Desktop\\frigkey.txt", "r")
+#key = open("C:\\Users\\ek\\Desktop\\frigkey.txt", "r")
 frigkey = key.readline()
 client.run(frigkey)
 
