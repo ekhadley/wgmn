@@ -56,9 +56,11 @@ async def on_message(message):
             choice = 'maybe'
         await message.channel.send(choice)
 
-    if "!lp " in message.content.lower():
+    if "!LP " in message.content or '!lp ' in message.content or '!Lp ' in message.content or '!lP ' in message.content:
         msg = list(message.content)
-        name = msg[4:-1]
+        name = ''
+        for i in range(4, len(msg)):
+            name += msg[i]
 
         try:
             page = bs4(requests.get('https://u.gg/lol/profile/na1/' + name + '/overview').text, 'html.parser')
