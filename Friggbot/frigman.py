@@ -14,4 +14,4 @@ class MyClient(discord.Client):
            await self.channel.send("yes, this is ozzy speaking")
 
 client = MyClient()
-client.run('MzUyMjI2MDQ1MjI4ODc1Nzg2.YngUnA.hORVUTyrazkOOm-6iF-A6XIHJCU')
+client.run('MzUyMjI2MDQ1MjI4ODc1Nzg2.YnhbAA.G_yITzIf18Eu6p7Y29grnKqBlHs')
