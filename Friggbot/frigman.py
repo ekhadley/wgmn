@@ -1,4 +1,4 @@
-import discord, ssl
+import discord, ssl, asyncio
 from discord.ext import tasks
 
 class MyClient(discord.Client):
@@ -10,8 +10,8 @@ class MyClient(discord.Client):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
 
     async def on_message(self, message):
-        if "ozzy" in message.content:
-           await self.channel.send("yes, this is ozzy speaking")
+        if "test" in message.content:
+           await self.channel.send("yeg")
 
 client = MyClient()
 client.run('MzUyMjI2MDQ1MjI4ODc1Nzg2.YnhbAA.G_yITzIf18Eu6p7Y29grnKqBlHs')
