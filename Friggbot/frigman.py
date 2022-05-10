@@ -14,4 +14,4 @@ class MyClient(discord.Client):
            await self.channel.send("yeg")
 
 client = MyClient()
-client.run('MzQ1MTM1NTA1MDQzNzUwOTEy.YnhmkQ.ie7YQoKui4wVHZfPYIX-eVX3z0o')
+client.run('MzUyMjI2MDQ1MjI4ODc1Nzg2.G-601j.ZGCBqrQmpmU0NoYCZvJgHuPO-3rsd_bpFVTa6g')
