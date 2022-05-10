@@ -69,8 +69,9 @@ class bot:
             openai.api_key = open("C:\\Users\\ekhad\\Desktop\\frig\\openaikey.txt").readline()
             resp = openai.Completion.create(
                 prompt=m.replace("!gpt3 ",""),
+                temperature=.1,
                 engine="text-davinci-002",
-                max_tokens=300,
+                max_tokens=200,
                 top_p=1,
                 frequency_penalty=0,
                 presence_penalty=0)
