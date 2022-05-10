@@ -3,9 +3,17 @@ from selenium.webdriver.common.keys import Keys
 import time, bot
 
 
+try:
+    dpath = "D:\\frigdrivers\\chrome80driver\\chromedriver.exe"
+    pwd = open("D:\\frigdrivers\\pass\\notthepassword.txt", "r").readline()
+except:
+    pass
+try:
+    dpath = "C:\\users\\ek\\Desktop\\frig\\chromedriver.exe"
+    pwd = open("C:\\users\\ek\\Desktop\\frig\\notthepassword.txt", "r").readline()
+except:
+    pass
 
-dpath = "D:\\frigdrivers\\chrome80driver\\chromedriver.exe"
-pwd = open("D:\\frigdrivers\\pass\\notthepassword.txt", "r").readline()
 driver = webdriver.Chrome(dpath)
 
 driver.get("https://discord.com/login")
