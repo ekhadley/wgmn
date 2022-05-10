@@ -1,4 +1,4 @@
-import selenium, time, random, requests
+import selenium, time, random, requests, openai
 from bs4 import BeautifulSoup as bs4
 class bot:
     def __init__(self, driver):
@@ -38,7 +38,7 @@ class bot:
     def onMessage(self):
         m = self.lastSeen.content
         for i, e in enumerate(self.responses):
-            if e == m.lower():
+            if e in m.lower():
                 self.send(self.responses[e])
 
         if "cemb cemb" in m.lower():
@@ -60,9 +60,22 @@ class bot:
                 if "Unranked" in report:
                     report = f"{name} is not on the ranked grind"
                 self.send(report)
-                
+
             except AttributeError:
                 self.send('https://tenor.com/view/who-dat-snoop-gif-15116696')
+
+        if "!gpt3" in m:
+            print("gpt request received. . .")
+            openai.api_key = open("C:\\Users\\ekhad\\Desktop\\frig\\openaikey.txt").readline()
+            resp = openai.Completion.create(
+                prompt=m.replace("!gpt3 ",""),
+                engine="text-davinci-002",
+                max_tokens=300,
+                top_p=1,
+                frequency_penalty=0,
+                presence_penalty=0)
+            print("request processed. . .")
+            self.send(resp.choices[0].text)
 
 class msg:
     def __init__(self):

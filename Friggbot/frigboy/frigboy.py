@@ -30,6 +30,7 @@ time.sleep(.3)
 
 frig = bot.bot(driver)
 
+print("friggbot initiated . . .")
 while 1:
     frig.readLast()
     #print(f"{frig.lastSeen.content}, sent by {frig.lastSeen.sender} at {frig.lastSeen.time}")
