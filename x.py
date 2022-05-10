@@ -1,6 +1,10 @@
 l = [1, 2, 3]
 
-for i, x in enumerate(l):
-    l[i] += 1
+s = "!lpkr eekay01"
 
-print(l)
+#print(s[0:s.index(" ")].replace("!lp", ""))
+
+region = s[0:s.index(" ")].replace("!lp", "")
+name = s.replace(f"!lp{region} ", "")
+region = "na1" if region=="" else region
+print(f"{name},{region}")

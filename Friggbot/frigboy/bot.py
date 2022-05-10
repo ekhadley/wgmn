@@ -44,7 +44,25 @@ class bot:
         if "cemb cemb" in m.lower():
             self.send(random.choice(["yes", "no", "c'est possible"]))
 
-
+        if "!lp" in m.lower():
+            region = m[0:m.index(" ")].replace("!lp", "")
+            name = m.replace(f"!lp{region} ", "")
+            region = "na1" if region=="" else region
+            try:
+                page = bs4(requests.get(f"https://u.gg/lol/profile/{region}/{name}/overview").text, 'html.parser')
+                page = list(str(page.find("div", class_="rank-text").text))
+                report = name +' is in '
+                for i in range(0, len(page)):
+                    if page[i] == '/':
+                        report += ' at '
+                    else:
+                        report += page[i]
+                if "Unranked" in report:
+                    self.send(name + ' is not on the ranked grind')
+                
+                self.send(report)
+            except AttributeError:
+                self.send('https://tenor.com/view/who-dat-snoop-gif-15116696')
 
 class msg:
     def __init__(self):
