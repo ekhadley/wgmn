@@ -1,16 +1,20 @@
-import zenon
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
 
-token = "MzUyMjI2MDQ1MjI4ODc1Nzg2.YnhbAA.G_yITzIf18Eu6p7Y29grnKqBlHs"
+dpath = "D:\\frigdrivers\\chrome80driver\\chromedriver.exe"
+pwd = open("D:\\frigdrivers\\pass\\notthepassword.txt", "r").readline()
+driver = webdriver.Chrome(dpath)
 
+driver.get("https://discord.com/login")
+#driver.get("https://discord.com/channels/@me/551246526924455937")
 
-def on_message():
-    while True:
-        chatid = "551246526924455937"
-        message = client.get_message(chatid)
-        if message == "!test":
-            client.send_message(chatid, "lorem ipsum")
-        
-if __name__ == '__main__':
-    client = zenon.Client(token)
-    # client = zenon.Client(token, proxy = "ip:port")
-    client.func_loop(on_message)
+time.sleep(1)
+driver.find_element_by_name("email").send_keys("21438709a@gmail.com")
+driver.find_element_by_name("password").send_keys(pwd)
+driver.find_element_by_css_selector('[type=submit]').click()
+
+time.sleep(5)
+driver.find_element_by_css_selector('[data-list-item-id="private-channels-uid_372___551246526924455937]').click()
+
+time.sleep(5)
