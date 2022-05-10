@@ -1,10 +1,12 @@
-l = [1, 2, 3]
+import openai
 
-s = "!lpkr eekay01"
-
-#print(s[0:s.index(" ")].replace("!lp", ""))
-
-region = s[0:s.index(" ")].replace("!lp", "")
-name = s.replace(f"!lp{region} ", "")
-region = "na1" if region=="" else region
-print(f"{name},{region}")
+openai.api_key = open("D:\\frigdrivers\\pass\\key.txt").readline()
+resp = openai.Completion.create(
+     prompt= "Ethan Kilgore Hadley, usually" ,
+     engine="text-davinci-002",
+     max_tokens=300,
+     top_p=1,
+     frequency_penalty=0,
+     presence_penalty=0)
+     
+print(resp)
