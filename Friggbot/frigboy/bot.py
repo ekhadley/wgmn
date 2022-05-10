@@ -38,7 +38,7 @@ class bot:
     def onMessage(self):
         m = self.lastSeen.content
         for i, e in enumerate(self.responses):
-            if e == m:
+            if e == m.lower():
                 self.send(self.responses[e])
 
         if "cemb cemb" in m.lower():
@@ -58,9 +58,9 @@ class bot:
                     else:
                         report += page[i]
                 if "Unranked" in report:
-                    self.send(name + ' is not on the ranked grind')
-                
+                    report = f"{name} is not on the ranked grind"
                 self.send(report)
+                
             except AttributeError:
                 self.send('https://tenor.com/view/who-dat-snoop-gif-15116696')
 

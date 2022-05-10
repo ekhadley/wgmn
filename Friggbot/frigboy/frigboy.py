@@ -9,8 +9,8 @@ try:
 except:
     pass
 try:
-    dpath = "C:\\users\\ek\\Desktop\\frig\\chromedriver.exe"
-    pwd = open("C:\\users\\ek\\Desktop\\frig\\notthepassword.txt", "r").readline()
+    dpath = "C:\\Users\\ekhad\\Desktop\\frig\\chrome101\chromedriver.exe"
+    pwd = open("C:\\Users\\ekhad\\Desktop\\frig\\notthepassword.txt", "r").readline()
 except:
     pass
 
