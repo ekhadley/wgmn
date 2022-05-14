@@ -18,7 +18,13 @@ driver.find_element_by_name("password").send_keys(pwd)
 driver.find_element_by_css_selector('[type=submit]').click()
 
 time.sleep(3)
-driver.find_element_by_css_selector('.subtext-14b69p').click()
+while 1:
+    try:
+        driver.find_element_by_css_selector('.overflow-1wOqNV').click()
+        break
+    except:
+        time.sleep(.5)
+        
 time.sleep(.3)
 
 
