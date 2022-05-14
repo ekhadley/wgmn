@@ -102,9 +102,9 @@ class bot:
 
     def getOnline(self):
         ppl = self.driver.find_elements_by_css_selector(".layout-1qmrhw")
-        online = [e.find_element_by_css_selector(".name-3Vmqxm").text for e in ppl if len(e.find_elements_by_css_selector("rect")) > 0]
-        #online = [e[e.index("\n"):-1] for e in online if "\n" in e]
-        return set(online)
+        online = [e.find_element_by_css_selector(".name-3Vmqxm") for e in ppl if len(e.find_elements_by_css_selector("rect")) > 0]
+        onPC = set([e.text for e in online if len(e.find_elements_by_css_selector("x")) == 0])
+        return onPC
 
 class msg:
     def __init__(self):

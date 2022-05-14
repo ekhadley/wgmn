@@ -1,7 +1,7 @@
 from PIL import Image
 import cv2, numpy as np
 
-pcs = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\pc2.jpg"))
+pcs = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\pcs.jpg"))
 done = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\done.jpg"))
 
 sift = cv2.SIFT_create()
@@ -13,15 +13,14 @@ matches = flann.knnMatch(desc1,desc2,k=2)
 
 matchesMask = [[0, 0] for i in range(len(matches))]
 matchIndex = []
+
 for i, (m,n) in enumerate(matches):
-    if m.distance < 0.6*n.distance:
+    if m.distance < 0.7*n.distance:
         matchesMask[i]=[1,0]
         matchIndex.append(i)
 
 print(sum(m[0] for m in matchesMask))
-
 matchedPos = [points1[i].pt for i in matchIndex]
-print(matchedPos)
 
 draw_params = dict(matchColor = (0,255,0),
                    singlePointColor = (255,0,0),
@@ -41,6 +40,3 @@ while 1:
 #    cv2.imshow("done", cv2.resize(done, (430, 400)))
     cv2.imshow("matched", cv2.resize(matchImg, (1600, 800)))
 
-    
-    if cv2.waitKey(1) & 0xFF == ord('q'): 
-        break
