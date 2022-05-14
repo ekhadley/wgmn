@@ -1,22 +1,18 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import time, bot
+import time, bot, os
 
-
-try:
+if "ekhad" in os.listdir("C:\\Users"):
+    dpath = "C:\\Users\\ekhad\\Desktop\\frig\\chrome101\\chromedriver.exe"
+    pwd = open("C:\\Users\\ekhad\\Desktop\\frig\\notthepassword.txt", "r").readline()
+else:
     dpath = "D:\\frigdrivers\\chrome80driver\\chromedriver.exe"
     pwd = open("D:\\frigdrivers\\pass\\notthepassword.txt", "r").readline()
-except:
-    pass
-try:
-    dpath = "C:\\Users\\ekhad\\Desktop\\frig\\chrome101\chromedriver.exe"
-    pwd = open("C:\\Users\\ekhad\\Desktop\\frig\\notthepassword.txt", "r").readline()
-except:
-    pass
+
 
 driver = webdriver.Chrome(dpath)
-
 driver.get("https://discord.com/login")
+
 
 time.sleep(.5)
 driver.find_element_by_name("email").send_keys("21438709a@gmail.com")
@@ -29,8 +25,8 @@ time.sleep(.3)
 
 
 frig = bot.bot(driver)
-
 print("friggbot initiated . . .")
 while 1:
     frig.readLast()
+    frig.intro()
     #print(f"{frig.lastSeen.content}, sent by {frig.lastSeen.sender} at {frig.lastSeen.time}")

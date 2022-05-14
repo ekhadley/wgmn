@@ -1,3 +1,4 @@
+from re import A
 import selenium, time, random, requests, openai
 from bs4 import BeautifulSoup as bs4
 class bot:
@@ -5,6 +6,7 @@ class bot:
         self.driver = driver
         self.lastSeen = msg()
         self.name = "FriggBot2000"
+        self.online = self.getOnline()
         self.responses = {
             "gaming":"GÅMING!",
             "lith":"https://cdn.discordapp.com/attachments/785014933758410796/785032262206226442/image0.jpg",
@@ -15,6 +17,16 @@ class bot:
             "weirdchamp":"https://cdn.discordapp.com/attachments/785015097927139348/785219023654354964/lmao.png",
             "nog":"https://cdn.discordapp.com/attachments/785014933758410796/785258888478851082/eggy.png",
             "wgmn":"https://cdn.discordapp.com/attachments/551246526924455937/783217821776740352/image0.gif",
+        }
+
+        self.introductions = {
+            "eekay":"https://tenor.com/view/kinoplex-ethan-gif-24282665",
+            "CaMelon":"https://tenor.com/view/camel-go-camel-go-go-ark-never-gonna-break-my-stride-walk-gif-20059775",
+            "Xylotile":"https://tenor.com/view/william-william-gaming-clownzy-clownzy-buddy-gif-22541192",
+            "ErfBundy":"https://tenor.com/view/gavin-discord-gif-22590938",
+            "Joguitaro":"https://discord.com/channels/@me/974896094637064262/974896234877829121",
+            "ASlowFatHorsey":"https://discord.com/channels/@me/974896094637064262/975013181950951514",
+            "jakecrewa":"https://tenor.com/view/silent-gift-tr-the-realness-gif-14030327"
         }
 
     def readLast(self):
@@ -35,7 +47,6 @@ class bot:
         print("typing . . .")
         self.driver.find_element_by_css_selector('[role=textbox]').send_keys(msg, selenium.webdriver.common.keys.Keys.ENTER)
         print("response finished . . .")
-
 
     def onMessage(self):
         m = self.lastSeen.content
@@ -79,6 +90,21 @@ class bot:
                 presence_penalty=0)
             print("request processed. . .")
             self.send(resp.choices[0].text)
+
+    def intro(self):
+        old = self.online
+        new = self.getOnline()
+        for e in new:
+            if e not in old:
+                self.send(self.introductions[e])
+        if old != new:
+            self.online = new 
+
+    def getOnline(self):
+        ppl = self.driver.find_elements_by_css_selector(".layout-1qmrhw")
+        online = [e.find_element_by_css_selector(".name-3Vmqxm").text for e in ppl if len(e.find_elements_by_css_selector("rect")) > 0]
+        #online = [e[e.index("\n"):-1] for e in online if "\n" in e]
+        return set(online)
 
 class msg:
     def __init__(self):
