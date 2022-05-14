@@ -24,7 +24,7 @@ class bot:
             "CaMelon":"https://tenor.com/view/camel-go-camel-go-go-ark-never-gonna-break-my-stride-walk-gif-20059775",
             "Xylotile":"https://tenor.com/view/william-william-gaming-clownzy-clownzy-buddy-gif-22541192",
             "ErfBundy":"https://tenor.com/view/gavin-discord-gif-22590938",
-            "Joguitaro":"https://discord.com/channels/@me/974896094637064262/974896234877829121",
+            "Joguitaro":"https://tenor.com/view/cat-spin-taylor-gif-19203154",
             "ASlowFatHorsey":"https://tenor.com/view/ap-down-revue-starlight-gif-22390985",
             "jakecrewa":"https://tenor.com/view/silent-gift-tr-the-realness-gif-14030327"
         }
