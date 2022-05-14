@@ -32,7 +32,10 @@ class bot:
             self.onMessage()
 
     def send(self, msg):
+        print("typing . . .")
         self.driver.find_element_by_css_selector('[role=textbox]').send_keys(msg, selenium.webdriver.common.keys.Keys.ENTER)
+        print("response finished . . .")
+
 
     def onMessage(self):
         m = self.lastSeen.content
@@ -68,9 +71,9 @@ class bot:
             openai.api_key = open("C:\\Users\\ekhad\\Desktop\\frig\\openaikey.txt").readline()
             resp = openai.Completion.create(
                 prompt=m.replace("!gpt3 ",""),
-                temperature=.2,
+                temperature=.5,
                 engine="text-davinci-002",
-                max_tokens=200,
+                max_tokens=250,
                 top_p=1,
                 frequency_penalty=0,
                 presence_penalty=0)
