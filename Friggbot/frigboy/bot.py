@@ -17,7 +17,6 @@ class bot:
             "wgmn":"https://cdn.discordapp.com/attachments/551246526924455937/783217821776740352/image0.gif",
         }
 
-
     def readLast(self):
         incoming = msg()
         while True:

@@ -22,7 +22,7 @@ def sign(a):
     return -1
 
 def sameSign(a, b):
-    return sign(a) == sign(b):
+    return sign(a) == sign(b)
 
 def limit(num, start, end):
     if num > end:
