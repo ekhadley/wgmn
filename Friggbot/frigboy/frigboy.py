@@ -9,10 +9,8 @@ else:
     dpath = "D:\\frigdrivers\\chrome80driver\\chromedriver.exe"
     pwd = open("D:\\frigdrivers\\pass\\notthepassword.txt", "r").readline()
 
-
 driver = webdriver.Chrome(dpath)
 driver.get("https://discord.com/login")
-
 
 time.sleep(.5)
 driver.find_element_by_name("email").send_keys("21438709a@gmail.com")

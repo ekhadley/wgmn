@@ -8,7 +8,7 @@ class bot:
         self.name = "FriggBot2000"
         self.online = self.getOnline()
         self.responses = {
-            "gaming":"GÅMING!",
+            "fdghdfghdfghdfghdfghdfghdfghdfghdfghdf":"GÅMING!",
             "lith":"https://cdn.discordapp.com/attachments/785014933758410796/785032262206226442/image0.jpg",
             "nefarious":"This computer is shared with others including parents. This is a parent speaking to you to now. Not sure what this group is up to. I have told my son that role playing d and d games are absolutely forbidden in out household. We do not mind him having online friendships with local people that he knows for legitimate purposes. Perhaps this is an innocent group. But, we expect transparency in our son's friendships and acquaintances. If you would like to identify yourself now and let me know what your purpose for this platform is this is fine. You are welcome to do so.",
             "avatars":"This computer is shared with others including parents. This is a parent speaking to you to now. Not sure what this group is up to. I have told my son that role playing d and d games are absolutely forbidden in out household. We do not mind him having online friendships with local people that he knows for legitimate purposes. Perhaps this is an innocent group. But, we expect transparency in our son's friendships and acquaintances. If you would like to identify yourself now and let me know what your purpose for this platform is this is fine. You are welcome to do so.",
@@ -25,7 +25,7 @@ class bot:
             "Xylotile":"https://tenor.com/view/william-william-gaming-clownzy-clownzy-buddy-gif-22541192",
             "ErfBundy":"https://tenor.com/view/gavin-discord-gif-22590938",
             "Joguitaro":"https://discord.com/channels/@me/974896094637064262/974896234877829121",
-            "ASlowFatHorsey":"https://discord.com/channels/@me/974896094637064262/975013181950951514",
+            "ASlowFatHorsey":"https://tenor.com/view/ap-down-revue-starlight-gif-22390985",
             "jakecrewa":"https://tenor.com/view/silent-gift-tr-the-realness-gif-14030327"
         }
 
@@ -51,7 +51,7 @@ class bot:
     def onMessage(self):
         m = self.lastSeen.content
         for i, e in enumerate(self.responses):
-            if e in m.lower():
+            if e == m.lower():
                 self.send(self.responses[e])
 
         if "cemb cemb" in m.lower():
