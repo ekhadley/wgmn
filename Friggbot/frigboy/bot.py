@@ -1,4 +1,3 @@
-from re import A
 import selenium, time, random, requests, openai
 from bs4 import BeautifulSoup as bs4
 class bot:
