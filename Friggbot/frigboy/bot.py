@@ -73,12 +73,14 @@ class bot:
                         report += page[i]
                 if "Unranked" in report:
                     report = f"{name} is not on the ranked grind"
-                if region not in regions:
-                    report = f"region not recognized. Recognized regions: {regions[:]}"
-                self.send(report)
 
             except AttributeError:
-                self.send('https://tenor.com/view/who-dat-snoop-gif-15116696')
+                if region not in regions:
+                    report = f"region not recognized. Recognized regions: {regions[:]}"
+                else:
+                    report = 'https://tenor.com/view/who-dat-snoop-gif-15116696'
+
+            self.send(report)
 
         if "!gpt3" in m:
             print("gpt request received. . .")
