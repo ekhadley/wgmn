@@ -1,42 +1,21 @@
 from PIL import Image
 import cv2, numpy as np
+import funcs
 
-pcs = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\pc3.jpg"))
-done = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\done.jpg"))
+pcs = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\allpc.jpg"))
+target = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\done.jpg"))
 
-sift = cv2.SIFT_create()
-points1, desc1 = sift.detectAndCompute(pcs, None)
-points2, desc2 = sift.detectAndCompute(done, None)
+read = funcs.reader()
 
-flann = cv2.FlannBasedMatcher(dict(algorithm = 1, trees = 5), dict(checks=50))
-matches = flann.knnMatch(desc1,desc2,k=2)
+points1, points2, matches, matchesMask, matchIndexes = read.findAndMatch(pcs, target, .6)
+matchImg = read.genMatchImg(pcs, target, points1, points2, matches, matchesMask)
 
-matchesMask = [[0, 0] for i in range(len(matches))]
-matchIndex = []
-for i, (m,n) in enumerate(matches):
-    if m.distance < 0.8*n.distance:
-        matchesMask[i]=[1,0]
-        matchIndex.append(i)
+queryPos, targetPos = read.getMatchPositions(points1, points2, matches, matchesMask)
 
 print(f"features matched: {sum(m[0] for m in matchesMask)}")
 
-queryMatchPos = [points1[i].pt for i in matchIndex]
-targetMatchPos = [points2[i].pt for i in matchIndex]
-
-draw_params = dict(matchColor = (0,255,0),
-                   singlePointColor = (255,0,0),
-                   matchesMask = matchesMask,
-                   flags = cv2.DrawMatchesFlags_DEFAULT)
-
-matchImg = cv2.drawMatchesKnn(pcs, points1, done, points2, matches, None, **draw_params)
-
-for x, y in queryMatchPos:
-    x, y = round(x), round(y)
-    cv2.circle(matchImg, (x, y), 20, (20, 120, 220), 7)
-
-for x, y in targetMatchPos:
-    x, y = round(x) + len(pcs[0]), round(y)
-    cv2.circle(matchImg, (x, y), 20, (20, 120, 220), 7)
+funcs.circles(matchImg, queryPos)
+funcs.circles(matchImg, [(e[0] + len(pcs[0]), e[1]) for e in targetPos])
 
 cv2.imwrite("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\matches.jpg", matchImg)
 
