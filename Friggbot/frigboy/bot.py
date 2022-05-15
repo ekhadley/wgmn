@@ -61,6 +61,7 @@ class bot:
             region = m[0:m.index(" ")].replace("!lp", "")
             name = m.replace(f"!lp{region} ", "")
             region = "na1" if region=="" else region
+            regions = ["na1", "euw1", "eun1", "kr", "br1", "jp1", "ru", "oc1", "tr1", "la1", ""]
             try:
                 page = bs4(requests.get(f"https://u.gg/lol/profile/{region}/{name}/overview").text, 'html.parser')
                 page = list(str(page.find("div", class_="rank-text").text))
@@ -72,6 +73,8 @@ class bot:
                         report += page[i]
                 if "Unranked" in report:
                     report = f"{name} is not on the ranked grind"
+                if region not in regions:
+                    report = f"region not recognized. Recognized regions: {regions[:]}"
                 self.send(report)
 
             except AttributeError:
