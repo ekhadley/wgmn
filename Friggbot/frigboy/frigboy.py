@@ -24,7 +24,7 @@ while 1:
         break
     except:
         time.sleep(.5)
-        
+
 time.sleep(.3)
 
 
@@ -32,6 +32,6 @@ frig = bot.bot(driver)
 print("friggbot initiated . . .")
 while 1:
     frig.readLast()
-    frig.intro()
-    print(frig.online)
+    #frig.intro()
+    #print(frig.online)
     #print(f"{frig.lastSeen.content}, sent by {frig.lastSeen.sender} at {frig.lastSeen.time}")
