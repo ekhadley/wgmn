@@ -36,7 +36,7 @@ class reader:
                 queryPos.append(points1[i].pt)
                 targetPos.append(points2[matches[i][0].trainIdx].pt)
 
-        return queryPos, targetPos
+        return (queryPos, targetPos)
 
     def ratioTest(self, matches, t):
         matchesMask = [[0, 0] for i in range(len(matches))]
@@ -45,7 +45,30 @@ class reader:
             if m.distance < t*n.distance:
                 matchesMask[i]=[1,0]
                 matchIndexes.append([i, m.trainIdx])
-        return matchesMask, matchIndexes
+        return (matchesMask, matchIndexes)
+
+class puzzle:
+    def __init__(self, img, width, height):
+        self.img = img
+        self.imWidth = len(self.img[0])
+        self.imHeight = len(self.img)
+        self.width = width
+        self.height = height
+
+        self.pcWidth = round(self.imWidth/width)
+        self.pcHeight = round(self.imHeight/height)
+
+    def getCoordOf(self, x, y):
+        return (round(x/self.width), round(y/self.height))
+
+    def gridImg(self, width=15):
+        grid = np.copy(self.img)
+        for i in range(1, round(self.imWidth/self.pcWidth)):
+            cv2.line(grid, (i*self.pcWidth, self.imHeight),  (i*self.pcWidth, 0), (0, 0, 0), width)
+        for i in range(1, round(self.imHeight/self.pcHeight)):
+            cv2.line(grid, (self.imWidth, i*self.pcHeight),  (0, i*self.pcHeight), (0, 0, 0), width)
+
+        return grid
 
 def circles(img, pos, radius=20, color=(20, 120, 220), width=7):
     for x, y in pos:
