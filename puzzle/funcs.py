@@ -70,6 +70,9 @@ class puzzle:
 
         return grid
 
+def imscale(img, s):
+    return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)))
+
 def circles(img, pos, radius=20, color=(20, 120, 220), width=7):
     for x, y in pos:
         x, y = round(x), round(y)
