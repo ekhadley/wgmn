@@ -73,6 +73,33 @@ class puzzle:
 def imscale(img, s):
     return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)))
 
+
+def multiMatch(target, queries):
+    r = []
+    for query in queries:
+        map = cv2.matchTemplate(target, query, cv2.TM_CCORR)
+        minSim, maxSim, minSimPos, maxSimPos = cv2.minMaxLoc(map)
+        r.append([maxSimPos, map[maxSimPos[0]][maxSimPos[1]]])
+    return np.array(r)
+
+def hahaha(a):
+    return np.interp(a, (0, 255), (0, 1)).astype(np.uint8)
+
+def match(target, query, returnMap=False):
+    map = cv2.matchTemplate(target, query, cv2.TM_CCOEFF_NORMED)
+    minSim, maxSim, minSimPos, maxSimPos = cv2.minMaxLoc(map)
+    try:
+        t = (maxSimPos, map[maxSimPos[0]][maxSimPos[1]], map) if returnMap else (maxSimPos, map[maxSimPos[0]][maxSimPos[1]]) 
+    except IndexError:
+        t = (maxSimPos, 0, map) if returnMap else (maxSimPos, 0) 
+    return t
+    
+
+def rectangles(img, posList, dim, weight=15, color=(150, 0, 255)):
+    for pos in posList:
+       cv2.rectangle(img, pos, (pos[0] + dim[0], pos[1] + dim[1]), color, weight)
+    return img
+
 def circles(img, pos, radius=20, color=(20, 120, 220), width=7):
     for x, y in pos:
         x, y = round(x), round(y)
