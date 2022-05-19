@@ -20,13 +20,21 @@ class bot:
 
         self.introductions = {
             "eekay":"https://tenor.com/view/kinoplex-ethan-gif-24282665",
-#            "CaMelon":"https://tenor.com/view/camel-go-camel-go-go-ark-never-gonna-break-my-stride-walk-gif-20059775",
-            "CaMelon":"https://media.discordapp.net/attachments/551246526924455937/976959442845335632/IMG_2085.gif",
+            "CaMelon":"https://tenor.com/view/camel-go-camel-go-go-ark-never-gonna-break-my-stride-walk-gif-20059775",
             "Xylotile":"https://tenor.com/view/william-william-gaming-clownzy-clownzy-buddy-gif-22541192",
             "ErfBundy":"https://tenor.com/view/gavin-discord-gif-22590938",
             "Joguitaro":"https://tenor.com/view/cat-spin-taylor-gif-19203154",
             "ASlowFatHorsey":"https://tenor.com/view/ap-down-revue-starlight-gif-22390985",
             "jakecrewa":"https://tenor.com/view/silent-gift-tr-the-realness-gif-14030327"
+        }
+        self.intros = {
+            "eekay":"https://cdn.discordapp.com/attachments/551246526924455937/976967172364570754/IMG_2090.gif",
+            "CaMelon":"https://media.discordapp.net/attachments/551246526924455937/976959442845335632/IMG_2085.gif",
+            "Xylotile":"https://cdn.discordapp.com/attachments/972938534661009519/976969584907272263/sadf.gif",
+            "ErfBundy":"https://cdn.discordapp.com/attachments/972938534661009519/976968856423772180/sdfg.gif",
+            "Joguitaro":"https://cdn.discordapp.com/attachments/972938534661009519/976968624524906496/asdf.gif",
+            "ASlowFatHorsey":"https://cdn.discordapp.com/attachments/972938534661009519/976968254478245998/aps.gif",
+            "jakecrewa":"https://cdn.discordapp.com/attachments/972938534661009519/976970039318179840/asdfasdfasdf.gif"
         }
 
     def readLast(self):
@@ -101,7 +109,7 @@ class bot:
         new = self.getOnline()
         for e in new:
             if e not in old:
-                self.send(self.introductions[e])
+                self.send(self.intros[e])
         if old != new:
             self.online = new 
 
