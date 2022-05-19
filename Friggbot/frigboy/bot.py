@@ -20,7 +20,8 @@ class bot:
 
         self.introductions = {
             "eekay":"https://tenor.com/view/kinoplex-ethan-gif-24282665",
-            "CaMelon":"https://tenor.com/view/camel-go-camel-go-go-ark-never-gonna-break-my-stride-walk-gif-20059775",
+#            "CaMelon":"https://tenor.com/view/camel-go-camel-go-go-ark-never-gonna-break-my-stride-walk-gif-20059775",
+            "CaMelon":"https://media.discordapp.net/attachments/551246526924455937/976959442845335632/IMG_2085.gif",
             "Xylotile":"https://tenor.com/view/william-william-gaming-clownzy-clownzy-buddy-gif-22541192",
             "ErfBundy":"https://tenor.com/view/gavin-discord-gif-22590938",
             "Joguitaro":"https://tenor.com/view/cat-spin-taylor-gif-19203154",
@@ -106,8 +107,9 @@ class bot:
 
     def getOnline(self):
         ppl = self.driver.find_elements_by_css_selector(".layout-1qmrhw")
-        online = [e.find_element_by_css_selector(".name-3Vmqxm") for e in ppl if len(e.find_elements_by_css_selector("rect")) > 0]
-        onPC = set([e.text for e in online if len(e.find_elements_by_css_selector("x")) == 0])
+        online = [e.find_element_by_css_selector(".name-3Vmqxm") for e in ppl if len(e.find_elements_by_css_selector(".pointerEvents-9SZWKj")) > 0]
+        print([e.get_attribute("x") for e in online])
+        onPC = set([e.text for e in online])
         return onPC
 
 class msg:

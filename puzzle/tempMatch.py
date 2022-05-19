@@ -2,8 +2,8 @@ from PIL import Image
 import cv2, numpy as np
 from funcs import *
 
-pc = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\candy\\sub4.jpg", cv2.IMREAD_GRAYSCALE))
-target = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\candy\\reference.jpg", cv2.IMREAD_GRAYSCALE))
+pc = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\peng\\sub1.jpg", cv2.IMREAD_GRAYSCALE))
+target = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\peng\\done.jpg", cv2.IMREAD_GRAYSCALE))
 
 pc = imscale(pc, 3/8)
 
