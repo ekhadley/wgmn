@@ -1,4 +1,4 @@
-import selenium, time, random, requests, openai, numpy as np, connect4
+import selenium, time, random, requests, openai, numpy as np
 from bs4 import BeautifulSoup as bs4
 class bot:
     def __init__(self, driver):
@@ -9,7 +9,7 @@ class bot:
 
         self.c4games = []
         self.c4challenges = []
-        
+
         self.responses = {
             "fdghdfghdfghdfghdfghdfghdfghdfghdfghdf":"GÅMING!",
             "lith":"https://cdn.discordapp.com/attachments/785014933758410796/785032262206226442/image0.jpg",
@@ -21,7 +21,6 @@ class bot:
             "nog":"https://cdn.discordapp.com/attachments/785014933758410796/785258888478851082/eggy.png",
             "wgmn":"https://cdn.discordapp.com/attachments/551246526924455937/783217821776740352/image0.gif",
         }
-
         self.introductions = {
             "eekay":"https://tenor.com/view/kinoplex-ethan-gif-24282665",
             "CaMelon":"https://tenor.com/view/camel-go-camel-go-go-ark-never-gonna-break-my-stride-walk-gif-20059775",
@@ -57,7 +56,9 @@ class bot:
 
     def send(self, msg):
         print("typing . . .")
-        self.driver.find_element_by_css_selector('[role=textbox]').send_keys(msg, selenium.webdriver.common.keys.Keys.ENTER)
+        self.driver.find_element_by_css_selector('[role=textbox]').send_keys(msg)
+        time.sleep(.1)
+        self.driver.find_element_by_css_selector('[role=textbox]').send_keys(selenium.webdriver.common.keys.Keys.ENTER)
         print("response finished . . .")
 
     def onMessage(self):
@@ -77,15 +78,16 @@ class bot:
             if self.isChallenged(self.lastSeen.sender, challenged):
                 self.send("You have already challenged that user")
             elif self.isChallenged(challenged, self.lastSeen.sender):
-                self.Send("That user has already challenged you. Accept the challenge with !accept [USERNAME]")
+                self.send("That user has already challenged you. Accept the challenge with !accept [USERNAME]")
             elif challenged == self.lastSeen.sender:
                 self.send("You can't play yourself moron why are you trying to break friggbot?")
             else:
-                self.challenges.append()
-
+                self.send(f"Connect4 challenge created vs {challenged}")
+                self.c4challenges.append([self.lastSeen.sender, challenged])
         if '!accept ' in m:
             n = m.replace("@", "")
             challenger = n.replace("!accept ", "")
+            print([])
             if not self.isChallenged(challenger, self.lastSeen.sender):
                 self.send("You have not been challenged by that user")
             elif self.isInGame(self.lastSeen.sender):
@@ -93,19 +95,43 @@ class bot:
             elif self.isInGame(challenger):
                 self.send('That user is currently in a game')
             else:
+                self.c4challenges.remove([challenger, self.lastSeen.sender])
                 new = connect4(challenger, self.lastSeen.sender)
                 self.c4games.append(new)
                 self.send(f"Game started between @{new.p1} and @{new.p2}. {new.p1} goes first:")
-                new.show()
+                self.send(new.show())
         if "!c4 " in m:
-            move = m.replace("!c4 ", "")
-            if not self.isInGame(self.lastSeen.sender):
-                self.send("You are not in a game")
-            elif move > 7 or move < 1:
-                self.send(f"Invalid move. Choose a colum [1-7] to drop your piece")
-            g = self.gameOf(self.lastSeen.sender)
-            resp = g.move(move)
-            if resp == ''
+            validMove = False
+            try:
+                move = int(m.replace("!c4 ", ""))
+                validMove = True
+            except TypeError:
+                self.send("Invalid move. choose a number [1-7] for your piece")
+            if validMove:
+                if not self.isInGame(self.lastSeen.sender):
+                    self.send("You are not in a game")
+                elif move > 7 or move < 1:
+                    self.send(f"Invalid move. Choose a column [1-7] to drop your piece")
+                else:
+                    g = self.gameOf(self.lastSeen.sender)
+                    resp = g.move(self.lastSeen.sender, move)
+                    if resp == "not their move":
+                        self.send(f"It's {(g.p1 if self.lastSeen.sender != g.p1 else g.p2)}'s move")
+                    elif resp == "column full":
+                        self.send("That column is full.")
+                    else:
+                        self.send(g.show())
+                        res = g.checkEnd()
+                        if res == 'p1 win':
+                            self.send(f"{g.p1} wins. wpyiyi!")
+                            self.c4games.remove(g)
+                        if res == 'p2 win':
+                            self.send(f"{g.p2} wins. wpyiyi!")
+                            self.c4games.remove(g)
+                        if res == 'draw':
+                            self.send(f"{g.p1} wins. wpyiyi!")
+                            self.c4games.remove(g)
+
 
         if "!lp" in m.lower():
             self.send(self.getLP(m))
@@ -133,7 +159,7 @@ class bot:
                 return True
         return False
 
-    def isChallenged(self, challenged, challenger):
+    def isChallenged(self, challenger, challenged):
         return [challenger, challenged] in self.c4challenges
 
     def getOnline(self):
@@ -155,8 +181,6 @@ class bot:
             presence_penalty=0)
         print("request processed. . .")
         return resp.choices[0].text
-
-
 
     def getLP(self, msg):
         region = m[0:m.index(" ")].replace("!lp", "")
@@ -208,7 +232,7 @@ class connect4:
         return 'column full'
 
     def show(self):
-        rep = '```json'
+        rep = '```'
         t = np.ndarray.tolist(np.transpose(self.board))
         t.reverse()
         for i in t:
