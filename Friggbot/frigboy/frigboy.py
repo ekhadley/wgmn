@@ -18,7 +18,7 @@ driver.find_element_by_name("email").send_keys("21438709a@gmail.com")
 driver.find_element_by_name("password").send_keys(pwd)
 driver.find_element_by_css_selector('[type=submit]').click()
 
-time.sleep(3
+time.sleep(3)
 while 1:
     try:
         driver.find_element_by_css_selector('.overflow-1wOqNV').click()
