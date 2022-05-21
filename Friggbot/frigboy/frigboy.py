@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import time, bot, os
+import time, os
+from bot import *
 
 if "ekhad" in os.listdir("C:\\Users"):
     dpath = "C:\\Users\\ekhad\\Desktop\\frig\\chrome101\\chromedriver.exe"
@@ -27,11 +28,13 @@ while 1:
 
 time.sleep(.3)
 
+k = connect4('x', 'y')
 
-frig = bot.bot(driver)
+frig = bot(driver)
 print("friggbot initiated . . .")
 while 1:
     frig.readLast()
     frig.intro()
-    print(frig.online)
+    print(frig.c4challenges, frig.c4games)
+    #print(frig.online)
     #print(f"{frig.lastSeen.content}, sent by {frig.lastSeen.sender} at {frig.lastSeen.time}")
