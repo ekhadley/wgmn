@@ -105,7 +105,7 @@ class bot:
             try:
                 move = int(m.replace("!c4 ", ""))
                 validMove = True
-            except TypeError:
+            except:
                 self.send("Invalid move. choose a number [1-7] for your piece")
             if validMove:
                 if not self.isInGame(self.lastSeen.sender):
