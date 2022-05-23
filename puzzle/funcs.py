@@ -73,17 +73,11 @@ class puzzle:
 def imscale(img, s):
     return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)))
 
-
 def multiMatch(target, queries):
     r = []
     for query in queries:
-        map = cv2.matchTemplate(target, query, cv2.TM_CCORR)
-        minSim, maxSim, minSimPos, maxSimPos = cv2.minMaxLoc(map)
-        r.append([maxSimPos, map[maxSimPos[0]][maxSimPos[1]]])
+        r.append(match(target, query))
     return np.array(r)
-
-def hahaha(a):
-    return np.interp(a, (0, 255), (0, 1)).astype(np.uint8)
 
 def match(target, query, returnMap=False):
     map = cv2.matchTemplate(target, query, cv2.TM_CCOEFF_NORMED)
