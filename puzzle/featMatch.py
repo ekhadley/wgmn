@@ -1,6 +1,6 @@
 from PIL import Image
 import cv2, numpy as np
-from funcs import reader, puzzle, circles
+from functions import reader, puzzle, circles
 
 pcs = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\candy\\sample.jpg"))
 target = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\candy\\reference.jpg"))
