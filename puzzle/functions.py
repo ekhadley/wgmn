@@ -1,5 +1,74 @@
+from decimal import DivisionByZero
 from PIL import Image
 import cv2, numpy as np
+
+def imscale(img, s):
+    return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)))
+
+def multiMatch(target, queries, bestOnly = False):
+    r = []
+    for query in queries:
+        r.append(match(target, query))
+    if bestOnly:
+        max = 0
+        for i, e in enumerate(r):
+            if r[i][1] > r[max][1]:
+                max = i
+        return np.array(r[max])
+    else:
+        return np.array(r)
+
+def match(target, query):
+    map = cv2.matchTemplate(target, query, cv2.TM_CCOEFF_NORMED)
+    minSim, maxSim, minSimPos, maxSimPos = cv2.minMaxLoc(map)
+    return (maxSimPos, map[maxSimPos[1]][maxSimPos[0]], query)
+
+
+def splitImage(img, dim):
+#    sampledim = (len(img[0]), len(img))
+    sampledim = np.shape(img)
+    subdims = (sampledim[1]//dim[0], sampledim[0]//dim[1])
+
+    subs = []
+    for i in range(dim[0]):
+        for j in range(0, dim[1]):
+            subs.append(img[subdims[0]*j:subdims[0]*(j+1), subdims[1]*i:subdims[1]*(i+1),])
+
+    return subs
+
+def com(img):
+    x, y = [], []
+    for i, e in enumerate(img):
+        for j, k in enumerate(e):
+            if k != 0:
+                x.append(j)
+                y.append(i)
+    try:
+        return (sum(x)//len(x), sum(y)//len(y))
+    except ZeroDivisionError:
+        return (0, 0)
+
+
+def rectangles(img, posList, dim, weight=5, color=(90, 0, 255)):
+
+    for i, pos in enumerate(posList):
+        if type(dim) == tuple:
+            cv2.rectangle(img, pos, (pos[0] + dim[0], pos[1] + dim[1]), color, weight)
+        if type(dim) == list:
+            cv2.rectangle(img, pos, (pos[0] + dim[i][0], pos[1] + dim[i][1]), color, weight)
+    return img
+
+def rect(img, pos, dim, weight=15, color=(150, 0, 255)):
+    cv2.rectangle(img, pos, (pos[0] + dim[0], pos[1] + dim[1]), color, weight)
+    return img
+
+def circles(img, pos, radius=20, color=(20, 120, 220), width=7):
+    for x, y in pos:
+        x, y = round(x), round(y)
+        cv2.circle(img, (x, y), radius, color, width)
+
+
+
 
 class reader:
     def __init__(self):
@@ -69,49 +138,6 @@ class puzzle:
             cv2.line(grid, (self.imWidth, i*self.pcHeight),  (0, i*self.pcHeight), (0, 0, 0), width)
 
         return grid
-
-def imscale(img, s):
-    return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)))
-
-def multiMatch(target, queries, bestOnly = False):
-    r = []
-    for query in queries:
-        r.append(match(target, query))
-    if bestOnly:
-        max = 0
-        for i, e in enumerate(r):
-            if r[i][1] > r[max][1]:
-                max = i
-        return np.array(r[max])
-    else:
-        return np.array(r)
-
-def match(target, query, returnMap=False):
-    map = cv2.matchTemplate(target, query, cv2.TM_CCOEFF_NORMED)
-    minSim, maxSim, minSimPos, maxSimPos = cv2.minMaxLoc(map)
-    return (maxSimPos, map[maxSimPos[1]][maxSimPos[0]], map) if returnMap else (maxSimPos, map[maxSimPos[1]][maxSimPos[0]]) 
-
-
-def rectangles(img, posList, dim, weight=5, color=(90, 0, 255)):
-    for i, pos in enumerate(posList):
-        if type(dim) == tuple:
-            cv2.rectangle(img, pos, (pos[0] + dim[0], pos[1] + dim[1]), color, weight)
-        if type(dim) == list:
-            cv2.rectangle(img, pos, (pos[0] + dim[i][0], pos[1] + dim[i][1]), color, weight)
-    return img
-
-def rect(img, pos, dim, weight=15, color=(150, 0, 255)):
-    cv2.rectangle(img, pos, (pos[0] + dim[0], pos[1] + dim[1]), color, weight)
-    return img
-
-def circles(img, pos, radius=20, color=(20, 120, 220), width=7):
-    for x, y in pos:
-        x, y = round(x), round(y)
-        cv2.circle(img, (x, y), radius, color, width)
-
-
-
-
 
 
 

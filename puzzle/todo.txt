@@ -7,7 +7,7 @@ HIGH PRIO:
                 > actually very unlikely if they required% of mask color is very high
         > carefully place pieces in grid so squares can be automatically cut out of image at certin intervals
             > low tolerance to placement error (which would be fairly common)
-
+        > backrgound subtraction (cv2 algorithm)
     > how to capture pieces and reference image to minimize scale variance (and make above easier)?
         > I can manually calculate the scale difference for now by finding a feature present in both and measuring its pixel dimensions in both
 
