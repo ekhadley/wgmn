@@ -8,9 +8,9 @@ class bot:
         self.name = "FriggBot2000"
         self.online = self.getOnline()
 
-#        self.desiredGCName = "EK kissy kissy femboys mega fax no joke straight calculator no printer on a stack yo"
-        self.desiredGCName = u"\u2764 \u1F48 \u1F46 EK kissy kissy femboys mega fax no joke straight calculator no printer on a stack yo"
-#        self.desiredGCName = u"👨❤💋👨 EK kissy kissy femboys mega fax no joke straight calculator no printer n a stack yo"
+        self.altGCName = "EK kissy kissy femboys mega fax no joke straight calculator no printer on a stack yo"
+#        self.desiredGCName = u"\u2764 \u1F48 \u1F46 EK kissy kissy femboys mega fax no joke straight calculator no printer on a stack yo"
+        self.desiredGCName = "👨❤💋👨 EK kissy kissy femboys mega fax no joke straight calculator no printer on a stack yo"
 
         self.c4games = []
         self.c4challenges = []
@@ -183,13 +183,14 @@ class bot:
         currentName = self.driver.find_element_by_css_selector(".container-1bg4pR").text
         return currentName
 
-    def enforceName(self, desired):
-        if self.gcName() != desired:
+    def enforceName(self):
+        name = self.gcName()
+        if name not in [self.altGCName, self.desiredGCName]:
             nameBox = self.driver.find_element_by_css_selector(".input-1nrc5P")
             nameBox.click()
             #nameBox.clear()
             nameBox.send_keys(Keys.CONTROL + "a", Keys.DELETE)
-            nameBox.send_keys(desired, Keys.ENTER)
+            nameBox.send_keys(self.altGCName, Keys.ENTER)
 
     def getOnline(self):
         ppl = self.driver.find_elements_by_css_selector(".layout-1qmrhw")

@@ -37,5 +37,5 @@ while 1:
     frig.readLast()
     frig.intro()
     print(frig.gcName())
-    #frig.enforceName(frig.desiredGCName)
+    frig.enforceName()
     #print(frig.c4challenges, frig.c4games, )

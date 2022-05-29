@@ -5,23 +5,25 @@ import cv2, numpy as np
 def imscale(img, s):
     return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)))
 
-def multiMatch(target, queries, bestOnly = False):
+def multiMatch(target, queries):
     r = []
     for query in queries:
         r.append(match(target, query))
-    if bestOnly:
-        max = 0
-        for i, e in enumerate(r):
-            if r[i][1] > r[max][1]:
-                max = i
-        return np.array(r[max])
-    else:
-        return np.array(r)
+    return np.array(r)
 
-def match(target, query):
+def bestMatch(target, queries):
+    matches = multiMatch(target, queries)
+    best = 0
+    for i, e in enumerate(matches):
+        if matches[i][1] > matches[best][1]:
+            best = i
+    return matches[best]
+
+
+def match(target, query, retMap = False):
     map = cv2.matchTemplate(target, query, cv2.TM_CCOEFF_NORMED)
     minSim, maxSim, minSimPos, maxSimPos = cv2.minMaxLoc(map)
-    return (maxSimPos, map[maxSimPos[1]][maxSimPos[0]], query)
+    return ((maxSimPos, map[maxSimPos[1]][maxSimPos[0]], query, map) if retMap else (maxSimPos, map[maxSimPos[1]][maxSimPos[0]], query))
 
 
 def splitImage(img, dim):
@@ -50,7 +52,6 @@ def com(img):
 
 
 def rectangles(img, posList, dim, weight=5, color=(90, 0, 255)):
-
     for i, pos in enumerate(posList):
         if type(dim) == tuple:
             cv2.rectangle(img, pos, (pos[0] + dim[0], pos[1] + dim[1]), color, weight)
