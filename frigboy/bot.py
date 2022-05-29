@@ -53,7 +53,8 @@ class bot:
                 incoming.sender = self.driver.find_elements_by_css_selector(".username-h_Y3Us")[-1].text
                 incoming.time = self.driver.find_elements_by_css_selector("[datetime]")[-1].get_attribute("datetime")
                 break
-            except selenium.common.exceptions.StaleElementReferenceException:
+            #except selenium.common.exceptions.StaleElementReferenceException:
+            except:
                 time.sleep(.01)
         if incoming != self.lastSeen and incoming.sender != self.name:
             self.lastSeen.copy(incoming)
