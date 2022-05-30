@@ -36,6 +36,5 @@ time.sleep(1)
 while 1:
     frig.readLast()
     #frig.intro()
-    print(frig.gcName())
     frig.enforceName()
     #print(frig.c4challenges, frig.c4games, )
