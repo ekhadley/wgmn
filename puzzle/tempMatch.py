@@ -2,7 +2,7 @@ from PIL import Image
 import cv2, numpy as np
 from functions import *
 
-pc = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\yeet\\pc4cr.jpg", cv2.IMREAD_GRAYSCALE))
+pc = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\yeet\\pc1cr.jpg", cv2.IMREAD_GRAYSCALE))
 ref = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\yeet\\reference.jpg", cv2.IMREAD_GRAYSCALE))
 
 #pc = imscale(pc, 1/4)
@@ -18,7 +18,7 @@ for i in range(20):
 
 matches = bestMatch(ref, pcs)
 
-ref = rectangles(cv2.cvtColor(ref, cv2.COLOR_GRAY2BGR), [matches[0]], dims)
+ref = rectangles(cv2.cvtColor(ref, cv2.COLOR_GRAY2BGR), [matches[0]], np.shape(matches[2]))
 
 
 #for i, p in enumerate(pcs):
