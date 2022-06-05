@@ -63,6 +63,7 @@ class agent:
             else:
                 Qpredictions[i][action] = reward
 
+
         if self.env.step ==  self.env.epLen:
             self.episode = 1
             if self.episode%self.updateRate == 0:
