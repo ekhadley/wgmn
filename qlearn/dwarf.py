@@ -10,37 +10,6 @@ foodTile = 1
 bombTile = 2
 agentTile = 3
 
-
-def makePlane(size, tile):
-    row = []
-    plane = []
-    for i in range(0, size):
-        row.append(tile)
-    for i in range(0, size):
-        plane.append(row.copy())
-    return plane
-
-def plant(arr, val, find):
-    y = random.randint(0, len(arr)-1)
-    x = random.randint(0, len(arr[y])-1)
-    tries = 0
-    while(arr[y][x] != find):
-        y = random.randint(0, len(arr)-1)
-        x = random.randint(0, len(arr[y])-1)
-    arr[y][x]=val
-    return x, y
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
 class env:
     def __init__(self, size, food, bomb, eplen, env = None, pos = None):
         self.size = size
@@ -122,10 +91,10 @@ class env:
         self.posx += moveDirection[0]
         self.posy += moveDirection[1]
 
-        self.posx = self.size-1 if self.posx>=self.size else self.posx
-        self.posx = 0 if self.posx<0 else self.posx
-        self.posy = self.size-1 if self.posy>=self.size else self.posy
-        self.posy = 0 if self.posy<0 else self.posy
+        self.posx = self.size-1 if self.posx >= self.size else self.posx
+        self.posx = 0 if self.posx < 0 else self.posx
+        self.posy = self.size-1 if self.posy >= self.size else self.posy
+        self.posy = 0 if self.posy < 0 else self.posy
         dest = self.get(self.posx, self.posy)
 
         if dest == foodTile:
@@ -173,6 +142,37 @@ class env:
         im = im.resize((400, 400), resample=Image.NEAREST)
         cv2.imshow("game", np.array(im))
         cv2.waitKey(1)
+
+def makePlane(size, tile):
+    row = []
+    plane = []
+    for i in range(0, size):
+        row.append(tile)
+    for i in range(0, size):
+        plane.append(row.copy())
+    return plane
+
+def plant(arr, val, find):
+    y = random.randint(0, len(arr)-1)
+    x = random.randint(0, len(arr[y])-1)
+    tries = 0
+    while(arr[y][x] != find):
+        y = random.randint(0, len(arr)-1)
+        x = random.randint(0, len(arr[y])-1)
+    arr[y][x]=val
+    return x, y
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 
 
 

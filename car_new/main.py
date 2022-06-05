@@ -1,5 +1,5 @@
 import numpy as np
-import cv2, serial, time
+import cv2, time
 from PIL import Image
 
 PLAYMODE = "test"
@@ -89,7 +89,7 @@ frameCount = 0
 switchCD = 0
 prevlaneSpeedDiff = 0
 vid.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-displayFrames = 0
+displayFrames = 1
 
 while 1:
     stime = time.time()

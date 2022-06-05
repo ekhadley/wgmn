@@ -9,6 +9,21 @@ def multiMatch(target, queries):
     r = []
     for query in queries:
         r.append(match(target, query))
+    '''
+    for j in range(round(len(r)/2)):
+        max = 0
+        min = len(r)
+        for i in range(j, len(r)-j):
+            if r[i][1] > r[max][1]:
+                max = i
+            if r[i][1] < r[min][1]:
+                min = i
+
+        print(len(r), min, max, sep = ", ")
+        
+        r[j], r[max] = r[max], r[j]
+        r[len(r)-j], r[min] = r[min], r[len(r)-j]
+    '''
     return np.array(r)
 
 def bestMatch(target, queries):

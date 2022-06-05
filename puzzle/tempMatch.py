@@ -2,8 +2,8 @@ from PIL import Image
 import cv2, numpy as np
 from functions import *
 
-pc = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\yeet\\pc1cr.jpg", cv2.IMREAD_GRAYSCALE))
-ref = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\yeet\\reference.jpg", cv2.IMREAD_GRAYSCALE))
+pc = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\candy\\pc1cr.jpg", cv2.IMREAD_GRAYSCALE))
+ref = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\candy\\reference.jpg", cv2.IMREAD_GRAYSCALE))
 
 #pc = imscale(pc, 1/4)
 
@@ -16,16 +16,17 @@ for i in range(20):
         pcs.append(x)
         dims.append(np.shape(x))
 
-matches = bestMatch(ref, pcs)
-
-ref = rectangles(cv2.cvtColor(ref, cv2.COLOR_GRAY2BGR), [matches[0]], np.shape(matches[2]))
+matches = multiMatch(ref, pcs)
+print(matches[:,0:2])
+#ref = rectangles(cv2.cvtColor(ref, cv2.COLOR_GRAY2BGR), [matches[0]], np.shape(matches[2]))
+ref = rectangles(cv2.cvtColor(ref, cv2.COLOR_GRAY2BGR), matches[:,0], dims)
 
 
 #for i, p in enumerate(pcs):
 #    cv2.imshow(f"pc{i}", imscale(p, 1.2))
 #    cv2.imshow("map", imscale(map, .2))
-cv2.imshow("target", imscale(ref, .2))
-cv2.imshow("best", imscale(pc, 1))
+cv2.imshow("ref", imscale(ref, .2))
+cv2.imshow("pc", imscale(pc, 1))
 cv2.waitKey(0)
 
 
