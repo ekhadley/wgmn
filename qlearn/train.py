@@ -20,6 +20,8 @@ episodes = 100000
 episodeLength = 15
 
 e = dwarf.env(worldSize, foodCount, bombCount, episodeLength)
+environ = [r[:] for r in e.env]
+print(environ)
 c = bond.agent(e, updateRate = 10, discount=.99,epsilon=.95,learnRate=.5)
 
 c.memreq = 100
@@ -28,6 +30,7 @@ c.batchSize = 16
 stime = time.time()
 for i in range(1, episodes+1):
     e.reset()
+    e.env = [r[:] for r environ]
     e.display()
     for j in range(0, e.epLen):
         e.display()
