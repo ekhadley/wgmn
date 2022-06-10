@@ -1,4 +1,3 @@
-from decimal import DivisionByZero
 from PIL import Image
 import cv2, numpy as np
 
@@ -25,6 +24,33 @@ def multiMatch(target, queries):
         r[len(r)-j], r[min] = r[min], r[len(r)-j]
     '''
     return np.array(r)
+
+def countColor(img, channel, lower, upper):
+    inrange = 0
+    for e in img:
+        for j in e:
+            if j[channel] in range(lower, upper):
+                inrange += 1
+    return inrange
+
+def avgColor(img):
+    c1, c2, c3, num = 0, 0, 0, 0
+    for r in img:
+        for j in r:
+            c1 += j[0]
+            c2 += j[1]
+            c3 += j[2]
+            num += 1
+    numPixels = len(img)*len(img[1])
+    return [c1/numPixels, c2/numPixels, c3/numPixels]
+
+def scaleImgSet(img, lower, upper, steps):
+    inc = (upper-lower)/steps
+    imgs = []
+    for i in range(steps+1):
+           imgs.append(imscale(img, lower+inc*i))
+    return imgs
+
 
 def bestMatch(target, queries):
     matches = multiMatch(target, queries)

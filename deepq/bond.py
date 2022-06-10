@@ -25,7 +25,7 @@ class agent:
         self.batchSize = 500
 
         #log_dir = "qlearn/qlearnlogs" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        log_dir = f"qlearn/logs/step{self.episode*self.env.epLen + self.env.step}"
+        log_dir = f"deepq/logs/step{self.episode*self.env.epLen + self.env.step}"
         self.tb = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
         self.net = self.genModel(discount, epsilon, learnRate)
