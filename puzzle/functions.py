@@ -70,11 +70,10 @@ def match(target, query, retMap = False):
 def splitImage(img, dim):
 #    sampledim = (len(img[0]), len(img))
     sampledim = np.shape(img)
-    subdims = (sampledim[1]//dim[0], sampledim[0]//dim[1])
-
+    subdims = (sampledim[0]//dim[1], sampledim[1]//dim[0])
     subs = []
-    for j in range(dim[0]):
-        for i in range(0, dim[1]):
+    for i in range(0, dim[0]):
+        for j in range(0, dim[1]):
             subs.append(img[subdims[0]*j:subdims[0]*(j+1), subdims[1]*i:subdims[1]*(i+1),])
 
     return subs
