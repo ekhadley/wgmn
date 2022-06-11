@@ -2,8 +2,8 @@ from PIL import Image
 import cv2, numpy as np
 from functions import *
 
-pcs = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\yeet\\pc1cr.jpg"))
-target = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\yeet\\reference.jpg"))
+pcs = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\turtle\\pc1cr.jpg"))
+target = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\turtle\\reference.jpg"))
 
 solved = puzzle(target, 50, 40)
 grid = solved.gridImg(width=15)

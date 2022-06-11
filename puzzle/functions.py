@@ -73,8 +73,8 @@ def splitImage(img, dim):
     subdims = (sampledim[1]//dim[0], sampledim[0]//dim[1])
 
     subs = []
-    for i in range(dim[0]):
-        for j in range(0, dim[1]):
+    for j in range(dim[0]):
+        for i in range(0, dim[1]):
             subs.append(img[subdims[0]*j:subdims[0]*(j+1), subdims[1]*i:subdims[1]*(i+1),])
 
     return subs
