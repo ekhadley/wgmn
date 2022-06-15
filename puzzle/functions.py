@@ -1,5 +1,85 @@
-from PIL import Image
 import cv2, numpy as np
+
+class pc:
+    def __init__(self, im):
+        self.im = im
+        self.edge = self.findContours()
+        self.corners = self.findCorners()
+        self.sides = self.segment()
+        self.straightSides = self.isStraight()
+        self.attached = []
+        [print(len(e)) for e in self.sides]
+
+    def evalFit(self, o):
+        fits = []
+        mine = [[[e[0,0]-side[0,0,0], e[0,1]-side[0,0,1]] for e in side] for side in self.sides]
+        other = [[[e[0,0]-side[0,0,0], e[0,1]-side[0,0,1]] for e in side] for side in o.sides]
+        for i, a in enumerate(mine):
+            for j, b in enumerate(other):
+                if self.straightSides[i] or o.straightSides[j]:
+                    fits.append(1000)
+                elif dist(a[0], a[-1]) - dist(b[0], b[-1]) >= 10:
+                    fits.append(1000)
+                else:
+                    diff = [dist(a[q], b[q]) for q in range(min(len(a), len(b)))]
+                    fits.append(sum(diff)/len(diff))
+        return fits
+
+    def segment(self):
+        closest = [0, 0, 0, 0]
+        for i, p in enumerate(self.edge):
+            for j, c in enumerate(self.corners):
+                if dist(c, p) < dist(c, self.edge[closest[j]]):
+                    closest[j] = i
+        closest = sorted(closest)
+        return [self.edge[closest[0]:closest[1]], self.edge[closest[1]:closest[2]],
+                      self.edge[closest[2]:closest[3]], np.vstack((self.edge[closest[3]:-1],self.edge[0:closest[0]]))]
+
+    def isStraight(self):
+        straightmask = []
+        for e in self.sides:
+            if len(e) < 50:
+                straightmask.append(1)
+            else:
+                straightmask.append(0)
+        return straightmask
+
+    def findContours(self):
+        contours, heirarchy = cv2.findContours(self.im, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours = [e for e in contours if len(e) > 60]
+        cv2.fillPoly(self.im, contours, color=(255))
+        return contours[0]
+ 
+    def findCorners(self):
+        cornerMap = cv2.cornerHarris(self.im, 12, 5, .01)
+        y, x = np.where(cornerMap>.3*np.max(cornerMap))
+        candidates = np.float32(np.array([[x[i], y[i]] for i in range(len(x))]))
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+        ret, label, centers=cv2.kmeans(candidates, 4, np.array([1,2,3,4]), criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+        return centers
+        '''
+        for i in centers:
+            x, y = round(i[0]), round(i[1])
+            localmax = np.unravel_index(np.argmax(cornerMap[y-10:y+10,x-10:x+10]), (20, 20))
+            self.corners.append((localmax[0] + i[0]-10, localmax[0] + i[1]-10))
+        '''
+
+    def show(self, scale=1, edges = False, corners = False):
+        mod = cv2.cvtColor(np.copy(self.im), cv2.COLOR_GRAY2RGB)
+        if (edges and len(self.edge) == 0) or (corners and len(self.corners) == 0):
+            print("(requested elements have not been detected)")
+            return imscale(mod, scale)
+        if edges:
+            if len(self.sides) > 0:
+                for i, e in enumerate(self.sides):
+                    #mod = cv2.drawContours(mod, [e], -1, (250-50*i, 150-50*i, 80*i), 3)
+                    mod = cv2.polylines(mod, [e], False, (250-50*i, 150-50*i, 80*i), 3)
+            else:
+                #mod = cv2.drawContours(mod, [self.edge], -1, (250, 150, 0), 3)
+                mod = cv2.polylines(mod, [self.edge], False, (250-50*i, 150-50*i, 80*i), 3)
+        if corners:
+            circles(mod, self.corners, radius=5, width=2)
+        return imscale(mod, scale)
 
 def imscale(img, s):
     return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)))
@@ -32,6 +112,9 @@ def countColor(img, channel, lower, upper):
             if j[channel] in range(lower, upper):
                 inrange += 1
     return inrange
+
+def dist(a,b):
+    return np.linalg.norm(np.array(a)-np.array(b))
 
 def avgColor(img):
     c1, c2, c3, num = 0, 0, 0, 0
@@ -99,17 +182,10 @@ def rectangles(img, posList, dim, weight=5, color=(90, 0, 255)):
             cv2.rectangle(img, pos, (pos[0] + dim[i][0], pos[1] + dim[i][1]), color, weight)
     return img
 
-def rect(img, pos, dim, weight=15, color=(150, 0, 255)):
-    cv2.rectangle(img, pos, (pos[0] + dim[0], pos[1] + dim[1]), color, weight)
-    return img
-
 def circles(img, pos, radius=20, color=(20, 120, 220), width=7):
-    for x, y in pos:
-        x, y = round(x), round(y)
+    for e in pos:
+        x, y = round(e[0]), round(e[1])
         cv2.circle(img, (x, y), radius, color, width)
-
-
-
 
 class reader:
     def __init__(self):
@@ -156,59 +232,4 @@ class reader:
                 matchesMask[i]=[1,0]
                 matchIndexes.append([i, m.trainIdx])
         return (matchesMask, matchIndexes)
-
-class puzzle:
-    def __init__(self, img, width, height):
-        self.img = img
-        self.imWidth = len(self.img[0])
-        self.imHeight = len(self.img)
-        self.width = width
-        self.height = height
-
-        self.pcWidth = round(self.imWidth/width)
-        self.pcHeight = round(self.imHeight/height)
-
-    def getCoordOf(self, x, y):
-        return (round(x/self.width), round(y/self.height))
-
-    def gridImg(self, width=15):
-        grid = np.copy(self.img)
-        for i in range(1, round(self.imWidth/self.pcWidth)):
-            cv2.line(grid, (i*self.pcWidth, self.imHeight),  (i*self.pcWidth, 0), (0, 0, 0), width)
-        for i in range(1, round(self.imHeight/self.pcHeight)):
-            cv2.line(grid, (self.imWidth, i*self.pcHeight),  (0, i*self.pcHeight), (0, 0, 0), width)
-
-        return grid
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
