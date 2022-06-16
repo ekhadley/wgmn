@@ -1,7 +1,7 @@
 from statistics import multimode
 from PIL import Image
-import cv2, numpy as np
-from functions import *
+import cv2, piece, numpy as np
+from misc import *
 
 path = "C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\"
 pc = cv2.imread(f"{path}turtle\\pc1cr.jpg", cv2.IMREAD_GRAYSCALE)
