@@ -1,0 +1,7 @@
+> connected group piece finding
+> make sure all contours go in a clockwise/ccw direction
+> check border contunuity when evaluating fit
+> better contour detection (frechet distance)
+> algorithm for optimizing a set of matches based on fit evaluation
+> optional: figure out how to photograph pieces face up with perfect binarization
+> profit

@@ -8,25 +8,31 @@ class pc:
         self.corners = self.findCorners()
         self.sides = self.segment()
         self.straightSides = self.isStraight()
+        self.centroid = [sum(self.corners[:,0]/4), sum(self.corners[:,1]/4)]
         self.attached = [0, 0, 0, 0]
 
     def evalFit(self, o):
         fits = []
-        mine = [[[e[0,0]-side[0,0,0], e[0,1]-side[0,0,1]] for e in side] for side in self.sides]
+        x = []
+        rev = [np.flipud(e) for e in self.sides]
+        mine = [[[e[0,0]-side[0,0,0], e[0,1]-side[0,0,1]] for e in side] for side in rev]
         other = [[[e[0,0]-side[0,0,0], e[0,1]-side[0,0,1]] for e in side] for side in o.sides]
         for i, a in enumerate(mine):
             for j, b in enumerate(other):
-                print(math.atan2(a[-1][1], a[-1][0]) - math.atan2(b[-1][1], b[-1][0]), math.atan2(a[-1][1], a[-1][0]) - math.atan2(b[-1][1], b[-1][0]))
-                #print(math.atan2(b[-1][1], b[-1][0]))
+                x.append(dist(a[0], a[-1]) - dist(b[0], b[-1]))
                 if self.straightSides[i] or o.straightSides[j]:
                     fits.append(10000)
-                elif dist(a[0], a[-1]) - dist(b[0], b[-1]) >= 15:
-                    fits.append(1000)
+                elif round(dist(a[0], a[-1]) - dist(b[0], b[-1])) not in range(-30, 30):
+                    fits.append(10000)
+                #elif (self.straightSides[(i+1)%4], self.straightSides[(i-1)%4]) and not (o.straightSides[(i+1)%4], self.straightSides[(i-1)%4]):
+                #    fits.append(10000)
                 else:
-                    #offset = math.atan2(a[-1][1], a[-1][0]) - math.atan2(b[-1][1], b[-1][0])
-                    #arot = np.array([[rotate(e[0], offset)] for e in a])
-                    fits.append(listSim(a, b))
+                    offset =  math.atan2(b[-1][1], b[-1][0]) - math.atan2(a[-1][1], a[-1][0])
+                    arot = np.array([rotateby(e, offset) for e in a])
+                    fits.append(listSim(arot, b))
+        print(x)
         return fits
+
 
     def segment(self):
         closest = [0, 0, 0, 0]
@@ -60,16 +66,10 @@ class pc:
         criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
         ret, label, centers=cv2.kmeans(candidates, 4, np.array([1,2,3,4]), criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
         return centers
-        '''
-        for i in centers:
-            x, y = round(i[0]), round(i[1])
-            localmax = np.unravel_index(np.argmax(cornerMap[y-10:y+10,x-10:x+10]), (20, 20))
-            self.corners.append((localmax[0] + i[0]-10, localmax[0] + i[1]-10))
-        '''
 
-    def show(self, scale=1, edges = False, corners = False):
+    def show(self, scale=1, edges = True, corners = True, center = True):
         mod = cv2.cvtColor(np.copy(self.im), cv2.COLOR_GRAY2RGB)
-        if (edges and len(self.edge) == 0) or (corners and len(self.corners) == 0):
+        if (edges and len(self.edge) == 0) or (corners and len(self.corners) == 0 or (center and self.centroid == None)):
             print("(requested elements have not been detected)")
             return imscale(mod, scale)
         if edges:
@@ -81,5 +81,7 @@ class pc:
                 #mod = cv2.drawContours(mod, [self.edge], -1, (250, 150, 0), 3)
                 mod = cv2.polylines(mod, np.int32([self.edge]), False, (250-70*i, 150-50*i, 80*i), 3)
         if corners:
-            circles(mod, self.corners, radius=5, width=2)
+            circles(mod, self.corners, radius=7, width=3)
+        if center:
+            mod = cv2.circle(mod, (round(self.centroid[0]), round(self.centroid[1])), 15, (130, 255, 50), 5)
         return imscale(mod, scale)

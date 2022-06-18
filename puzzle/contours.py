@@ -11,18 +11,12 @@ for i in range(1):
     bin = cv2.erode(bin, np.ones((3, 3), np.uint8))
     bin = cv2.dilate(bin, np.ones((3, 3), np.uint8))
 
-split = splitImage(bin, (2, 2))
-pcs = [pc(e) for e in split]
-print(pcs[0].evalFit(pcs[3]))
+pcs = [pc(e) for e in splitImage(bin, (2, 2))]
+print(pcs[0].evalFit(pcs[2]))
 
-a = pcs[0].sides[0]
-b = pcs[0].sides[3]
-#offset = math.atan2(b[-1][0][1], b[-1][0][0]) - math.atan2(a[-1][0][1], a[-1][0][0])
-#print(offset)
-#pcs[0].sides[0] = np.array([[rotate(e[0], offset, origin=pcs[0].sides[0][0][0])] for e in pcs[0].sides[0]])
 
-cv2.imshow('bin', imscale(bin, .2))
+cv2.imshow('sample', imscale(sample, .2))
 for i, p in enumerate(pcs):
-    cv2.imshow(f'{i}', p.show(scale = .4, edges=True, corners=True))
+    cv2.imshow(f'{i}', p.show(scale = .5))
 
 cv2.waitKey(0)

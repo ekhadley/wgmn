@@ -1,4 +1,4 @@
-import math, cv2, numpy as np
+import math, cv2, similaritymeasures, numpy as np
 
 def imscale(img, s):
     return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)))
@@ -7,12 +7,28 @@ def listSim(a, b):
     diff = [dist(a[q], b[q]) for q in range(min(len(a), len(b)))]
     return sum(diff)/len(diff)
 
-def rotate(pos, angle, origin=(0,0)):
+def rotateby(pos, angle, origin = (0, 0)):
     cx, cy = origin[0], origin[1]
     x, y = pos[0]-cx, pos[1]-cy
     theta = math.atan2(y,x)
     h = dist(pos,origin)
     return [h*math.cos(theta+angle)+cx, h*math.sin(theta+angle)+cy]
+
+def rotateto(pos, angle, origin=(0,0)):
+    cx, cy = origin[0], origin[1]
+    x, y = pos[0]-cx, pos[1]-cy
+    theta = math.atan2(y,x)
+    h = dist(pos,origin)
+    return [h*math.cos(theta-angle)+cx, h*math.sin(theta-angle)+cy]
+
+def arcdir(pts, center=(0, 0)):
+    cx, cy = center
+    adir = 0
+    for i, e in enumerate(pts):
+        x, y = e[0]-cx, e[1]-cy
+        px, py = pts[(i+1)%len(pts)][0]-cx, pts[(i+1)%len(pts)][1]-cy
+        adir += (math.atan2(py, px) - math.atan2(y,x))
+    return adir > 0
 
 def multiMatch(target, queries):
     r = []
