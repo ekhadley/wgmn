@@ -2,7 +2,8 @@ from PIL import Image
 import cv2, random, numpy as np
 from piece import *
 
-sample = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\turtle\\sample5.jpg", cv2.IMREAD_GRAYSCALE))
+imgdir = "C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs"
+sample = np.array(cv2.imread(f"{imgdir}\\turtle\\sample5.jpg", cv2.IMREAD_GRAYSCALE))
 
 blur = cv2.GaussianBlur(sample, (3,3), 50)
 #bin = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 1)
@@ -13,7 +14,6 @@ for i in range(1):
 
 pcs = [pc(e) for e in splitImage(bin, (2, 2))]
 print(pcs[0].evalFit(pcs[2]))
-
 
 cv2.imshow('sample', imscale(sample, .2))
 for i, p in enumerate(pcs):
