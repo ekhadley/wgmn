@@ -1,11 +1,9 @@
-from statistics import multimode
-from PIL import Image
 import cv2, piece, numpy as np
-from misc import *
+from funcs import *
 
-path = "C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\"
-pc = cv2.imread(f"{path}turtle\\pc1cr.jpg", cv2.IMREAD_GRAYSCALE)
-ref = cv2.imread(f"{path}turtle\\reference.jpg", cv2.IMREAD_GRAYSCALE)
+path = "C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs"
+pc = cv2.imread(f"{path}\\turtle\\pc1cr.jpg", cv2.IMREAD_GRAYSCALE)
+ref = cv2.imread(f"{path}\\turtle\\reference.jpg", cv2.IMREAD_GRAYSCALE)
 
 pc = cv2.GaussianBlur(pc, (11,11), 50)
 ref = cv2.GaussianBlur(ref, (11,11), 50)

@@ -1,4 +1,5 @@
 import math, cv2, similaritymeasures, numpy as np
+import piece
 
 def imscale(img, s):
     return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)))

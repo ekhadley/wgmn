@@ -1,12 +1,11 @@
 from PIL import Image
 import cv2, numpy as np
-from functions import *
+from funcs import *
+from featreader import *
 
-pcs = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\turtle\\pc1cr.jpg"))
+pcs = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\turtle\\pc2cr.jpg"))
 target = np.array(cv2.imread("C:\\Users\\ek\\Desktop\\sdfghj\\puzzle\\testimgs\\turtle\\reference.jpg"))
 
-solved = puzzle(target, 50, 40)
-grid = solved.gridImg(width=15)
 
 read = reader()
 points1, points2, matches, matchesMask, matchIndexes = read.findAndMatch(pcs, target, 1)

@@ -1,5 +1,5 @@
 import math, cv2, numpy as np
-from misc import *
+from funcs import *
 
 class pc:
     def __init__(self, im):
@@ -13,13 +13,11 @@ class pc:
 
     def evalFit(self, o):
         fits = []
-        x = []
         rev = [np.flipud(e) for e in self.sides]
         mine = [[[e[0,0]-side[0,0,0], e[0,1]-side[0,0,1]] for e in side] for side in rev]
         other = [[[e[0,0]-side[0,0,0], e[0,1]-side[0,0,1]] for e in side] for side in o.sides]
         for i, a in enumerate(mine):
             for j, b in enumerate(other):
-                x.append(dist(a[0], a[-1]) - dist(b[0], b[-1]))
                 if self.straightSides[i] or o.straightSides[j]:
                     fits.append(10000)
                 elif round(dist(a[0], a[-1]) - dist(b[0], b[-1])) not in range(-30, 30):
@@ -29,10 +27,9 @@ class pc:
                 else:
                     offset =  math.atan2(b[-1][1], b[-1][0]) - math.atan2(a[-1][1], a[-1][0])
                     arot = np.array([rotateby(e, offset) for e in a])
+                    #fits.append(similaritymeasures.frechet_dist(arot, b))
                     fits.append(listSim(arot, b))
-        print(x)
         return fits
-
 
     def segment(self):
         closest = [0, 0, 0, 0]
@@ -69,6 +66,11 @@ class pc:
 
     def show(self, scale=1, edges = True, corners = True, center = True):
         mod = cv2.cvtColor(np.copy(self.im), cv2.COLOR_GRAY2RGB)
+
+        #rect = cv2.minAreaRect(self.edge)
+        #box = np.int0(cv2.boxPoints(rect))
+        #cv2.drawContours(mod,[box],0,(0,0,255),2)
+
         if (edges and len(self.edge) == 0) or (corners and len(self.corners) == 0 or (center and self.centroid == None)):
             print("(requested elements have not been detected)")
             return imscale(mod, scale)
