@@ -1,5 +1,4 @@
-import math, cv2, similaritymeasures, numpy as np
-import piece
+import math, cv2, similaritymeasures, imutils, numpy as np
 
 def imscale(img, s):
     return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)))
@@ -56,7 +55,7 @@ def countColor(img, channel, lower, upper):
     inrange = 0
     for e in img:
         for j in e:
-            if j[channel] in range(lower, upper):
+            if j[channel] > lower and j[channel] < upper:
                 inrange += 1
     return inrange
 
@@ -79,17 +78,16 @@ def bestMatch(target, queries):
     return matches[best]
 
 def match(target, query, retMap = False):
-    map = cv2.matchTemplate(target, query, cv2.TM_CCOEFF_NORMED)
-    minSim, maxSim, minSimPos, maxSimPos = cv2.minMaxLoc(map)
+    map = cv2.matchTemplate(target, query, cv2.TM_SQDIFF_NORMED)
+    minSim, maxSim, maxSimPos, minSimPos = cv2.minMaxLoc(map)
     return ((maxSimPos, map[maxSimPos[1]][maxSimPos[0]], query, map) if retMap else (maxSimPos, map[maxSimPos[1]][maxSimPos[0]], query))
 
 def splitImage(img, dim):
-#    sampledim = (len(img[0]), len(img))
     sampledim = np.shape(img)
     subdims = (sampledim[0]//dim[1], sampledim[1]//dim[0])
     subs = []
-    for i in range(0, dim[0]):
-        for j in range(0, dim[1]):
+    for j in range(0, dim[0]):
+        for i in range(0, dim[1]):
             subs.append(img[subdims[0]*j:subdims[0]*(j+1), subdims[1]*i:subdims[1]*(i+1),])
     return subs
 
