@@ -12,7 +12,6 @@ def setup():
     size(w, h)
     stroke(50)
 
-
 def randomDNA(l):
     q = []
     for i in range(0, l):

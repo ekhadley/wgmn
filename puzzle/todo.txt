@@ -1,32 +1,12 @@
-> connected group piece finding
-> make sure all contours go in a clockwise/ccw direction
-> check border contunuity when evaluating fit
-> better contour detection (frechet distance)
-> algorithm for optimizing a set of matches based on fit evaluation
-> figure out how to photograph pieces face up with perfect binarization
+> algorithm for optimizing a set of matches based on fit evaluation (!)
+> automatic scale finding between piece images/reference image
 
-
-
-description of problems:
-    the main problem is that I have not found a method of comparison that can reliably find a piece's position based 
-on the reference image. feature matching does not produce enough features for many piece images, and template matching is
-apparently not robust enough to account for noise/rotation/color shift between images. It is clear that the puzzle I have chosen
-cannot be solved through piece shape alone, so I need to figure out how to get reliable shape detection while they are face 
-up as well so the image is usable for locating. A method I have seen for other puzzle solvers is to take some measure of
-color around the edge of two pieces which match based on their edge shape, and compare them for "chromatic continuity"
-The downside of this approach is that its possible, but unlikely, for a natural color shift to accur abruptly and
-along the edge of two pieces, giving them little chromatic continuity but still being a correct match. This was a reason before
-for my initial hesitance, but it seems relatively unlikely now due to the irregular shape of the interlocking portions of pieces.
-And also, this method would not likely greatly depend on processing the reference image for direct comparision to piece images.
-It would really only be necessary to compare pieces to eachother for chromatic continuity, which is quite desirable, as one
-of the main difficulties of template matching was that it is difficult to get a reliable, binarizable image of the pieces,
-while capturing their images without glare or shadows, correct for scale and/or rotation, and compare it directly to the ref image.
-The downside of this is that I need perfect binarization while capturing the puzzle's face. The obvious method to do this is to
-individually, or in small batches, capture the pieces on a backlit surface. One suggestion is that the camera is mounted
-on the head with the grabber, and a wide angle view can be taken of the pieces on some non-lit surface, identify clusters,
-then go to each piece, carry it to some lit surface for a quality image read, then take it back after. Do this for every piece,
-process them and solve for finished puzzle and execute movements. The question is if a webcam that can be mounted on the head 
-will have high enough resolution to get good enough images. investigation required. I think that for now, the way to continue
-will be to figure out my solving algorithm based on contours alone, becuase this will generate extra, false solutions, then
-once that is finished we need only integrate the chromatic continuity algorithm as a rejection step for pairing up pieces, so
-should be easy to include at the end.
+current problem:
+    when you take out an individual side of one piece and compare it to another that it interlocks with
+in the solved puzzle, it is impossible for you to visually tell they are a perfect fit. They just dont align.
+For some reason there is some kind of distortion in the image which causes the shapes to lack the precision
+required to evaluate matches based on contour shape. My current theory is that this is caused by the different
+pieces being photographed at different positions relative to the camera which causes distortions of
+perspective. If this is the problem, I can see two ways to address it: perspective correction or increase
+the height of the camera from the piecs when capturing the images. Will think of tests to determine the source
+of the distortions.
