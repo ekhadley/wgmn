@@ -4,8 +4,8 @@ from cv2 import cornerMinEigenVal
 from funcs import *
 
 class pc:
-    def __init__(self, im):
-        self.im = self.preprocess(im)
+    def __init__(self, im, lower=20_000, upper=100_000):
+        self.im = self.preprocess(im, lower=lower, upper=upper)
         self.edge = self.findContours()
         self.corners = self.findCorners()
         self.sides = self.segment()
@@ -70,7 +70,8 @@ class pc:
         #fit = self.pcs[pc1].evalFit(self.pcs[pc2], 15, 20)
         s1, s2 = s1[:,0], s2[:,0]
         origin = [-e for e in s1[0]]
-        s1, s2 = shiftPts(s1, s1[0]), shiftPts(np.flipud(s2), s2[-1])
+        #s1, s2 = shiftPts(s1, s1[0]), shiftPts(np.flipud(s2), s2[-1])
+        s1, s2 = shiftPts(s1, s1[0]), shiftPts(s2, s2[0])
         offset = math.atan2(s1[-1][1], s1[-1][0]) - math.atan2(s2[-1][1], s2[-1][0])
         s2 = [rotateby(e, offset) for e in s2]
         fit = similaritymeasures.frechet_dist(s1, s2)
@@ -83,9 +84,8 @@ class pc:
             im = cv2.polylines(im, np.int32([s2]), False, (50, 0, 250), 1)
             return fit, im
         return fit
-        
 
-    def preprocess(self, im, lower=40_000, upper=150_000):
+    def preprocess(self, im, lower, upper):
         self.base = im
         gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
         blur = cv2.GaussianBlur(gray, (3,3), 50)
@@ -94,10 +94,10 @@ class pc:
         for i in range(1):
             bin = cv2.erode(bin, np.ones((3, 3), np.uint8))
             bin = cv2.dilate(bin, np.ones((1, 1), np.uint8))
-
         labels, labelids, values, centroids = cv2.connectedComponentsWithStats(bin, 4, cv2.CV_32S)
+        shape = np.shape(bin)
         for i, e in enumerate(values):
-            if e[4] in range(lower, upper):
+            if e[4] in range(lower, upper) and e[3]<shape[0] and e[2]<shape[1]:
                 pcindex = i
         component = (labelids == pcindex).astype("uint8")*255
         return component
@@ -159,7 +159,7 @@ class pc:
                 #mod = cv2.drawContours(mod, [self.edge], -1, (250, 150, 0), 3)
                 mod = cv2.polylines(mod, np.int32([self.edge]), False, (250-70*i, 150-50*i, 80*i), 2)
         if corners:
-            mod = circles(mod, self.corners, radius=8, width=2)
+            mod = circles(mod, scaleCont(self.corners, 1.25, (100, 100)), radius=8, width=2)
         if center:
             mod = cv2.circle(mod, (round(self.centroid[0]), round(self.centroid[1])), 10, (130, 255, 50), 2)
         if locks:

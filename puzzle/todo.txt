@@ -9,4 +9,9 @@ required to evaluate matches based on contour shape. My current theory is that t
 pieces being photographed at different positions relative to the camera which causes distortions of
 perspective. If this is the problem, I can see two ways to address it: perspective correction or increase
 the height of the camera from the piecs when capturing the images. Will think of tests to determine the source
-of the distortions.
+of the distortions. A good intermediary step is to determine when this distortion is actually happening. I will
+take a few of the piecs and photograph them in different ways to see how strong the distortion is from various
+positions relative to camera. 
+Ok at this point it is confirmed that distortions are perspective distortions from differing positions to 
+the camera. I think The way to solve it is some kind of correction matrix calculated with reference points
+placed on the capturing surface.
