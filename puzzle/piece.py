@@ -71,14 +71,17 @@ class pc:
         corners = np.array(self.corners, np.float32)
         outwidth = max(dist(corners[0], corners[1]), dist(corners[2], corners[3]))
         outheight = max(dist(corners[0], corners[2]), dist(corners[1], corners[3]))
-        dest = np.array([[0, 0], [outwidth, 0], [0, outheight], [outwidth, outheight]], np.float32)
+        y, x = 200, 200
+        dest = np.array([[0, 0], [0, x], [y, x], [y, 0]], np.float32)
         mat = cv2.getPerspectiveTransform(corners, dest)
         shifted = [[], [], [], []]
         for i, side in enumerate(self.sides):
             for p in side:
                 shifted[i].append([(mat[0][0]*p[0] + mat[0][1]*p[1] + mat[0][2])/(mat[2][0]*p[0] + mat[2][1]*p[1] + mat[2][2]),
                                    (mat[1][0]*p[0] + mat[1][1]*p[1] + mat[1][2])/(mat[2][0]*p[0] + mat[2][1]*p[1] + mat[2][2])])
-        self.warpedBase
+        s = np.shape(self.base)
+        h, w = s[0], s[1]
+        self.warped = cv2.warpPerspective(self.base, mat, (w, h))
         return shifted
 
     def evalMatch(self, pc2, sidenums, show=False):
