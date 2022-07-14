@@ -58,11 +58,6 @@ def multiMatch(target, queries):
     '''
     return np.array(r)
 
-def scaleCont(pts, scale, center):
-    cx, cy = center[0], center[1]
-    [print(scale*[e[0]-cx, e[1]-cy]) for e in pts]
-    return [[scale*(e[0]-cx), scale*[e[1]-cy]] for e in pts]
-
 def countColor(img, channel, lower, upper):
     inrange = 0
     for e in img:

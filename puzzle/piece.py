@@ -4,12 +4,13 @@ from cv2 import cornerMinEigenVal
 from funcs import *
 
 class pc:
-    def __init__(self, im, lower=20_000, upper=100_000):
-        self.im = self.preprocess(im, lower=lower, upper=upper)
+    def __init__(self, im):
+        self.im = self.preprocess(im)
         self.edge = self.findContours()
         self.corners = self.findCorners()
         self.sides = self.segment()
         self.straightSides = self.isStraight()
+        self.correctedSides = self.correctSides()
         #self.locks = self.lockPoints()
         self.locks = []
         
@@ -26,7 +27,7 @@ class pc:
             return []
 
     def findCorners(self):
-        cornerMap = cv2.cornerHarris(self.im, 10, 5, .001)
+        cornerMap = cv2.cornerHarris(self.im, 7, 5, .001)
         #ret, bina = cv2.threshold(cornerMap, .25*np.max(cornerMap), 255, cv2.THRESH_BINARY)
         y, x = np.where(cornerMap>.5*np.max(cornerMap))
         self.cm = cornerMap
@@ -34,8 +35,8 @@ class pc:
         criteria = (cv2.TERM_CRITERIA_EPS, 10, 1.0)
         compactness, labels, centers = cv2.kmeans(candidates, 8, np.array([1,2,3,4]), criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
         centers = filter(centers, 5, 4)
-        #quads = [e for e in choices(centers, 4) if cv2.contourArea(e) > 0]
-        quads = choices(centers, 4)
+        quads = [e for e in choices(centers, 4) if cv2.contourArea(e) > 100]
+        #quads = choices(centers, 4)
         best = quads[0]
         for e in np.unique(quads, axis=0):
             rect, hull = cv2.boxPoints(cv2.minAreaRect(e)), cv2.convexHull(e)
@@ -63,20 +64,36 @@ class pc:
         closest = sorted(closest)
         edges =  [self.edge[closest[0]:closest[1]], self.edge[closest[1]:closest[2]],
                 self.edge[closest[2]:closest[3]], np.vstack((self.edge[closest[3]:-1],self.edge[0:closest[0]]))]
-        return edges
+        e = [[e[0,:] for e in edge] for edge in edges]
+        return e
+
+    def correctSides(self):
+        corners = np.array(self.corners, np.float32)
+        outwidth = max(dist(corners[0], corners[1]), dist(corners[2], corners[3]))
+        outheight = max(dist(corners[0], corners[2]), dist(corners[1], corners[3]))
+        dest = np.array([[0, 0], [outwidth, 0], [0, outheight], [outwidth, outheight]], np.float32)
+        mat = cv2.getPerspectiveTransform(corners, dest)
+        shifted = [[], [], [], []]
+        for i, side in enumerate(self.sides):
+            for p in side:
+                shifted[i].append([(mat[0][0]*p[0] + mat[0][1]*p[1] + mat[0][2])/(mat[2][0]*p[0] + mat[2][1]*p[1] + mat[2][2]),
+                                   (mat[1][0]*p[0] + mat[1][1]*p[1] + mat[1][2])/(mat[2][0]*p[0] + mat[2][1]*p[1] + mat[2][2])])
+        self.warpedBase
+        return shifted
 
     def evalMatch(self, pc2, sidenums, show=False):
-        s1, s2 = self.sides[sidenums[0]], pc2.sides[sidenums[1]]
-        #fit = self.pcs[pc1].evalFit(self.pcs[pc2], 15, 20)
-        s1, s2 = s1[:,0], s2[:,0]
-        origin = [-e for e in s1[0]]
+        s1, s2 = self.correctedSides[sidenums[0]], pc2.correctedSides[sidenums[1]]
+        #s1, s2 = self.sides[sidenums[0]], pc2.sides[sidenums[1]]
+        origin = [-200, -200]
         #s1, s2 = shiftPts(s1, s1[0]), shiftPts(np.flipud(s2), s2[-1])
         s1, s2 = shiftPts(s1, s1[0]), shiftPts(s2, s2[0])
+
         offset = math.atan2(s1[-1][1], s1[-1][0]) - math.atan2(s2[-1][1], s2[-1][0])
         s2 = [rotateby(e, offset) for e in s2]
+        
         fit = similaritymeasures.frechet_dist(s1, s2)
+        #fit = listSim(s1, s2)
         if show:
-            #s1, s2 = shiftPts(s1, origin), shiftPts(s2, origin)
             shape = np.shape(self.im)
             im = np.zeros((shape[0], shape[1], 3), np.uint8)
             s1, s2 = shiftPts(s1, origin), shiftPts(s2, origin)
@@ -85,11 +102,11 @@ class pc:
             return fit, im
         return fit
 
-    def preprocess(self, im, lower, upper):
+    def preprocess(self, im, lower=15_000, upper=5100_000):
         self.base = im
         gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
         blur = cv2.GaussianBlur(gray, (3,3), 50)
-        ret, bin = cv2.threshold(blur, 190, 255, cv2.THRESH_BINARY_INV)
+        ret, bin = cv2.threshold(blur, 250, 255, cv2.THRESH_BINARY_INV)
         #bin = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 7, 1)
         for i in range(1):
             bin = cv2.erode(bin, np.ones((3, 3), np.uint8))
@@ -118,8 +135,7 @@ class pc:
 
     def isStraight(self):
         mask = [False, False, False, False]
-        sides = [e[:,0] for e in self.sides]
-        for i, side in enumerate(sides):
+        for i, side in enumerate(self.sides):
             crowdir = (side[-1] - side[0]) / dist(side[-1], side[0])
             c = []
             for pt in side:
@@ -159,7 +175,8 @@ class pc:
                 #mod = cv2.drawContours(mod, [self.edge], -1, (250, 150, 0), 3)
                 mod = cv2.polylines(mod, np.int32([self.edge]), False, (250-70*i, 150-50*i, 80*i), 2)
         if corners:
-            mod = circles(mod, scaleCont(self.corners, 1.25, (100, 100)), radius=8, width=2)
+            c = (sum(self.corners[:,0]/len(self.corners[:,0])), sum(self.corners[:,1]/len(self.corners[:,1])))
+            mod = circles(mod, self.corners, radius=8, width=2)
         if center:
             mod = cv2.circle(mod, (round(self.centroid[0]), round(self.centroid[1])), 10, (130, 255, 50), 2)
         if locks:
