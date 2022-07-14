@@ -13,5 +13,6 @@
         "test*.py"
     ],
     "python.testing.promptToConfigure": false,
-    "git.terminalAuthentication": false
+    "git.terminalAuthentication": false,
+    "vim.useCtrlKeys": false
 }
