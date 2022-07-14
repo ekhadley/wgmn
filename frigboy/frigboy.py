@@ -4,7 +4,7 @@ import time, os
 from bot import *
 
 if "ekhad" in os.listdir("C:\\Users"):
-    dpath = "C:\\Users\\ekhad\\Desktop\\frig\\chrome101\\chromedriver.exe"
+    dpath = "C:\\Users\\ekhad\\Desktop\\frig\\chrome103\\chromedriver.exe"
     pwd = open("C:\\Users\\ekhad\\Desktop\\frig\\notthepassword.txt", "r").readline()
 else:
     dpath = "D:\\frigdrivers\\chrome80driver\\chromedriver.exe"
@@ -27,8 +27,6 @@ while 1:
         time.sleep(.5)
 
 time.sleep(.3)
-
-k = connect4('x', 'y')
 
 frig = bot(driver)
 print("friggbot initiated . . .")
