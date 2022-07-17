@@ -73,7 +73,7 @@ def scaleImgSet(img, lower, upper, steps):
     inc = (upper-lower)/steps
     return [imscale(img, lower+inc*i) for i in range(steps+1)]
 
-def filter(arr, d, l=0):
+def filter(arr, d):
     n = np.copy(arr)
     mod = 1
     while mod:
@@ -84,8 +84,6 @@ def filter(arr, d, l=0):
                     mod = 1
                     n = np.delete(n, j, axis=0)
                     n[i] = ptavg(e, f)
-                    if len(n) == l:
-                        return n
                     break
             if mod:
                 break

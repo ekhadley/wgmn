@@ -1,17 +1,11 @@
 > algorithm for optimizing a set of matches based on fit evaluation (!)
 > automatic scale finding between piece images/reference image
 
-current problem:
-    when you take out an individual side of one piece and compare it to another that it interlocks with
-in the solved puzzle, it is impossible for you to visually tell they are a perfect fit. They just dont align.
-For some reason there is some kind of distortion in the image which causes the shapes to lack the precision
-required to evaluate matches based on contour shape. My current theory is that this is caused by the different
-pieces being photographed at different positions relative to the camera which causes distortions of
-perspective. If this is the problem, I can see two ways to address it: perspective correction or increase
-the height of the camera from the piecs when capturing the images. Will think of tests to determine the source
-of the distortions. A good intermediary step is to determine when this distortion is actually happening. I will
-take a few of the piecs and photograph them in different ways to see how strong the distortion is from various
-positions relative to camera. 
-Ok at this point it is confirmed that distortions are perspective distortions from differing positions to 
-the camera. I think The way to solve it is some kind of correction matrix calculated with reference points
-placed on the capturing surface.
+What's left? Distortion for edge comparison is finished and seems to be working fine. The thing
+to do now is completely finish fit evaluation by implementing rules about straight edges on neighboring
+pieces, and convert from the edge similarity measure to a fit or no fit return. Theres 2 obvious things
+to include here i can think of right now: compare distances between the original images to see if the
+corner to corner distances approximately match, and make sure that when matching with an edge piece, 
+you need to form a continuous line (or terminate in a corner) between two straight edges. After this
+I can think about adding boundary color comparison as an extra level, but I think that method will be 
+finnicky if it gets added. Id prefer not to rely on it.

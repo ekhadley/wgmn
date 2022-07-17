@@ -1,6 +1,5 @@
 import math, random, timeit, cv2, numpy as np
-from re import A
-from cv2 import cornerMinEigenVal
+from operator import indexOf
 from funcs import *
 
 class pc:
@@ -27,14 +26,14 @@ class pc:
             return []
 
     def findCorners(self):
-        cornerMap = cv2.cornerHarris(self.im, 7, 5, .001)
+        cornerMap = cv2.cornerHarris(self.im, 10, 5, .001)
         #ret, bina = cv2.threshold(cornerMap, .25*np.max(cornerMap), 255, cv2.THRESH_BINARY)
         y, x = np.where(cornerMap>.5*np.max(cornerMap))
         self.cm = cornerMap
         candidates = np.float32(np.array([[x[i], y[i]] for i in range(len(x))]))
         criteria = (cv2.TERM_CRITERIA_EPS, 10, 1.0)
         compactness, labels, centers = cv2.kmeans(candidates, 8, np.array([1,2,3,4]), criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
-        centers = filter(centers, 5, 4)
+        centers = filter(centers, 15)
         quads = [e for e in choices(centers, 4) if cv2.contourArea(e) > 100]
         #quads = choices(centers, 4)
         best = quads[0]
@@ -58,7 +57,6 @@ class pc:
         closest = [0, 0, 0, 0]
         for i, p in enumerate(self.edge):
             for j, c in enumerate(self.corners):
-                #print(dist(c, p), dist(c, self.edge[closest[j]]))
                 if dist(c, p) < dist(c, self.edge[closest[j]]):
                     closest[j] = i
         closest = sorted(closest)
@@ -68,34 +66,52 @@ class pc:
         return e
 
     def correctSides(self):
-        corners = np.array(self.corners, np.float32)
-        outwidth = max(dist(corners[0], corners[1]), dist(corners[2], corners[3]))
-        outheight = max(dist(corners[0], corners[2]), dist(corners[1], corners[3]))
-        y, x = 200, 200
-        dest = np.array([[0, 0], [0, x], [y, x], [y, 0]], np.float32)
-        mat = cv2.getPerspectiveTransform(corners, dest)
+        corners = cv2.convexHull(np.array(self.corners, np.float32))
+        x, y, w, h = cv2.boundingRect(corners)
+        #rect = cv2.convexHull(np.array([[x, y], [x, y+h], [x+w, y+h], [x+w, h]], np.float32))
+        rect = np.array([[100, 100], [250, 100], [250, 250], [100, 250]], np.float32)
+        self.r = rect
+
+        mat = cv2.getPerspectiveTransform(corners, rect)
         shifted = [[], [], [], []]
         for i, side in enumerate(self.sides):
             for p in side:
                 shifted[i].append([(mat[0][0]*p[0] + mat[0][1]*p[1] + mat[0][2])/(mat[2][0]*p[0] + mat[2][1]*p[1] + mat[2][2]),
                                    (mat[1][0]*p[0] + mat[1][1]*p[1] + mat[1][2])/(mat[2][0]*p[0] + mat[2][1]*p[1] + mat[2][2])])
         s = np.shape(self.base)
-        h, w = s[0], s[1]
-        self.warped = cv2.warpPerspective(self.base, mat, (w, h))
+        self.warped = cv2.warpPerspective(self.base, mat, (400, 400))
         return shifted
 
     def evalMatch(self, pc2, sidenums, show=False):
-        s1, s2 = self.correctedSides[sidenums[0]], pc2.correctedSides[sidenums[1]]
-        #s1, s2 = self.sides[sidenums[0]], pc2.sides[sidenums[1]]
+        mine, other = sidenums
+        s1, s2 = self.correctedSides[mine], pc2.correctedSides[other]
+        s1o, s2o = self.sides[mine], pc2.sides[other]
         origin = [-200, -200]
-        #s1, s2 = shiftPts(s1, s1[0]), shiftPts(np.flipud(s2), s2[-1])
-        s1, s2 = shiftPts(s1, s1[0]), shiftPts(s2, s2[0])
-
+        s1, s2 = shiftPts(s1, s1[0]), shiftPts(np.flipud(s2), s2[-1])
+        #s1, s2 = shiftPts(s1, s1[0]), shiftPts(s2, s2[0])
         offset = math.atan2(s1[-1][1], s1[-1][0]) - math.atan2(s2[-1][1], s2[-1][0])
         s2 = [rotateby(e, offset) for e in s2]
-        
-        fit = similaritymeasures.frechet_dist(s1, s2)
-        #fit = listSim(s1, s2)
+
+        d = dist(s1o[0], s1o[-1]) - dist(s2o[0], s2o[-1])
+        smask1, smask2 = self.straightSides, pc2.straightSides
+
+        if (1 in smask1) and (1 in smask2):
+            check = not ((smask1[(mine-1)%4] and smask2[(other+1)%4]) or (smask1[(mine+1)%4] and smask2[(other-1)%4]))
+        elif (sum(smask1) == 1) and (sum(smask2)==0):
+            i = indexOf(smask1, 1)
+            check = (mine!=((i+2)%4))
+        elif (sum(smask1) == 0) and (sum(smask2) == 1):
+            i = indexOf(smask2, 1)
+            check = (other!=((i+2)%4))
+        else:
+            check = False
+
+        if d > 15 or smask1[mine] or smask2[other] or check:
+            fit = 1000
+        else:
+            fit = similaritymeasures.frechet_dist(s1, s2)
+            #fit = listSim(s1, s2)
+
         if show:
             shape = np.shape(self.im)
             im = np.zeros((shape[0], shape[1], 3), np.uint8)
@@ -137,7 +153,7 @@ class pc:
         return tans
 
     def isStraight(self):
-        mask = [False, False, False, False]
+        mask = [0, 0, 0, 0]
         for i, side in enumerate(self.sides):
             crowdir = (side[-1] - side[0]) / dist(side[-1], side[0])
             c = []
@@ -149,7 +165,7 @@ class pc:
             mask[i] = 1 if (sum(c)/len(c) < 7) else 0
         return mask
     
-    def show(self, base=False, scale=1, edges = True, corners = True, center = True, locks=False):
+    def show(self, base=False, scale=1, edges = True, corners = True, center = True, locks=False, thickness=1):
         if base:
             mod = np.copy(self.base)
         else:
@@ -173,10 +189,10 @@ class pc:
             if len(self.sides) > 0:
                 for i, e in enumerate(self.sides):
                     #mod = cv2.drawContours(mod, [e], -1, (250-50*i, 150-50*i, 80*i), 3)
-                    mod = cv2.polylines(mod, np.int32([e]), False, (250-70*i, 150-50*i, 80*i), 2)
+                    mod = cv2.polylines(mod, np.int32([e]), False, (250-70*i, 150-50*i, 80*i), thickness)
             else:
                 #mod = cv2.drawContours(mod, [self.edge], -1, (250, 150, 0), 3)
-                mod = cv2.polylines(mod, np.int32([self.edge]), False, (250-70*i, 150-50*i, 80*i), 2)
+                mod = cv2.polylines(mod, np.int32([self.edge]), False, (250-70*i, 150-50*i, 80*i), thickness)
         if corners:
             c = (sum(self.corners[:,0]/len(self.corners[:,0])), sum(self.corners[:,1]/len(self.corners[:,1])))
             mod = circles(mod, self.corners, radius=8, width=2)
