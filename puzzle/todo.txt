@@ -1,11 +1,30 @@
-> algorithm for optimizing a set of matches based on fit evaluation (!)
-> automatic scale finding between piece images/reference image
+> generate solving methods
+> border color comparison for match evaluation (?)
+> get a job and a life
 
-What's left? Distortion for edge comparison is finished and seems to be working fine. The thing
-to do now is completely finish fit evaluation by implementing rules about straight edges on neighboring
-pieces, and convert from the edge similarity measure to a fit or no fit return. Theres 2 obvious things
-to include here i can think of right now: compare distances between the original images to see if the
-corner to corner distances approximately match, and make sure that when matching with an edge piece, 
-you need to form a continuous line (or terminate in a corner) between two straight edges. After this
-I can think about adding boundary color comparison as an extra level, but I think that method will be 
-finnicky if it gets added. Id prefer not to rely on it.
+    Ok how about now? The things to do are border color comparison if i feel like it,
+but I think fit evaluation is basically done. The edge comparison was drastically 
+improved by perspective correction, but there is some other source which causes 
+distortion as well becuase some matching curves are not completely similair. I will 
+think about this and try to correct, perhaps something with the lense on the camera? But 
+I think the comparison is good enough to start thinking about the solving process. Something
+i saw in other solvers was to first figure out the entire perimeter first. From that point
+on you have the option to only place pieces in spots where you have 2 edges in that 
+position to compare them to.The problem with this approach is most likely in finding
+the correct perimeter. While you do have a reduced selection pool for this subset,
+(non corners, non interior pieces), you would be required to construct the entire perimeter
+while only comparing a single edge on each piece. It is also worth considering that once some
+amount of progress has been gained in connecting pieces, a fair number will already be able to 
+be compared with more than a single edge. 
+    Another method Ive just considered is to simply make the most confident placement possible 
+starting with any corner piece. When empty positions bordering 2 free sides are available, always 
+fill those first. This method will create successively larger squares by filling out a new row or
+column on one of the two sides at a time. Once a row or column has been filled out, there are no priority 
+placements to be made, and the most confident 1-border placement is made. (I wonder how this 
+method varies without the 2-side prioritization)
+    Something very important needs to be tested before starting the solving:
+while it may not currently be possible to determine if 2 pieces match based simply on their match
+similarity, it should be considered if, when comparing one piece's edge to all others in the
+available pool, does the one with highest similarity always form a true match? I imagine this would
+be true, more so for 2 or 3-sided piece vancancies. If it is not my evaluation process must be
+improved or the solving process becomes much much harder.

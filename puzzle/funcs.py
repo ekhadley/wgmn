@@ -6,6 +6,19 @@ def imscale(img, s):
 def listSim(a, b):
     diff = [dist(a[q], b[q]) for q in range(min(len(a), len(b)))]
     return sum(diff)/len(diff)
+    '''
+    diffs = []
+    for i, e in enumerate(a):
+        closest = b[0]
+        low = i-5 if i-5>=0 else 0
+        up = i+5 if i+5<=len(b) else len(b)-1
+        for j, f in enumerate(b[low:up]):
+            if dist(e, f) < dist(e, closest):
+                closest = f
+        diffs.append(dist(closest, e))
+    return sum(diffs)/len(diffs)
+    '''
+
 
 def rotateby(pos, angle, origin = (0, 0)):
     cx, cy = origin[0], origin[1]

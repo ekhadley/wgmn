@@ -10,11 +10,10 @@ class pc:
         self.sides = self.segment()
         self.straightSides = self.isStraight()
         self.correctedSides = self.correctSides()
+        self.pos = None
+        self.rotation = None
         #self.locks = self.lockPoints()
-        self.locks = []
-        
         self.centroid = [sum(self.corners[:,0]/4), sum(self.corners[:,1]/4)]
-        self.attached = [0, 0, 0, 0]
 
     def findContours(self):
         contours, heirarchy = cv2.findContours(self.im, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -34,7 +33,7 @@ class pc:
         criteria = (cv2.TERM_CRITERIA_EPS, 10, 1.0)
         compactness, labels, centers = cv2.kmeans(candidates, 8, np.array([1,2,3,4]), criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
         centers = filter(centers, 15)
-        quads = [e for e in choices(centers, 4) if cv2.contourArea(e) > 100]
+        quads = [e for e in choices(centers, 4) if cv2.contourArea(e) > 0]
         #quads = choices(centers, 4)
         best = quads[0]
         for e in np.unique(quads, axis=0):
@@ -105,13 +104,12 @@ class pc:
             check = (other!=((i+2)%4))
         else:
             check = False
-
         if d > 15 or smask1[mine] or smask2[other] or check:
             fit = 1000
         else:
-            fit = similaritymeasures.frechet_dist(s1, s2)
-            #fit = listSim(s1, s2)
-
+            #st1, st2 = [s1[i] for i in range(0,len(s1),5)], [s2[i] for i in range(0,len(s2),5)]
+            #fit = similaritymeasures.frechet_dist(s1, s2)
+            fit = listSim(s1, s2)
         if show:
             shape = np.shape(self.im)
             im = np.zeros((shape[0], shape[1], 3), np.uint8)
@@ -121,7 +119,7 @@ class pc:
             return fit, im
         return fit
 
-    def preprocess(self, im, lower=15_000, upper=5100_000):
+    def preprocess(self, im, lower=15_000, upper=100_000):
         self.base = im
         gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
         blur = cv2.GaussianBlur(gray, (3,3), 50)
@@ -138,20 +136,6 @@ class pc:
         component = (labelids == pcindex).astype("uint8")*255
         return component
 
-    def lockPoints(self):
-        edges = [np.delete(e, range(-1, -1-len(e)%5, -1), axis=0) for e in self.sides]
-        tans = [[], [], [], []]
-        for i, e in enumerate(edges):
-            disp = ptdiff(e[0][0], e[-1][0])
-            off = math.atan2(disp[0], disp[1])
-            for j in range(len(e)-5):
-                diffs = [ptdiff(e[j][0], e[j+5][0])]
-                diff = sum(diffs)/len(diffs)
-                tan = math.degrees(math.atan2(diff[0], diff[1]) - off)
-                if abs(tan) > 88 and tan < 92:
-                    tans[i].append(e[j][0])
-        return tans
-
     def isStraight(self):
         mask = [0, 0, 0, 0]
         for i, side in enumerate(self.sides):
@@ -165,7 +149,7 @@ class pc:
             mask[i] = 1 if (sum(c)/len(c) < 7) else 0
         return mask
     
-    def show(self, base=False, scale=1, edges = True, corners = True, center = True, locks=False, thickness=1):
+    def show(self, base=False, scale=1, edges = True, corners = True, center = True, locks=False, thickness=2):
         if base:
             mod = np.copy(self.base)
         else:
@@ -206,7 +190,75 @@ class pc:
 class puzzle:
     def __init__(self, pcs, dims):
         self.pcs = pcs
+        self.unplaced = [e for e in pcs]
+        self.placed = []
         self.dims = dims
-
         self.edgepcs = [e for e in self.pcs if sum(e.straightSides) == 1]
         self.cornerpcs = [e for e in self.pcs if sum(e.straightSides) == 2]
+        self.solved = False
+        r = [e for e in self.cornerpcs[0].straightSides]
+        c = 0
+        while r[3] + r[1] != 2:
+            c += 1
+            r.insert(0, r[3])
+            r.pop(3)
+        print(f'starting corner is at index {self.pcs.index(self.cornerpcs[0])}')
+        self.place(self.cornerpcs[0], (0,0), c)
+
+    def getBorders(self, pos):
+        x, y = pos[0], pos[1]
+        c = [(x+1,y), (x,y+1), (x-1,y), (x,y-1)]
+        borders = [None, None, None, None]
+        for pc in self.placed:
+            if pc.pos in c:
+                s = indexOf(c, pc.pos)
+                borders[(s+2)%4] = (pc, (s+pc.rotation)%4)
+        return borders 
+
+    def place(self, p, pos, r):
+        p.pos = pos
+        p.rotation = r
+        self.unplaced.remove(p)
+        self.placed.append(p)
+        self.solved = len(self.unplaced)==0
+
+    def bestFit(self, pos):
+        fits = []
+        for pc in self.unplaced:
+            for rot in range(0, 3):
+                score = self.evalPlacement(pc, pos, rot)
+                fits.append((pc, rot, score))
+        best = np.argmin(np.array(fits)[:,2])
+        print(fits, "\n")
+        return fits[best]
+
+    def bestPlacement(self):
+        spots = self.perimeterPositions()[0]
+        s = [self.bestFit(e) for e in spots]
+        print(s)
+        [print(self.pcs.index(e[0])) for e in s]
+
+
+    def evalPlacement(self, p, pos, rot):
+        borders = self.getBorders(pos)
+        score = 0
+        for i in range(4):
+            if borders[i] != None:
+                otherpc, otherside = borders[i]
+                score += p.evalMatch(otherpc, ((i+rot)%4, otherside))
+        return score
+
+    def perimeterPositions(self):
+        coords = [(e.pos[0], e.pos[1]) for e in self.placed]
+        maxX, maxY = np.max([e[0] for e in coords]), np.max([e[1] for e in coords])
+        maxX, maxY = min(maxX, self.dims[0]), min(maxY, self.dims[1])
+        borders = [[], [], [], []]
+        for i in range(maxX+2):
+            for j in range(maxY+2):
+                if (i, j) not in coords:
+                    edges = self.getBorders((i, j))
+                    m = sum([1 for e in edges if e != None])
+                    if m > 0:
+                        borders[4-m].append((i, j))
+        return [e for e in borders if len(e)>0]
+    
