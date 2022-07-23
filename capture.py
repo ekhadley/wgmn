@@ -2,7 +2,7 @@ import numpy, time, cv2, time
 from PIL import Image
 
 vid = cv2.VideoCapture(0)
-c = 0
+c = 19
 while 1:
     ret, frame = numpy.array(vid.read())
 

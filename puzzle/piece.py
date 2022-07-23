@@ -19,10 +19,7 @@ class pc:
         contours, heirarchy = cv2.findContours(self.im, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         contours = [e for e in contours if len(e) > 60]
         cv2.fillPoly(self.im, contours, color=(255))
-        try:
-            return contours[0]
-        except IndexError:
-            return []
+        return contours[0]
 
     def findCorners(self):
         cornerMap = cv2.cornerHarris(self.im, 10, 5, .001)
@@ -34,7 +31,7 @@ class pc:
         compactness, labels, centers = cv2.kmeans(candidates, 8, np.array([1,2,3,4]), criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
         centers = filter(centers, 15)
         quads = [e for e in choices(centers, 4) if cv2.contourArea(e) > 0]
-        #quads = choices(centers, 4)
+        assert len(quads)>0, "Corner finding failed, zero candidate groupings"
         best = quads[0]
         for e in np.unique(quads, axis=0):
             rect, hull = cv2.boxPoints(cv2.minAreaRect(e)), cv2.convexHull(e)
@@ -43,14 +40,13 @@ class pc:
                 best = e
         localmax = []
         size = 14
-        assert size%2 == 0
         radius = int(size/2)
         for e in best:
             x, y = round(e[0]), round(e[1])
             local = cornerMap[y-radius:y+radius, x-radius:x+radius]
             m = np.unravel_index(np.argmax(local), (size, size))
             localmax.append([m[0]+x-radius, m[1]+y-radius])
-        return np.array(localmax)
+        return cv2.convexHull(np.array(localmax))[:,0]
 
     def segment(self):
         closest = [0, 0, 0, 0]
@@ -58,19 +54,25 @@ class pc:
             for j, c in enumerate(self.corners):
                 if dist(c, p) < dist(c, self.edge[closest[j]]):
                     closest[j] = i
-        closest = sorted(closest)
-        edges =  [self.edge[closest[0]:closest[1]], self.edge[closest[1]:closest[2]],
-                self.edge[closest[2]:closest[3]], np.vstack((self.edge[closest[3]:-1],self.edge[0:closest[0]]))]
-        e = [[e[0,:] for e in edge] for edge in edges]
-        return e
+        edges = []
+        closest.reverse()
+        for i in range(len(closest)):
+            seg = self.edge[closest[i]:closest[(i+1)%4],0]
+            print(len(seg))
+            if len(seg) == 0:
+                seg = np.vstack((self.edge[closest[i]:-1,0],self.edge[0:closest[(i+1)%4],0]))
+            edges.append(seg)
+
+        print(closest)
+        [print(len(e)) for e in edges]
+        print()
+        return edges
 
     def correctSides(self):
         corners = cv2.convexHull(np.array(self.corners, np.float32))
-        x, y, w, h = cv2.boundingRect(corners)
+        #corners = np.array(self.corners, np.float32)
         #rect = cv2.convexHull(np.array([[x, y], [x, y+h], [x+w, y+h], [x+w, h]], np.float32))
-        rect = np.array([[100, 100], [250, 100], [250, 250], [100, 250]], np.float32)
-        self.r = rect
-
+        rect = np.array([[80, 80], [320, 80], [320, 320], [80, 320]], np.float32)
         mat = cv2.getPerspectiveTransform(corners, rect)
         shifted = [[], [], [], []]
         for i, side in enumerate(self.sides):
@@ -96,18 +98,18 @@ class pc:
 
         if (1 in smask1) and (1 in smask2):
             check = not ((smask1[(mine-1)%4] and smask2[(other+1)%4]) or (smask1[(mine+1)%4] and smask2[(other-1)%4]))
-        elif (sum(smask1) == 1) and (sum(smask2)==0):
+        elif (1 in smask1) and (not 1 in smask2):
             i = indexOf(smask1, 1)
             check = (mine!=((i+2)%4))
-        elif (sum(smask1) == 0) and (sum(smask2) == 1):
+        elif (not 1 in smask1) and (1 in smask2):
             i = indexOf(smask2, 1)
             check = (other!=((i+2)%4))
         else:
             check = False
+
         if d > 15 or smask1[mine] or smask2[other] or check:
             fit = 1000
         else:
-            #st1, st2 = [s1[i] for i in range(0,len(s1),5)], [s2[i] for i in range(0,len(s2),5)]
             #fit = similaritymeasures.frechet_dist(s1, s2)
             fit = listSim(s1, s2)
         if show:
@@ -123,17 +125,22 @@ class pc:
         self.base = im
         gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
         blur = cv2.GaussianBlur(gray, (3,3), 50)
-        ret, bin = cv2.threshold(blur, 250, 255, cv2.THRESH_BINARY_INV)
+        ret, bin = cv2.threshold(blur, 150, 255, cv2.THRESH_BINARY_INV)
         #bin = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 7, 1)
         for i in range(1):
             bin = cv2.erode(bin, np.ones((3, 3), np.uint8))
             bin = cv2.dilate(bin, np.ones((1, 1), np.uint8))
         labels, labelids, values, centroids = cv2.connectedComponentsWithStats(bin, 4, cv2.CV_32S)
         shape = np.shape(bin)
+
+        pcindex=-1
         for i, e in enumerate(values):
             if e[4] in range(lower, upper) and e[3]<shape[0] and e[2]<shape[1]:
                 pcindex = i
+
+        assert pcindex != -1, f"connected component failed: no match.\nComponents found:\n{values}"
         component = (labelids == pcindex).astype("uint8")*255
+
         return component
 
     def isStraight(self):
@@ -141,12 +148,13 @@ class pc:
         for i, side in enumerate(self.sides):
             crowdir = (side[-1] - side[0]) / dist(side[-1], side[0])
             c = []
-            for pt in side:
+            for q in range(0, len(side), 5):
+                pt = side[q]
                 crowpt = side[0] + dist(side[0], pt)*crowdir
                 pt2crow = dist(pt, crowpt)
                 #print(pt2crow)
                 c.append(pt2crow)
-            mask[i] = 1 if (sum(c)/len(c) < 7) else 0
+            mask[i] = 1 if (sum(c)/len(c))<5 else 0
         return mask
     
     def show(self, base=False, scale=1, edges = True, corners = True, center = True, locks=False, thickness=2):
@@ -179,7 +187,8 @@ class pc:
                 mod = cv2.polylines(mod, np.int32([self.edge]), False, (250-70*i, 150-50*i, 80*i), thickness)
         if corners:
             c = (sum(self.corners[:,0]/len(self.corners[:,0])), sum(self.corners[:,1]/len(self.corners[:,1])))
-            mod = circles(mod, self.corners, radius=8, width=2)
+            for i, e in enumerate(self.corners):
+                mod = circles(mod, [e], radius=8, width=2, color=(250-70*i, 150-50*i, 80*i))
         if center:
             mod = cv2.circle(mod, (round(self.centroid[0]), round(self.centroid[1])), 10, (130, 255, 50), 2)
         if locks:
@@ -228,16 +237,15 @@ class puzzle:
             for rot in range(0, 3):
                 score = self.evalPlacement(pc, pos, rot)
                 fits.append((pc, rot, score))
-        best = np.argmin(np.array(fits)[:,2])
-        print(fits, "\n")
-        return fits[best]
+        #best = np.argmin(np.array(fits)[:,2])
+        fits = sorted(fits, key=lambda x:x[2])
+        print(f"{fits}, \n")
+        return fits[0]
 
     def bestPlacement(self):
         spots = self.perimeterPositions()[0]
         s = [self.bestFit(e) for e in spots]
-        print(s)
-        [print(self.pcs.index(e[0])) for e in s]
-
+        return s
 
     def evalPlacement(self, p, pos, rot):
         borders = self.getBorders(pos)
@@ -261,4 +269,4 @@ class puzzle:
                     if m > 0:
                         borders[4-m].append((i, j))
         return [e for e in borders if len(e)>0]
-    
+        
