@@ -1,10 +1,9 @@
-import math, random, timeit, cv2, numpy as np
-from operator import indexOf
+import math, random, timeit, cv2, time, numpy as np
 from funcs import *
 
 class pc:
-    def __init__(self, im):
-        self.im = self.preprocess(im)
+    def __init__(self, im, undistort=None):
+        self.im = self.preprocess(im, undistort)
         self.edge = self.findContours()
         self.corners = self.findCorners()
         self.sides = self.segment()
@@ -18,7 +17,7 @@ class pc:
     def findContours(self):
         contours, heirarchy = cv2.findContours(self.im, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         contours = [e for e in contours if len(e) > 60]
-        cv2.fillPoly(self.im, contours, color=(255))
+        #cv2.fillPoly(self.im, contours, color=(255))
         return contours[0]
 
     def findCorners(self):
@@ -46,7 +45,7 @@ class pc:
             local = cornerMap[y-radius:y+radius, x-radius:x+radius]
             m = np.unravel_index(np.argmax(local), (size, size))
             localmax.append([m[0]+x-radius, m[1]+y-radius])
-        return cv2.convexHull(np.array(localmax))[:,0]
+        return np.flip(cv2.convexHull(np.array(localmax))[:,0], axis=0)
 
     def segment(self):
         closest = [0, 0, 0, 0]
@@ -55,17 +54,12 @@ class pc:
                 if dist(c, p) < dist(c, self.edge[closest[j]]):
                     closest[j] = i
         edges = []
-        closest.reverse()
         for i in range(len(closest)):
-            seg = self.edge[closest[i]:closest[(i+1)%4],0]
-            print(len(seg))
-            if len(seg) == 0:
+            if closest[i] < closest[(i+1)%4]:
+                seg = self.edge[closest[i]:closest[(i+1)%4],0]
+            else:
                 seg = np.vstack((self.edge[closest[i]:-1,0],self.edge[0:closest[(i+1)%4],0]))
             edges.append(seg)
-
-        print(closest)
-        [print(len(e)) for e in edges]
-        print()
         return edges
 
     def correctSides(self):
@@ -82,46 +76,11 @@ class pc:
         s = np.shape(self.base)
         self.warped = cv2.warpPerspective(self.base, mat, (400, 400))
         return shifted
-
-    def evalMatch(self, pc2, sidenums, show=False):
-        mine, other = sidenums
-        s1, s2 = self.correctedSides[mine], pc2.correctedSides[other]
-        s1o, s2o = self.sides[mine], pc2.sides[other]
-        origin = [-200, -200]
-        s1, s2 = shiftPts(s1, s1[0]), shiftPts(np.flipud(s2), s2[-1])
-        #s1, s2 = shiftPts(s1, s1[0]), shiftPts(s2, s2[0])
-        offset = math.atan2(s1[-1][1], s1[-1][0]) - math.atan2(s2[-1][1], s2[-1][0])
-        s2 = [rotateby(e, offset) for e in s2]
-
-        d = dist(s1o[0], s1o[-1]) - dist(s2o[0], s2o[-1])
-        smask1, smask2 = self.straightSides, pc2.straightSides
-
-        if (1 in smask1) and (1 in smask2):
-            check = not ((smask1[(mine-1)%4] and smask2[(other+1)%4]) or (smask1[(mine+1)%4] and smask2[(other-1)%4]))
-        elif (1 in smask1) and (not 1 in smask2):
-            i = indexOf(smask1, 1)
-            check = (mine!=((i+2)%4))
-        elif (not 1 in smask1) and (1 in smask2):
-            i = indexOf(smask2, 1)
-            check = (other!=((i+2)%4))
-        else:
-            check = False
-
-        if d > 15 or smask1[mine] or smask2[other] or check:
-            fit = 1000
-        else:
-            #fit = similaritymeasures.frechet_dist(s1, s2)
-            fit = listSim(s1, s2)
-        if show:
-            shape = np.shape(self.im)
-            im = np.zeros((shape[0], shape[1], 3), np.uint8)
-            s1, s2 = shiftPts(s1, origin), shiftPts(s2, origin)
-            im = cv2.polylines(im, np.int32([s1]), False, (250, 0, 50), 1)
-            im = cv2.polylines(im, np.int32([s2]), False, (50, 0, 250), 1)
-            return fit, im
-        return fit
-
-    def preprocess(self, im, lower=15_000, upper=100_000):
+    
+    def preprocess(self, im, undistort, lower=15_000, upper=100_000):
+        if undistort != None:
+            mtx,dst,newmtx = undistort
+            im = cv2.undistort(im, mtx, dst, None, newmtx)
         self.base = im
         gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
         blur = cv2.GaussianBlur(gray, (3,3), 50)
@@ -163,7 +122,7 @@ class pc:
         else:
             mod = cv2.cvtColor(self.im, cv2.COLOR_GRAY2BGR)
 
-        #(x,y),radius = cv2.minEnclosingCircle(self.edge)
+        #(x,y),radius = minEnclosingCircle(self.edge)
         #center = (int(x),int(y))
         #radius = int(radius)
         #cv2.circle(mod,center,radius,(0,255,0),2)
@@ -205,14 +164,8 @@ class puzzle:
         self.edgepcs = [e for e in self.pcs if sum(e.straightSides) == 1]
         self.cornerpcs = [e for e in self.pcs if sum(e.straightSides) == 2]
         self.solved = False
-        r = [e for e in self.cornerpcs[0].straightSides]
-        c = 0
-        while r[3] + r[1] != 2:
-            c += 1
-            r.insert(0, r[3])
-            r.pop(3)
-        print(f'starting corner is at index {self.pcs.index(self.cornerpcs[0])}')
-        self.place(self.cornerpcs[0], (0,0), c)
+        c=0
+        self.place(self.pcs[0], (0,0), c)
 
     def getBorders(self, pos):
         x, y = pos[0], pos[1]
@@ -269,4 +222,42 @@ class puzzle:
                     if m > 0:
                         borders[4-m].append((i, j))
         return [e for e in borders if len(e)>0]
-        
+
+    def evalMatch(self, pieces, sidenums, show=False):
+        first, second = sidenums
+        pc1, pc2 = pieces
+        s1, s2 = pc1.correctedSides[first], pc2.correctedSides[second]
+        s1o, s2o = pc1.sides[first], pc2.sides[second]
+        origin = [-200, -200]
+#        s1, s2 = shiftPts(s1, s1[0]), shiftPts(np.flipud(s2), s2[-1])
+        s1, s2 = shiftPts(s1, s1[0]), shiftPts(s2, s2[0])
+        offset = math.atan2(s1[-1][1], s1[-1][0]) - math.atan2(s2[-1][1], s2[-1][0])
+        s2 = [rotateby(e, offset) for e in s2]
+
+        d = dist(s1o[0], s1o[-1]) - dist(s2o[0], s2o[-1])
+        smask1, smask2 = pc1.straightSides, pc2.straightSides
+
+        if (1 in smask1) and (1 in smask2):
+            check = not ((smask1[(first-1)%4] and smask2[(second+1)%4]) or (smask1[(first+1)%4] and smask2[(second-1)%4]))
+        elif (1 in smask1) and (not 1 in smask2):
+            i = smask1.index(1)
+            check = (first!=((i+2)%4))
+        elif (not 1 in smask1) and (1 in smask2):
+            i = smask2.index(1)
+            check = (second!=((i+2)%4))
+        else:
+            check = False
+
+        if d > 15 or smask1[first] or smask2[second] or check:
+            fit = 1000
+        else:
+            fit = similaritymeasures.frechet_dist(s1, s2)
+            #fit = listSim(s1, s2)
+        if show:
+            shape = np.shape(pc1.im)
+            im = np.zeros((shape[0], shape[1], 3), np.uint8)
+            s1, s2 = shiftPts(s1, origin), shiftPts(s2, origin)
+            im = cv2.polylines(im, np.int32([s1]), False, (250, 0, 50), 1)
+            im = cv2.polylines(im, np.int32([s2]), False, (50, 0, 250), 1)
+            return fit, im
+        return fit

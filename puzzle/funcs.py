@@ -1,7 +1,7 @@
 import math, random, cv2, similaritymeasures, imutils, numpy as np
 
 def imscale(img, s):
-    return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)))
+    return cv2.resize(img, (round(len(img[0])*s), round(len(img)*s)), interpolation=cv2.INTER_NEAREST)
 
 def listSim(a, b):
     diff = [dist(a[q], b[q]) for q in range(min(len(a), len(b)))]
