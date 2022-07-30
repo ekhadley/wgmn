@@ -21,8 +21,8 @@ class pc:
         return contours[0]
 
     def findCorners(self):
-        #cornerMap = cv2.cornerHarris(self.im, 10, 5, .001)
-        cornerMap = cv2.cornerHarris(self.im, 25, 5, .001)
+        cornerMap = cv2.cornerHarris(self.im, 10, 5, .001)
+        #cornerMap = cv2.cornerHarris(self.im, 25, 5, .001)
         #ret, bina = cv2.threshold(cornerMap, .25*np.max(cornerMap), 255, cv2.THRESH_BINARY)
         y, x = np.where(cornerMap>.5*np.max(cornerMap))
         self.cm = cornerMap
@@ -65,10 +65,8 @@ class pc:
 
     def correctSides(self):
         corners = cv2.convexHull(np.array(self.corners, np.float32))
-        #corners = np.array(self.corners, np.float32)
-        #rect = cv2.convexHull(np.array([[x, y], [x, y+h], [x+w, y+h], [x+w, h]], np.float32))
-        sqrSize = 2000
-        rect = np.array([[80, 80], [sqrSize-80, 80], [sqrSize-20, sqrSize-80], [80, sqrSize-80]], np.float32)
+        sqrSize = 400
+        rect = np.array([[80, 80], [sqrSize-80, 80], [sqrSize-80, sqrSize-80], [80, sqrSize-80]], np.float32)
         mat = cv2.getPerspectiveTransform(corners, rect)
         shifted = [[], [], [], []]
         for i, side in enumerate(self.sides):
@@ -79,11 +77,12 @@ class pc:
         self.warped = cv2.warpPerspective(self.base, mat, (sqrSize, sqrSize))
         return shifted
     
-    def preprocess(self, im, undistort, lower=1_000_000, upper=2_000_000):
+    def preprocess(self, im, undistort, lower=45_000, upper=100_000):
         if undistort != None:
             mtx,dst,newmtx = undistort
             im = cv2.undistort(im, mtx, dst, None, newmtx)
         self.base = im
+        h, w, d = np.shape(im)
         gray = cv2.cvtColor(im, cv2.COLOR_RGB2GRAY)
         blur = cv2.GaussianBlur(gray, (3,3), 50)
         ret, bin = cv2.threshold(blur, 150, 255, cv2.THRESH_BINARY_INV)
@@ -92,16 +91,12 @@ class pc:
             bin = cv2.erode(bin, np.ones((3, 3), np.uint8))
             bin = cv2.dilate(bin, np.ones((1, 1), np.uint8))
         labels, labelids, values, centroids = cv2.connectedComponentsWithStats(bin, 4, cv2.CV_32S)
-        shape = np.shape(bin)
-
-        pcindex=-1
+        pcindex = -1
         for i, e in enumerate(values):
-            if e[4] in range(lower, upper) and e[3]<shape[0] and e[2]<shape[1]:
+            if e[4] in range(lower, upper) and e[3]<h and e[2]<w:
                 pcindex = i
-
         assert pcindex != -1, f"connected component failed: no match.\nComponents found:\n{values}"
         component = (labelids == pcindex).astype("uint8")*255
-
         return component
 
     def isStraight(self):
@@ -216,7 +211,7 @@ class puzzle:
         first, second = sidenums
         pc1, pc2 = pieces
         s1, s2 = pc1.correctedSides[first], pc2.correctedSides[second]
-        origin = [-200, -200]
+        #s1, s2 = pc1.sides[first], pc2.sides[second]
         #s1, s2 = shiftPts(s1, s1[0]), shiftPts(np.flipud(s2), s2[-1])
         s1, s2 = shiftPts(s1, s1[0]), shiftPts(s2, s2[0])
         offset = math.atan2(s1[-1][1], s1[-1][0]) - math.atan2(s2[-1][1], s2[-1][0])
@@ -245,6 +240,7 @@ class puzzle:
         if show:
             x, y = np.shape(pc1.im)
             im = np.zeros((x, y, 3), np.uint8)
+            origin = [-y/2, -x/2]
             s1, s2 = shiftPts(s1, origin), shiftPts(s2, origin)
             im = cv2.polylines(im, np.int32([s1]), False, (250, 0, 50), thickness)
             im = cv2.polylines(im, np.int32([s2]), False, (50, 0, 250), thickness)
